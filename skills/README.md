@@ -1,18 +1,22 @@
 # Skills Directory
 
-Store every repository skill in this directory. Use `_template/` as the base scaffold for new skills.
+Store all repository skills in this directory.
 
 ## Rules
 
 - One skill per subdirectory: `skills/<skill-name>/`
-- Each skill must include a `SKILL.md`
-- Keep implementation files local to that skill directory
-- Avoid imports or runtime dependencies across sibling skills
-- Put temporary outputs inside the skill's own `tmp/` directory
+- Every skill must include a `SKILL.md`
+- Keep implementation files local to the skill directory
+- Avoid runtime dependencies across sibling skills
+- Keep temporary outputs inside the skill's own `tmp/` directory
 
-## Current Skills
+## Current Entries
 
 - `dongchedi-scraper/`
-- `_template/` — starter scaffold for new skills
+- `_template/` — starter scaffold for future skills
 
-Use `../scripts/new-skill.sh <skill-name>` to create a new skill from `_template/`.
+Create a new skill with:
+
+```bash
+./scripts/new-skill.sh <skill-name>
+```

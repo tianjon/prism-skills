@@ -1,39 +1,34 @@
 ---
 name: your-skill-name
-description: Briefly describe what this skill does, when to use it, and trigger phrases.
+description: Briefly describe what the skill does, when to use it, and typical trigger phrases.
 ---
 
 # Skill Name
 
-Short summary of the skill's purpose.
+Short summary of the skill.
 
 ## When to Use
 
 Use this skill when the user asks to:
-- action one
-- action two
-- action three
+- do action one
+- do action two
+- do action three
 
 ## Prerequisites
 
-List required tools, services, environment variables, or accounts.
-
-```bash
-# example setup
-cd ~/ai/prism-skills/skills/your-skill-name
-```
+List required tools, accounts, services, or environment variables.
 
 ## Directory Layout
 
-- `SKILL.md` — source of truth for the skill workflow
+- `SKILL.md` — source of truth for runtime behavior
 - `lib/` — reusable logic
-- `scripts/` — runnable entry scripts
-- `tmp/` — generated scratch files
+- `scripts/` — executable entrypoints
+- `tmp/` — disposable scratch outputs
 
 ## Workflow
 
 ### Step 1: Gather input
-Describe what input is required.
+Describe the required input.
 
 ### Step 2: Run the main script
 
@@ -42,15 +37,13 @@ python3 scripts/example.py
 ```
 
 ### Step 3: Validate output
-Explain what files or output to inspect.
+Describe what files or outputs to inspect.
 
 ## Error Handling
 
-- Common failure 1 — how to recover
-- Common failure 2 — how to recover
+- Common failure 1 — recovery guidance
+- Common failure 2 — recovery guidance
 
 ## Cleanup
 
-```bash
-rm -f tmp/*
-```
+Keep generated artifacts inside `tmp/` and do not commit them.

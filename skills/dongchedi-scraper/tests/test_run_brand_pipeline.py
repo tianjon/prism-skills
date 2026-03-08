@@ -3,7 +3,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.run_brand_pipeline import build_parser, create_run_dir, trim_target_models
+from unittest.mock import patch
+
+from scripts.run_brand_pipeline import build_parser, create_run_dir, trim_target_models, ensure_obsidian_available
 
 
 class RunBrandPipelineTest(unittest.TestCase):
@@ -46,6 +48,12 @@ class RunBrandPipelineTest(unittest.TestCase):
             payload = json.loads(target_path.read_text("utf-8"))
             self.assertEqual(len(payload), 2)
             self.assertEqual([item["series_id"] for item in payload], ["145", "146"])
+
+    def test_skip_store_does_not_require_obsidian(self) -> None:
+        with patch('scripts.run_brand_pipeline.shutil.which', return_value=None):
+            with self.assertRaisesRegex(RuntimeError, 'Obsidian CLI is not installed'):
+                ensure_obsidian_available()
+
 
 
 if __name__ == "__main__":

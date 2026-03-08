@@ -1,67 +1,50 @@
 # prism-skills
 
-A local repository for managing Codex skills in one place. All skills live under `skills/`, so the repository can grow cleanly as more skills are added.
+A local repository for Codex-compatible skills.
+
+This repository currently focuses on a productionized `dongchedi-scraper` skill that scrapes structured vehicle data from dongchedi.com and publishes standardized notes into Obsidian through `Obsidian-cli`.
 
 ## Repository Layout
-
-Current structure:
 
 ```text
 .
 ├── AGENTS.md
 ├── README.md
-├── .gitignore
+├── docs/
+│   └── plans/
 ├── scripts/
 │   └── new-skill.sh
 └── skills/
     ├── README.md
     ├── _template/
     └── dongchedi-scraper/
-        ├── SKILL.md
-        ├── lib/
-        ├── scripts/
-        ├── tmp/
-        └── pyproject.toml
 ```
 
-Recommended pattern for future skills:
+## Current Skill
 
-```text
-skills/<skill-name>/
-├── SKILL.md
-├── lib/
-├── scripts/
-├── assets/         # optional
-├── tests/          # optional
-└── pyproject.toml  # optional
-```
+- `skills/dongchedi-scraper/`
+  - Brand-driven vehicle scraping pipeline
+  - Current model extraction
+  - Optional recent-history model supplementation
+  - Structured parameter extraction
+  - Obsidian publishing through `Obsidian-cli`
 
-Create a new skill from the template:
+## Principles
 
-```bash
-./scripts/new-skill.sh my-new-skill
-```
-
-## Current Skills
-
-- `skills/dongchedi-scraper/`: scrape car configuration data from 懂车帝, with browser automation scripts and data post-processing helpers.
-- `skills/_template/`: starter scaffold for creating new skills consistently.
-
-## Working Conventions
-
-- Keep each skill self-contained inside `skills/<skill-name>/`.
-- Put reusable logic in `lib/` and task entrypoints in `scripts/`.
-- Treat each `SKILL.md` as the source of truth for setup and runtime workflow.
-- Keep generated artifacts in local temp/output folders such as `tmp/`.
+- Keep every skill self-contained under `skills/<skill-name>/`
+- Keep reusable logic in `lib/` and runnable entrypoints in `scripts/`
+- Keep temporary outputs in local `tmp/` folders and out of version control
+- Treat each `SKILL.md` as the canonical runtime contract for that skill
 
 ## Quick Start
 
 ```bash
 cd skills/dongchedi-scraper
-uv venv --python 3.11
-uv pip install browser-use
-browser-use install
-browser-use python --file scripts/search.py
+python3 scripts/run_brand_pipeline.py --brand BMW
 ```
 
-See `AGENTS.md` for contributor guidelines and `skills/README.md` for the skill directory policy.
+The runtime prefers a globally available Python environment when the required dependencies already exist there. If they do not, it falls back to a local `uv`-managed environment.
+
+## Distribution
+
+See `skills/dongchedi-scraper/DISTRIBUTION.md` for the distribution, environment, determinism, and verification contract.

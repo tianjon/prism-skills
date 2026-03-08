@@ -2,47 +2,52 @@
 
 ## Purpose
 
-This skill scrapes structured car data from dongchedi and writes standardized notes into Obsidian via `Obsidian-cli`.
+This skill scrapes structured vehicle data from dongchedi.com and publishes standardized notes into Obsidian through `Obsidian-cli`.
 
 ## Environment Requirements
 
 - Python 3.11+
-- `browser-use` installed and working
+- `browser-use`
 - `Obsidian-cli` available as `obsidian`
 - Network access to `dongchedi.com`
-- An opened and reachable Obsidian vault
+- An open and reachable Obsidian vault
+
+## Runtime Selection Policy
+
+The skill follows this runtime policy:
+
+1. Prefer a global Python environment if the required dependencies are already installed there
+2. If the global environment is missing the required dependencies, use `uv` to provision a local runtime
+3. If Python or Obsidian CLI is missing entirely, stop and instruct the user to complete the base environment setup first
 
 ## Canonical Entry
 
 ```bash
 cd skills/dongchedi-scraper
-python3 scripts/run_brand_pipeline.py --brand 品牌名
+python3 scripts/run_brand_pipeline.py --brand <brand>
 ```
 
-## Output Contract
+## Deterministic Output Contract
 
-- Brand root: `汽车/品牌库/{品牌}/{车型}/`
-- Current trim note: `当前款型/{YYYY款 车型配置名}.md`
-- Monthly snapshot: `更新记录/{YYYY-MM}/{YYYY款 车型配置名}.md`
-- Series overview: `00-车型总览.md`
-- Monthly summary: `更新记录/{YYYY-MM}/00-本月更新摘要.md`
+The skill is deterministic at the level of:
 
-## Determinism Statement
-
-This skill is deterministic at the level of:
-
-- output structure
-- note naming
-- frontmatter schema
+- note directory structure
+- note naming rules
+- frontmatter structure
 - fixed link layout
+- historical-model filtering policy
 - command interface
 
-It is not fully deterministic at the level of live external data because dongchedi content can change.
+The skill is not fully deterministic at the level of live external content because dongchedi data can change over time.
 
 ## Obsidian Alias Policy
 
-`OBS`, `笔记仓库`, and `Obsidian` are aliases of the same system: Obsidian.
+The following terms are aliases of the same system:
+
+- `OBS`
+- `note repository`
+- `Obsidian`
 
 ## Obsidian Operation Policy
 
-All Obsidian operations must go through `Obsidian-cli`.
+All Obsidian operations must ultimately go through `Obsidian-cli`.

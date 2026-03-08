@@ -1,11 +1,16 @@
 """Run the dongchedi brand pipeline end-to-end.
 
-Example:
-  python3 scripts/run_brand_pipeline.py --brand 宝马 --limit-series 3 --skip-store
+This script prefers a globally available Python + dependencies. If the required
+Python dependencies are missing from the global environment, it will create and
+use a local `uv`-managed virtual environment.
+
+All user-facing options can be confirmed interactively when they are not passed
+explicitly on the command line.
 """
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import re
@@ -18,24 +23,25 @@ from pathlib import Path
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
 TMP_ROOT = SKILL_DIR / "tmp" / "runs"
+REQUIRED_MODULES = ("browser_use", "pydantic")
 
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Run dongchedi brand pipeline")
-    parser.add_argument("--brand", required=True, help="品牌名，例如 宝马")
-    parser.add_argument("--vault", default="", help="可选 Obsidian vault 名称")
-    parser.add_argument("--limit-series", type=int, default=0, help="仅处理前 N 个车型，0 表示全部")
-    parser.add_argument("--limit-configs", type=int, default=0, help="仅处理前 N 个配置，0 表示全部")
-    parser.add_argument("--configs-batch-size", type=int, default=5, help="配置抓取分批大小，避免 browser-use CLI 超时")
-    parser.add_argument("--with-competitors", action="store_true", help="抓取竞品并写入竞品分析")
-    parser.add_argument("--include-history", action="store_true", help="补充停售/历史车型与停售配置")
-    parser.add_argument("--history-window-years", type=int, default=3, help="历史车型仅保留最近 N 个年款窗口，默认 3")
-    parser.add_argument("--skip-store", action="store_true", help="只抓取，不写入 Obsidian")
-    parser.add_argument("--skip-params", action="store_true", help="只抓配置，不抓参数")
-    parser.add_argument("--params-batch-size", type=int, default=1, help="参数抓取分批大小，避免 browser-use CLI 超时")
-    parser.add_argument("--keep-session", action="store_true", help="保留 browser-use 会话，便于人工继续检查")
-    parser.add_argument("--tmp-root", default=str(TMP_ROOT), help="运行目录根路径")
+    parser = argparse.ArgumentParser(description="Run the dongchedi brand pipeline")
+    parser.add_argument("--brand", required=True, help="Brand name, for example BMW")
+    parser.add_argument("--vault", default="", help="Optional Obsidian vault name")
+    parser.add_argument("--limit-series", type=int, default=0, help="Process only the first N series, 0 means all")
+    parser.add_argument("--limit-configs", type=int, default=0, help="Process only the first N configs, 0 means all")
+    parser.add_argument("--configs-batch-size", type=int, default=5, help="Batch size for config extraction")
+    parser.add_argument("--with-competitors", action="store_true", help="Extract competitors and publish competitor notes")
+    parser.add_argument("--include-history", action="store_true", help="Include historical/discontinued models")
+    parser.add_argument("--history-window-years", type=int, default=3, help="Keep only the most recent N model years for historical models")
+    parser.add_argument("--skip-store", action="store_true", help="Run scraping only and skip Obsidian writing")
+    parser.add_argument("--skip-params", action="store_true", help="Skip parameter extraction")
+    parser.add_argument("--params-batch-size", type=int, default=1, help="Reserved parameter batch size option")
+    parser.add_argument("--keep-session", action="store_true", help="Keep browser-use sessions open for manual inspection")
+    parser.add_argument("--tmp-root", default=str(TMP_ROOT), help="Root directory for run artifacts")
     return parser
 
 
@@ -62,6 +68,7 @@ def trim_configs(configs_path: Path, limit: int) -> None:
     payload = json.loads(configs_path.read_text("utf-8"))
     payload = payload[:limit]
     configs_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
 
 
 def trim_target_models(target_path: Path, limit: int) -> None:
@@ -94,12 +101,9 @@ def merge_json_list_outputs(batch_paths: list[Path], output_path: Path) -> None:
     output_path.write_text(json.dumps(merged, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+
 def merge_param_batch_outputs(batch_paths: list[Path], output_path: Path) -> None:
-    merged = []
-    for batch_path in batch_paths:
-        if batch_path.exists():
-            merged.extend(json.loads(batch_path.read_text("utf-8")))
-    output_path.write_text(json.dumps(merged, ensure_ascii=False, indent=2), encoding="utf-8")
+    merge_json_list_outputs(batch_paths, output_path)
 
 
 
@@ -112,11 +116,113 @@ def assert_non_empty_json_list(path: Path, message: str) -> list[dict]:
     return payload
 
 
-def _browser_use_bin() -> str:
-    local_bin = SKILL_DIR / ".venv" / "bin" / "browser-use"
-    if local_bin.exists():
-        return str(local_bin)
-    return shutil.which("browser-use") or "browser-use"
+
+def _python_has_modules(python_executable: str) -> bool:
+    code = "import browser_use, pydantic; print('OK')"
+    result = subprocess.run([python_executable, "-c", code], capture_output=True, text=True)
+    return result.returncode == 0 and "OK" in result.stdout
+
+
+
+def _select_global_python() -> str | None:
+    candidates = []
+    for item in (sys.executable, shutil.which("python3"), shutil.which("python")):
+        if item and item not in candidates:
+            candidates.append(item)
+    for candidate in candidates:
+        if _python_has_modules(candidate):
+            return candidate
+    return None
+
+
+
+def _ensure_uv_runtime() -> tuple[str, str]:
+    uv = shutil.which("uv")
+    if not uv:
+        raise RuntimeError(
+            "Python dependencies are missing from the global environment and `uv` is not installed. "
+            "Please install Python 3.11+ and uv first."
+        )
+    venv_dir = SKILL_DIR / ".venv"
+    python_bin = venv_dir / "bin" / "python"
+    browser_use_bin = venv_dir / "bin" / "browser-use"
+    if not python_bin.exists():
+        subprocess.run([uv, "venv", "--python", "3.11", str(venv_dir)], cwd=SKILL_DIR, check=True)
+    if not _python_has_modules(str(python_bin)) or not browser_use_bin.exists():
+        subprocess.run([uv, "pip", "install", "--python", str(python_bin), "browser-use", "pydantic>=2.0"], cwd=SKILL_DIR, check=True)
+        subprocess.run([str(browser_use_bin), "install"], cwd=SKILL_DIR, check=True)
+    return str(python_bin), str(browser_use_bin)
+
+
+
+def resolve_runtime() -> tuple[str, str]:
+    global_python = _select_global_python()
+    global_browser_use = shutil.which("browser-use")
+    if global_python and global_browser_use:
+        return global_python, global_browser_use
+    return _ensure_uv_runtime()
+
+
+
+def ensure_python_available() -> None:
+    if shutil.which("python3") is None and not sys.executable:
+        raise RuntimeError("Python is not available. Please install Python 3.11+ first.")
+
+
+def ensure_obsidian_available() -> None:
+    if shutil.which("obsidian") is None:
+        raise RuntimeError("Obsidian CLI is not installed. Please install Obsidian and verify `obsidian help` first.")
+
+
+
+def _prompt_bool(label: str, default: bool) -> bool:
+    suffix = "Y/n" if default else "y/N"
+    answer = input(f"{label} [{suffix}]: ").strip().lower()
+    if not answer:
+        return default
+    return answer in {"y", "yes", "1", "true"}
+
+
+
+def _prompt_int(label: str, default: int) -> int:
+    answer = input(f"{label} [default: {default}]: ").strip()
+    if not answer:
+        return default
+    return int(answer)
+
+
+
+def _prompt_str(label: str, default: str = "") -> str:
+    placeholder = default if default else "empty"
+    answer = input(f"{label} [default: {placeholder}]: ").strip()
+    return answer if answer else default
+
+
+
+def resolve_options_interactively(args: argparse.Namespace, argv: list[str]) -> argparse.Namespace:
+    if "--vault" not in argv and not args.skip_store:
+        args.vault = _prompt_str("Obsidian vault name (leave empty to use the active vault)", args.vault)
+    if "--limit-series" not in argv:
+        args.limit_series = _prompt_int("Maximum number of series to process (0 = all)", args.limit_series)
+    if "--limit-configs" not in argv:
+        args.limit_configs = _prompt_int("Maximum number of configs to process (0 = all)", args.limit_configs)
+    if "--configs-batch-size" not in argv:
+        args.configs_batch_size = _prompt_int("Config batch size", args.configs_batch_size)
+    if "--params-batch-size" not in argv:
+        args.params_batch_size = _prompt_int("Parameter batch size", args.params_batch_size)
+    if "--with-competitors" not in argv:
+        args.with_competitors = _prompt_bool("Extract competitors as well?", False)
+    if "--include-history" not in argv:
+        args.include_history = _prompt_bool("Include historical / discontinued models?", False)
+    if args.include_history and "--history-window-years" not in argv:
+        args.history_window_years = _prompt_int("Historical model year window", args.history_window_years)
+    if "--skip-params" not in argv:
+        args.skip_params = not _prompt_bool("Extract parameters?", True)
+    if "--skip-store" not in argv:
+        args.skip_store = not _prompt_bool("Write results to Obsidian (OBS / note repository)?", True)
+    if "--keep-session" not in argv:
+        args.keep_session = _prompt_bool("Keep browser sessions open for manual inspection?", False)
+    return args
 
 
 
@@ -127,8 +233,7 @@ def _run(cmd: list[str], env: dict[str, str]) -> None:
 
 
 def _run_configs_in_batches(browser_use: str, session_name: str, env: dict[str, str], run_dir: Path, batch_size: int) -> None:
-    series_list_path = run_dir / "series-list.json"
-    series_list = json.loads(series_list_path.read_text("utf-8"))
+    series_list = json.loads((run_dir / "series-list.json").read_text("utf-8"))
     batches = build_param_batches(len(series_list), batch_size)
     batch_paths = []
     for batch_index, (offset, limit) in enumerate(batches):
@@ -148,33 +253,17 @@ def _run_configs_in_batches(browser_use: str, session_name: str, env: dict[str, 
     merge_json_list_outputs(batch_paths, run_dir / "all-configs.json")
 
 
-def _run_params_in_batches(browser_use: str, session_name: str, env: dict[str, str], run_dir: Path, batch_size: int) -> None:
-    configs_path = run_dir / "all-configs.json"
-    configs = json.loads(configs_path.read_text("utf-8"))
-    batches = build_param_batches(len(configs), batch_size)
-    batch_paths = []
-    for batch_index, (offset, limit) in enumerate(batches):
-        batch_env = env.copy()
-        output_name = f"all-configs-with-params.batch-{batch_index}.json"
-        batch_env["DONGCHEDI_PARAMS_OFFSET"] = str(offset)
-        batch_env["DONGCHEDI_PARAMS_LIMIT"] = str(limit)
-        batch_env["DONGCHEDI_PARAMS_OUTPUT"] = output_name
-        batch_session = f"{session_name}-params-{batch_index}"
-        print(f"params batch {batch_index + 1}/{len(batches)}: offset={offset}, limit={limit}, session={batch_session}")
-        try:
-            _run([browser_use, "--session", batch_session, "open", "https://www.dongchedi.com"], batch_env)
-            _run([browser_use, "--session", batch_session, "python", "--file", "scripts/params.py"], batch_env)
-        finally:
-            subprocess.run([browser_use, "--session", batch_session, "close"], cwd=SKILL_DIR, env=batch_env, check=False)
-        batch_paths.append(run_dir / output_name)
-    merge_param_batch_outputs(batch_paths, run_dir / "all-configs-with-params.json")
-
-
 
 def main(argv: list[str] | None = None) -> int:
+    argv = list(argv) if argv is not None else sys.argv[1:]
     parser = build_parser()
     args = parser.parse_args(argv)
+    ensure_python_available()
+    args = resolve_options_interactively(args, argv)
+    if not args.skip_store:
+        ensure_obsidian_available()
 
+    python_bin, browser_use = resolve_runtime()
     run_dir = create_run_dir(Path(args.tmp_root), args.brand)
     session_name = f"brand-{_slugify(args.brand)}-{datetime.now().strftime('%H%M%S')}"
     env = os.environ.copy()
@@ -183,23 +272,21 @@ def main(argv: list[str] | None = None) -> int:
         env["DONGCHEDI_INCLUDE_HISTORY"] = "1"
         env["DONGCHEDI_HISTORY_CUTOFF_YEAR"] = str(datetime.now().year - args.history_window_years + 1)
 
-    browser_use = _browser_use_bin()
-    python_bin = sys.executable
-
     print(f"run_dir={run_dir}")
     print(f"session={session_name}")
+    print(f"python={python_bin}")
+    print(f"browser_use={browser_use}")
 
     try:
         _run([browser_use, "--session", session_name, "open", "https://www.dongchedi.com"], env)
         _run([browser_use, "--session", session_name, "python", f"KEYWORD = {args.brand!r}"], env)
         _run([browser_use, "--session", session_name, "python", "--file", "scripts/search.py"], env)
         assert_non_empty_json_list(run_dir / "search-results.json", "empty search results")
-        _run([python_bin, "scripts/prepare_targets.py"], env)
 
+        _run([python_bin, "scripts/prepare_targets.py"], env)
         if args.limit_series > 0:
             trim_target_models(run_dir / "target-models.json", args.limit_series)
             print(f"trimmed target models to first {args.limit_series}")
-
         assert_non_empty_json_list(run_dir / "target-models.json", "empty target models")
 
         if args.with_competitors:
@@ -208,6 +295,7 @@ def main(argv: list[str] | None = None) -> int:
         _run([python_bin, "scripts/build_series_list.py"], env)
         _run_configs_in_batches(browser_use, session_name, env, run_dir, args.configs_batch_size)
         assert_non_empty_json_list(run_dir / "all-configs.json", "empty configs extracted")
+
         if args.limit_configs > 0:
             trim_configs(run_dir / "all-configs.json", args.limit_configs)
             print(f"trimmed configs to first {args.limit_configs}")
@@ -229,10 +317,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     finally:
         if not args.keep_session:
-            try:
-                subprocess.run([browser_use, "--session", session_name, "close"], cwd=SKILL_DIR, env=env, check=False)
-            except Exception:
-                pass
+            subprocess.run([browser_use, "--session", session_name, "close"], cwd=SKILL_DIR, env=env, check=False)
 
 
 if __name__ == "__main__":
