@@ -1,0 +1,12 @@
+[project]
+name = "dongchedi-scraper"
+version = "0.1.0"
+description = "懂车帝车型配置抓取工具 - Claude Code Skill"
+requires-python = ">=3.11"
+dependencies = [
+    "browser-use",
+    "pydantic>=2.0",
+]
+
+[tool.uv]
+dev-dependencies = []

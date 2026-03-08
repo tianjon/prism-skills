@@ -1,0 +1,28 @@
+[
+  {
+    "car_id": "42863",
+    "car_name": "xDrive25e",
+    "price": "暂无报价",
+    "year": "2020",
+    "series_name": "宝马X2 PHEV",
+    "series_id": "4343",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "245172",
+    "car_name": "30e xDrive M Sport",
+    "price": "暂无报价",
+    "year": "2025",
+    "series_name": "宝马X3 PHEV(海外)",
+    "series_id": "3891",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  }
+]

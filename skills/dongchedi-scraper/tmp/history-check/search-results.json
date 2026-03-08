@@ -1,0 +1,702 @@
+[
+  {
+    "name": "宝马3系",
+    "series_id": "145",
+    "price_range": "22.66-31.99万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马5系",
+    "series_id": "146",
+    "price_range": "31.60-41.80万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X5",
+    "series_id": "5273",
+    "price_range": "57.80-74.50万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X3",
+    "series_id": "2812",
+    "price_range": "29.99-38.99万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马7系",
+    "series_id": "122",
+    "price_range": "62.99-99.99万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X1",
+    "series_id": "148",
+    "price_range": "18.80-32.90万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马4系",
+    "series_id": "118",
+    "price_range": "34.19-51.05万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马i3",
+    "series_id": "4838",
+    "price_range": "20.69-25.69万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马M4",
+    "series_id": "136",
+    "price_range": "76.19-108.80万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X7",
+    "series_id": "2825",
+    "price_range": "89.99-157.80万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马M3",
+    "series_id": "135",
+    "price_range": "73.19-94.39万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马2系",
+    "series_id": "24609",
+    "price_range": "17.00-27.80万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马i5",
+    "series_id": "9224",
+    "price_range": "31.39-45.80万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马5系(进口)",
+    "series_id": "120",
+    "price_range": "32.30-40.50万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马2系(进口)",
+    "series_id": "131",
+    "price_range": "28.80-41.80万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马8系",
+    "series_id": "1641",
+    "price_range": "71.40-88.20万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马i7",
+    "series_id": "4296",
+    "price_range": "62.99-159.80万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马i4",
+    "series_id": "4211",
+    "price_range": "33.00-44.80万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马7系PHEV",
+    "series_id": "123",
+    "price_range": "159.80万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马M5 PHEV",
+    "series_id": "20047",
+    "price_range": "146.79万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马i5(进口)",
+    "series_id": "5451",
+    "price_range": "55.80万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马3系(进口)",
+    "series_id": "116",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马1系(进口)",
+    "series_id": "115",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马5系PHEV(进口)",
+    "series_id": "3929",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马2系旅行车PHEV(海外)",
+    "series_id": "2723",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马3系PHEV(海外)",
+    "series_id": "3146",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "Vision Driving Experience",
+    "series_id": "25235",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "Compact Sedan",
+    "series_id": "2090",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "VISION NEXT 100",
+    "series_id": "2065",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "Vision Neue Klasse",
+    "series_id": "9272",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "BMW i Vision Circular",
+    "series_id": "5323",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "Gran Coupe",
+    "series_id": "3287",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "i Vision Dynamics",
+    "series_id": "1732",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "i Vision Dee",
+    "series_id": "6345",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "Vision Future Luxury",
+    "series_id": "2648",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "Garmisch ",
+    "series_id": "4089",
+    "price_range": "未上市",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马6系GT",
+    "series_id": "1639",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马1系",
+    "series_id": "143",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马M5",
+    "series_id": "137",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马M8",
+    "series_id": "2592",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马3系GT",
+    "series_id": "117",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马6系",
+    "series_id": "121",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马5系PHEV",
+    "series_id": "147",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马5系GT",
+    "series_id": "119",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马M6",
+    "series_id": "138",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马2系旅行车",
+    "series_id": "144",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马i3(进口)",
+    "series_id": "133",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马1系M",
+    "series_id": "142",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马2系旅行车(进口)",
+    "series_id": "1675",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "Isetta",
+    "series_id": "3852",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "Active Tourer",
+    "series_id": "3261",
+    "price_range": "停售",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X6",
+    "series_id": "127",
+    "price_range": "59.99-80.80万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马iX3",
+    "series_id": "4538",
+    "price_range": "25.65-29.25万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X4",
+    "series_id": "125",
+    "price_range": "53.29万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马iX1",
+    "series_id": "8942",
+    "price_range": "17.00-19.90万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X5 M",
+    "series_id": "139",
+    "price_range": "132.85万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马XM",
+    "series_id": "4772",
+    "price_range": "116.41-245.00万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马iX",
+    "series_id": "3023",
+    "price_range": "41.70-75.74万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X2(进口)",
+    "series_id": "1783",
+    "price_range": "21.60-27.80万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X3 M",
+    "series_id": "3175",
+    "price_range": "72.39万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X3(进口)",
+    "series_id": "126",
+    "price_range": "59.90万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X6 M",
+    "series_id": "140",
+    "price_range": "134.79万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X4 M",
+    "series_id": "3176",
+    "price_range": "74.89万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X5(进口)",
+    "series_id": "128",
+    "price_range": "未上市",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X5 PHEV",
+    "series_id": "129",
+    "price_range": "未上市",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X1(进口)",
+    "series_id": "124",
+    "price_range": "未上市",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马iX5",
+    "series_id": "5303",
+    "price_range": "未上市",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X7 PHEV",
+    "series_id": "1734",
+    "price_range": "未上市",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马iX3(海外)",
+    "series_id": "2874",
+    "price_range": "未上市",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马iX2",
+    "series_id": "4864",
+    "price_range": "未上市",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X2 PHEV",
+    "series_id": "4343",
+    "price_range": "未上市",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X3 PHEV(海外)",
+    "series_id": "3891",
+    "price_range": "未上市",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X1 PHEV(海外)",
+    "series_id": "4234",
+    "price_range": "未上市",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马iX1(海外)",
+    "series_id": "4669",
+    "price_range": "未上市",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "Vision Neue Klasse X",
+    "series_id": "10008",
+    "price_range": "未上市",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "i Hydrogen NEXT",
+    "series_id": "4140",
+    "price_range": "未上市",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X2",
+    "series_id": "3708",
+    "price_range": "停售",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X1 PHEV",
+    "series_id": "149",
+    "price_range": "停售",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马M2",
+    "series_id": "141",
+    "price_range": "52.60-80.80万",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马Z4",
+    "series_id": "132",
+    "price_range": "39.45-51.25万",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马3.0 CSL",
+    "series_id": "2078",
+    "price_range": "未上市",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马Z2",
+    "series_id": "3695",
+    "price_range": "未上市",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "Zagato Coupe",
+    "series_id": "2525",
+    "price_range": "未上市",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马M Hybrid V8",
+    "series_id": "6184",
+    "price_range": "未上市",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马328",
+    "series_id": "5098",
+    "price_range": "未上市",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "EfficientDynamics",
+    "series_id": "3846",
+    "price_range": "未上市",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "i Vision Future Interaction",
+    "series_id": "2119",
+    "price_range": "未上市",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "Gran Lusso",
+    "series_id": "2389",
+    "price_range": "未上市",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "Skytop",
+    "series_id": "10257",
+    "price_range": "未上市",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "2002 Hommage",
+    "series_id": "2008",
+    "price_range": "未上市",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "VISION M NEXT",
+    "series_id": "3751",
+    "price_range": "未上市",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马GINA",
+    "series_id": "3218",
+    "price_range": "未上市",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "ConnectedDrive",
+    "series_id": "3208",
+    "price_range": "未上市",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "Speedtop",
+    "series_id": "25539",
+    "price_range": "未上市",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马i8",
+    "series_id": "134",
+    "price_range": "停售",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马M1",
+    "series_id": "3888",
+    "price_range": "停售",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马Z3",
+    "series_id": "4776",
+    "price_range": "停售",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马Z8",
+    "series_id": "3677",
+    "price_range": "停售",
+    "level": "跑车",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马X7皮卡",
+    "series_id": "3753",
+    "price_range": "未上市",
+    "level": "皮卡",
+    "energy_type": ""
+  },
+  {
+    "name": "宝马2系多功能旅行车",
+    "series_id": "130",
+    "price_range": "停售",
+    "level": "MPV",
+    "energy_type": ""
+  }
+]

@@ -1,0 +1,1514 @@
+[
+  {
+    "car_id": "255689",
+    "car_name": "325i M运动套装",
+    "price": "25.80万",
+    "year": "2026",
+    "series_name": "宝马3系",
+    "series_id": "145",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "params": [
+      {
+        "category": "基本信息",
+        "name": "官方指导价",
+        "value": "25.8万"
+      },
+      {
+        "category": "基本信息",
+        "name": "厂商",
+        "value": "华晨宝马"
+      },
+      {
+        "category": "基本信息",
+        "name": "级别",
+        "value": "中型车"
+      },
+      {
+        "category": "基本信息",
+        "name": "能源类型",
+        "value": "汽油"
+      },
+      {
+        "category": "基本信息",
+        "name": "上市时间",
+        "value": "2026.01"
+      },
+      {
+        "category": "基本信息",
+        "name": "发动机",
+        "value": "2.0T 204马力 L4"
+      },
+      {
+        "category": "基本信息",
+        "name": "最大功率(kW)",
+        "value": "150(204Ps)"
+      },
+      {
+        "category": "基本信息",
+        "name": "最大扭矩(N·m)",
+        "value": "300"
+      },
+      {
+        "category": "基本信息",
+        "name": "变速箱",
+        "value": "8挡手自一体"
+      },
+      {
+        "category": "基本信息",
+        "name": "长x宽x高(mm)",
+        "value": "4728x1827x1452"
+      },
+      {
+        "category": "基本信息",
+        "name": "车身结构",
+        "value": "4门5座三厢车"
+      },
+      {
+        "category": "基本信息",
+        "name": "最高车速(km/h)",
+        "value": "233"
+      },
+      {
+        "category": "基本信息",
+        "name": "官方百公里加速时间(s)",
+        "value": "7.6"
+      },
+      {
+        "category": "基本信息",
+        "name": "WLTC综合油耗(L/100km)",
+        "value": "6.9"
+      },
+      {
+        "category": "基本信息",
+        "name": "整车保修期限",
+        "value": "3年或10万公里"
+      },
+      {
+        "category": "车身",
+        "name": "长(mm)",
+        "value": "4728"
+      },
+      {
+        "category": "车身",
+        "name": "宽(mm)",
+        "value": "1827"
+      },
+      {
+        "category": "车身",
+        "name": "高(mm)",
+        "value": "1452"
+      },
+      {
+        "category": "车身",
+        "name": "轴距(mm)",
+        "value": "2851"
+      },
+      {
+        "category": "车身",
+        "name": "前轮距(mm)",
+        "value": "1583"
+      },
+      {
+        "category": "车身",
+        "name": "后轮距(mm)",
+        "value": "1598"
+      },
+      {
+        "category": "车身",
+        "name": "最小离地间隙(mm)",
+        "value": "无"
+      },
+      {
+        "category": "车身",
+        "name": "车身结构",
+        "value": "三厢车"
+      },
+      {
+        "category": "车身",
+        "name": "车门数(个)",
+        "value": "4"
+      },
+      {
+        "category": "车身",
+        "name": "车门开启方式",
+        "value": "平开门"
+      },
+      {
+        "category": "车身",
+        "name": "座位数(个)",
+        "value": "5"
+      },
+      {
+        "category": "车身",
+        "name": "整备质量(kg)",
+        "value": "1588"
+      },
+      {
+        "category": "车身",
+        "name": "满载质量(kg)",
+        "value": "2050"
+      },
+      {
+        "category": "车身",
+        "name": "油箱容积(L)",
+        "value": "59.0"
+      },
+      {
+        "category": "车身",
+        "name": "行李舱容积(L)",
+        "value": "无"
+      },
+      {
+        "category": "车身",
+        "name": "最小转弯半径",
+        "value": "5.7m"
+      },
+      {
+        "category": "发动机",
+        "name": "发动机型号",
+        "value": "B48B20C"
+      },
+      {
+        "category": "发动机",
+        "name": "排量(mL)",
+        "value": "1998"
+      },
+      {
+        "category": "发动机",
+        "name": "排量(L)",
+        "value": "2.0"
+      },
+      {
+        "category": "发动机",
+        "name": "进气形式",
+        "value": "涡轮增压"
+      },
+      {
+        "category": "发动机",
+        "name": "发动机布局形式",
+        "value": "纵置"
+      },
+      {
+        "category": "发动机",
+        "name": "气缸排列形式",
+        "value": "L"
+      },
+      {
+        "category": "发动机",
+        "name": "气缸数(个)",
+        "value": "4"
+      },
+      {
+        "category": "发动机",
+        "name": "每缸气门数(个)",
+        "value": "4"
+      },
+      {
+        "category": "发动机",
+        "name": "压缩比",
+        "value": "无"
+      },
+      {
+        "category": "发动机",
+        "name": "配气机构",
+        "value": "DOHC"
+      },
+      {
+        "category": "发动机",
+        "name": "最大马力(Ps)",
+        "value": "204"
+      },
+      {
+        "category": "发动机",
+        "name": "最大功率(kW)",
+        "value": "150"
+      },
+      {
+        "category": "发动机",
+        "name": "最大净功率(kW)",
+        "value": "135"
+      },
+      {
+        "category": "发动机",
+        "name": "最大功率转速(rpm)",
+        "value": "5000-6500"
+      },
+      {
+        "category": "发动机",
+        "name": "最大扭矩(N·m)",
+        "value": "300"
+      },
+      {
+        "category": "发动机",
+        "name": "最大扭矩转速(rpm)",
+        "value": "1350-4000"
+      },
+      {
+        "category": "发动机",
+        "name": "发动机特有技术",
+        "value": "Valvetronic/Double VANOS"
+      },
+      {
+        "category": "发动机",
+        "name": "燃料形式",
+        "value": "汽油"
+      },
+      {
+        "category": "发动机",
+        "name": "燃油标号",
+        "value": "95#"
+      },
+      {
+        "category": "发动机",
+        "name": "供油方式",
+        "value": "缸内直喷"
+      },
+      {
+        "category": "发动机",
+        "name": "缸盖材料",
+        "value": "铝合金"
+      },
+      {
+        "category": "发动机",
+        "name": "缸体材料",
+        "value": "铝合金"
+      },
+      {
+        "category": "发动机",
+        "name": "环保标准",
+        "value": "国VI b"
+      },
+      {
+        "category": "变速箱",
+        "name": "变速箱描述",
+        "value": "8挡手自一体"
+      },
+      {
+        "category": "变速箱",
+        "name": "挡位数",
+        "value": "8"
+      },
+      {
+        "category": "变速箱",
+        "name": "变速箱类型",
+        "value": "手自一体变速箱(AT)"
+      },
+      {
+        "category": "底盘/转向",
+        "name": "驱动方式",
+        "value": "前置后驱"
+      },
+      {
+        "category": "底盘/转向",
+        "name": "前悬挂形式",
+        "value": "连杆支柱式独立悬挂"
+      },
+      {
+        "category": "底盘/转向",
+        "name": "后悬挂形式",
+        "value": "多连杆式独立悬挂"
+      },
+      {
+        "category": "底盘/转向",
+        "name": "转向类型",
+        "value": "电动助力"
+      },
+      {
+        "category": "底盘/转向",
+        "name": "车体结构",
+        "value": "承载式"
+      },
+      {
+        "category": "车轮/制动",
+        "name": "前制动器类型",
+        "value": "通风盘式"
+      },
+      {
+        "category": "车轮/制动",
+        "name": "后制动器类型",
+        "value": "通风盘式"
+      },
+      {
+        "category": "车轮/制动",
+        "name": "驻车制动类型",
+        "value": "电子驻车"
+      },
+      {
+        "category": "车轮/制动",
+        "name": "前轮胎规格尺寸",
+        "value": "225/45 R18"
+      },
+      {
+        "category": "车轮/制动",
+        "name": "后轮胎规格尺寸",
+        "value": "225/45 R18"
+      },
+      {
+        "category": "车轮/制动",
+        "name": "备胎规格",
+        "value": "无"
+      },
+      {
+        "category": "主动安全",
+        "name": "ABS防抱死",
+        "value": "标配"
+      },
+      {
+        "category": "主动安全",
+        "name": "制动力分配(EBD/CBC等)",
+        "value": "标配"
+      },
+      {
+        "category": "主动安全",
+        "name": "刹车辅助(EBA/BA等)",
+        "value": "标配"
+      },
+      {
+        "category": "主动安全",
+        "name": "牵引力控制(TCS/ASR等)",
+        "value": "标配"
+      },
+      {
+        "category": "主动安全",
+        "name": "车身稳定系统(ESP/DSC等)",
+        "value": "标配"
+      },
+      {
+        "category": "主动安全",
+        "name": "车道偏离预警",
+        "value": "车道偏离预警"
+      },
+      {
+        "category": "主动安全",
+        "name": "前方碰撞预警",
+        "value": "前方碰撞预警"
+      },
+      {
+        "category": "主动安全",
+        "name": "后方碰撞预警",
+        "value": "后方碰撞预警"
+      },
+      {
+        "category": "主动安全",
+        "name": "倒车车侧预警",
+        "value": "倒车车侧预警"
+      },
+      {
+        "category": "主动安全",
+        "name": "DOW开门预警",
+        "value": "DOW开门预警"
+      },
+      {
+        "category": "主动安全",
+        "name": "前方交通穿行预警",
+        "value": "前方交通穿行预警"
+      },
+      {
+        "category": "主动安全",
+        "name": "前方交通穿行制动",
+        "value": "前方交通穿行制动"
+      },
+      {
+        "category": "主动安全",
+        "name": "主动刹车",
+        "value": "标配"
+      },
+      {
+        "category": "主动安全",
+        "name": "并线辅助",
+        "value": "标配"
+      },
+      {
+        "category": "主动安全",
+        "name": "车道保持辅助系统",
+        "value": "标配"
+      },
+      {
+        "category": "主动安全",
+        "name": "车道居中保持",
+        "value": "选配"
+      },
+      {
+        "category": "主动安全",
+        "name": "疲劳驾驶提示",
+        "value": "标配"
+      },
+      {
+        "category": "主动安全",
+        "name": "主动式DMS疲劳检测",
+        "value": "选配"
+      },
+      {
+        "category": "主动安全",
+        "name": "车内生命体征检测",
+        "value": "无"
+      },
+      {
+        "category": "主动安全",
+        "name": "道路交通标识识别",
+        "value": "选配"
+      },
+      {
+        "category": "主动安全",
+        "name": "信号灯识别",
+        "value": "选配"
+      },
+      {
+        "category": "主动安全",
+        "name": "夜视系统",
+        "value": "无"
+      },
+      {
+        "category": "被动安全",
+        "name": "主驾驶位",
+        "value": "主驾驶位"
+      },
+      {
+        "category": "被动安全",
+        "name": "副驾驶位",
+        "value": "副驾驶位"
+      },
+      {
+        "category": "被动安全",
+        "name": "前排",
+        "value": "前排"
+      },
+      {
+        "category": "被动安全",
+        "name": "侧安全气帘",
+        "value": "标配"
+      },
+      {
+        "category": "被动安全",
+        "name": "前排膝部气囊",
+        "value": "无"
+      },
+      {
+        "category": "被动安全",
+        "name": "中央安全气囊",
+        "value": "无"
+      },
+      {
+        "category": "被动安全",
+        "name": "安全带未系提示",
+        "value": "标配"
+      },
+      {
+        "category": "被动安全",
+        "name": "胎压监测系统",
+        "value": "胎压显示"
+      },
+      {
+        "category": "被动安全",
+        "name": "儿童座椅接口(ISOFIX)",
+        "value": "标配"
+      },
+      {
+        "category": "被动安全",
+        "name": "被动行人保护",
+        "value": "标配"
+      },
+      {
+        "category": "被动安全",
+        "name": "安全轮胎",
+        "value": "标配"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "前",
+        "value": "前"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "后",
+        "value": "后"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "前车驶离提醒",
+        "value": "无"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "倒车影像",
+        "value": "倒车影像"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "360°全景影像",
+        "value": "360°全景影像"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "定速巡航",
+        "value": "定速巡航"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "自适应巡航",
+        "value": "自适应巡航"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "全速自适应巡航",
+        "value": "全速自适应巡航"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "自动变道辅助",
+        "value": "选配"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "匝道自动驶出（入）",
+        "value": "无"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "导航辅助驾驶",
+        "value": "无"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "L1级",
+        "value": "L1级"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "L2级",
+        "value": "L2级"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "自动泊车入位",
+        "value": "标配"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "循迹倒车",
+        "value": "标配"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "记忆泊车",
+        "value": "无"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "自动驻车(AUTOHOLD)",
+        "value": "标配"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "上坡辅助(HAC)",
+        "value": "标配"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "陡坡缓降(HDC)",
+        "value": "无"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "发动机启停技术",
+        "value": "标配"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "可变悬挂调节",
+        "value": "无"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "空气悬挂",
+        "value": "无"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "空气悬挂类型",
+        "value": "无"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "电磁感应悬挂",
+        "value": "无"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "可变转向比系统",
+        "value": "无"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "前桥限滑方式",
+        "value": "无"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "后桥限滑方式",
+        "value": "无"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "中央差速器锁止功能",
+        "value": "无"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "整体主动转向系统",
+        "value": "无"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "运动",
+        "value": "运动"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "个性化",
+        "value": "个性化"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "ECO/经济",
+        "value": "ECO/经济"
+      },
+      {
+        "category": "辅助/操控配置",
+        "name": "标准舒适",
+        "value": "标准舒适"
+      },
+      {
+        "category": "外部配置",
+        "name": "天窗类型",
+        "value": "单天窗"
+      },
+      {
+        "category": "外部配置",
+        "name": "智能调光天幕",
+        "value": "无"
+      },
+      {
+        "category": "外部配置",
+        "name": "车顶行李架",
+        "value": "无"
+      },
+      {
+        "category": "外部配置",
+        "name": "运动外观套件",
+        "value": "标配"
+      },
+      {
+        "category": "外部配置",
+        "name": "电动扰流板",
+        "value": "无"
+      },
+      {
+        "category": "外部配置",
+        "name": "主动闭合式进气格栅",
+        "value": "标配"
+      },
+      {
+        "category": "外部配置",
+        "name": "铝合金轮毂",
+        "value": "标配"
+      },
+      {
+        "category": "外部配置",
+        "name": "无框设计车门",
+        "value": "无"
+      },
+      {
+        "category": "外部配置",
+        "name": "隐藏式门把手",
+        "value": "无"
+      },
+      {
+        "category": "外部配置",
+        "name": "拖挂钩",
+        "value": "无"
+      },
+      {
+        "category": "内部配置",
+        "name": "真皮",
+        "value": "真皮"
+      },
+      {
+        "category": "内部配置",
+        "name": "方向盘调节",
+        "value": "上下+前后"
+      },
+      {
+        "category": "内部配置",
+        "name": "方向盘电动调节",
+        "value": "无"
+      },
+      {
+        "category": "内部配置",
+        "name": "多功能控制",
+        "value": "多功能控制"
+      },
+      {
+        "category": "内部配置",
+        "name": "换挡",
+        "value": "换挡"
+      },
+      {
+        "category": "内部配置",
+        "name": "电子挡把",
+        "value": "电子挡把"
+      },
+      {
+        "category": "内部配置",
+        "name": "液晶仪表样式",
+        "value": "全液晶"
+      },
+      {
+        "category": "内部配置",
+        "name": "12.3",
+        "value": "12.3"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "电动吸合门",
+        "value": "无"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "电动后尾门",
+        "value": "标配"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "感应式后尾门",
+        "value": "标配"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "电动后尾门位置记忆",
+        "value": "无"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "发动机电子防盗",
+        "value": "标配"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "车内中控锁",
+        "value": "标配"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "智能遥控钥匙",
+        "value": "智能遥控钥匙"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "NFC/RFID钥匙",
+        "value": "NFC/RFID钥匙"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "无钥匙进入",
+        "value": "全车"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "无钥匙启动",
+        "value": "标配"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "远程启动",
+        "value": "标配"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "遥控移动车辆",
+        "value": "无"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "车辆召唤功能",
+        "value": "无"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "抬头显示系统(HUD)",
+        "value": "选配"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "内置行车记录仪",
+        "value": "标配"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "原厂ETC",
+        "value": "选配"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "主动降噪",
+        "value": "无"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "手机无线充电",
+        "value": "选配"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "110V/220V/230V电源插座",
+        "value": "无"
+      },
+      {
+        "category": "舒适/防盗配置",
+        "name": "行李舱12V电源接口",
+        "value": "无"
+      },
+      {
+        "category": "座椅配置",
+        "name": "座椅材质",
+        "value": "仿皮"
+      },
+      {
+        "category": "座椅配置",
+        "name": "座椅皮质风格",
+        "value": "Sensatec合成皮"
+      },
+      {
+        "category": "座椅配置",
+        "name": "运动风格座椅",
+        "value": "无"
+      },
+      {
+        "category": "座椅配置",
+        "name": "第二排独立座椅",
+        "value": "无"
+      },
+      {
+        "category": "座椅配置",
+        "name": "主驾驶位",
+        "value": "主驾驶位"
+      },
+      {
+        "category": "座椅配置",
+        "name": "副驾驶位",
+        "value": "副驾驶位"
+      },
+      {
+        "category": "座椅配置",
+        "name": "下沉式后排座椅收折",
+        "value": "无"
+      },
+      {
+        "category": "座椅配置",
+        "name": "前后移动",
+        "value": "前后移动"
+      },
+      {
+        "category": "座椅配置",
+        "name": "靠背角度",
+        "value": "靠背角度"
+      },
+      {
+        "category": "座椅配置",
+        "name": "高低调节",
+        "value": "高低调节"
+      },
+      {
+        "category": "座椅配置",
+        "name": "头枕",
+        "value": "头枕"
+      },
+      {
+        "category": "座椅配置",
+        "name": "腰部",
+        "value": "腰部"
+      },
+      {
+        "category": "座椅配置",
+        "name": "腿托",
+        "value": "腿托"
+      },
+      {
+        "category": "座椅配置",
+        "name": "第二排座椅整体调节",
+        "value": "无"
+      },
+      {
+        "category": "座椅配置",
+        "name": "第二排座椅局部调节",
+        "value": "无"
+      },
+      {
+        "category": "座椅配置",
+        "name": "加热",
+        "value": "加热"
+      },
+      {
+        "category": "座椅配置",
+        "name": "记忆(主驾驶)",
+        "value": "记忆(主驾驶)"
+      },
+      {
+        "category": "座椅配置",
+        "name": "第二排座椅功能",
+        "value": "无"
+      },
+      {
+        "category": "座椅配置",
+        "name": "老板键",
+        "value": "无"
+      },
+      {
+        "category": "座椅配置",
+        "name": "前排",
+        "value": "前排"
+      },
+      {
+        "category": "座椅配置",
+        "name": "后排",
+        "value": "后排"
+      },
+      {
+        "category": "座椅配置",
+        "name": "后排杯架",
+        "value": "标配"
+      },
+      {
+        "category": "座椅配置",
+        "name": "可加热/制冷杯架",
+        "value": "无"
+      },
+      {
+        "category": "座椅配置",
+        "name": "后排座椅放倒比例",
+        "value": "无"
+      },
+      {
+        "category": "座椅配置",
+        "name": "第二排小桌板",
+        "value": "无"
+      },
+      {
+        "category": "智能互联",
+        "name": "中控屏尺寸(英寸)",
+        "value": "14.9"
+      },
+      {
+        "category": "智能互联",
+        "name": "中控屏幕材质",
+        "value": "无"
+      },
+      {
+        "category": "智能互联",
+        "name": "卫星导航系统",
+        "value": "标配"
+      },
+      {
+        "category": "智能互联",
+        "name": "AR实景导航",
+        "value": "无"
+      },
+      {
+        "category": "智能互联",
+        "name": "导航路况信息展示",
+        "value": "标配"
+      },
+      {
+        "category": "智能互联",
+        "name": "道路救援服务",
+        "value": "标配"
+      },
+      {
+        "category": "智能互联",
+        "name": "蓝牙/车载电话",
+        "value": "标配"
+      },
+      {
+        "category": "智能互联",
+        "name": "CarPlay",
+        "value": "CarPlay"
+      },
+      {
+        "category": "智能互联",
+        "name": "车联网",
+        "value": "标配"
+      },
+      {
+        "category": "智能互联",
+        "name": "5G",
+        "value": "5G"
+      },
+      {
+        "category": "智能互联",
+        "name": "OTA升级",
+        "value": "标配"
+      },
+      {
+        "category": "智能互联",
+        "name": "面部识别",
+        "value": "选配"
+      },
+      {
+        "category": "智能互联",
+        "name": "指纹识别",
+        "value": "无"
+      },
+      {
+        "category": "智能互联",
+        "name": "声纹识别",
+        "value": "无"
+      },
+      {
+        "category": "智能互联",
+        "name": "情绪识别",
+        "value": "无"
+      },
+      {
+        "category": "智能互联",
+        "name": "语音识别控制系统",
+        "value": "标配"
+      },
+      {
+        "category": "智能互联",
+        "name": "语音免唤醒功能",
+        "value": "标配"
+      },
+      {
+        "category": "智能互联",
+        "name": "主驾驶",
+        "value": "主驾驶"
+      },
+      {
+        "category": "智能互联",
+        "name": "副驾驶",
+        "value": "副驾驶"
+      },
+      {
+        "category": "智能互联",
+        "name": "连续性语音识别",
+        "value": "标配"
+      },
+      {
+        "category": "智能互联",
+        "name": "可见即可说",
+        "value": "无"
+      },
+      {
+        "category": "智能互联",
+        "name": "语音助手唤醒词",
+        "value": "你好宝马"
+      },
+      {
+        "category": "智能互联",
+        "name": "手势控制功能",
+        "value": "无"
+      },
+      {
+        "category": "智能互联",
+        "name": "Wi-Fi热点",
+        "value": "无"
+      },
+      {
+        "category": "影音娱乐",
+        "name": "多指飞屏操控",
+        "value": "无"
+      },
+      {
+        "category": "影音娱乐",
+        "name": "应用商店",
+        "value": "无"
+      },
+      {
+        "category": "影音娱乐",
+        "name": "USB/Type-C",
+        "value": "USB/Type-C"
+      },
+      {
+        "category": "影音娱乐",
+        "name": "前排2个",
+        "value": "前排2个"
+      },
+      {
+        "category": "影音娱乐",
+        "name": "后排2个",
+        "value": "后排2个"
+      },
+      {
+        "category": "影音娱乐",
+        "name": "USB/Type-C最大充电功率",
+        "value": "无"
+      },
+      {
+        "category": "影音娱乐",
+        "name": "车载电视",
+        "value": "无"
+      },
+      {
+        "category": "影音娱乐",
+        "name": "后排液晶屏",
+        "value": "无"
+      },
+      {
+        "category": "影音娱乐",
+        "name": "模拟声浪",
+        "value": "无"
+      },
+      {
+        "category": "影音娱乐",
+        "name": "哈曼卡顿",
+        "value": "哈曼卡顿"
+      },
+      {
+        "category": "影音娱乐",
+        "name": "6",
+        "value": "6"
+      },
+      {
+        "category": "影音娱乐",
+        "name": "16",
+        "value": "16"
+      },
+      {
+        "category": "影音娱乐",
+        "name": "后排多媒体控制",
+        "value": "无"
+      },
+      {
+        "category": "灯光配置",
+        "name": "近光灯",
+        "value": "LED"
+      },
+      {
+        "category": "灯光配置",
+        "name": "远光灯",
+        "value": "LED"
+      },
+      {
+        "category": "灯光配置",
+        "name": "日间行车灯",
+        "value": "标配"
+      },
+      {
+        "category": "灯光配置",
+        "name": "自适应远近光",
+        "value": "标配"
+      },
+      {
+        "category": "灯光配置",
+        "name": "自动大灯",
+        "value": "标配"
+      },
+      {
+        "category": "灯光配置",
+        "name": "转向辅助灯",
+        "value": "选配"
+      },
+      {
+        "category": "灯光配置",
+        "name": "前雾灯",
+        "value": "无"
+      },
+      {
+        "category": "灯光配置",
+        "name": "大灯随动转向(AFS)",
+        "value": "无"
+      },
+      {
+        "category": "灯光配置",
+        "name": "大灯高度调节",
+        "value": "标配"
+      },
+      {
+        "category": "灯光配置",
+        "name": "大灯清洗功能",
+        "value": "无"
+      },
+      {
+        "category": "灯光配置",
+        "name": "车内氛围灯",
+        "value": "9色"
+      },
+      {
+        "category": "灯光配置",
+        "name": "主动式环境氛围灯",
+        "value": "无"
+      },
+      {
+        "category": "灯光配置",
+        "name": "矩阵式",
+        "value": "矩阵式"
+      },
+      {
+        "category": "灯光配置",
+        "name": "灯光投影技术",
+        "value": "无"
+      },
+      {
+        "category": "灯光配置",
+        "name": "大灯延时关闭",
+        "value": "标配"
+      },
+      {
+        "category": "灯光配置",
+        "name": "前大灯雨雾模式",
+        "value": "无"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "前排",
+        "value": "前排"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "后排",
+        "value": "后排"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "车窗一键升降",
+        "value": "全车"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "车窗防夹手功能",
+        "value": "标配"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "电动调节",
+        "value": "电动调节"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "加热",
+        "value": "加热"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "电动折叠",
+        "value": "电动折叠"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "记忆",
+        "value": "记忆"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "倒车自动下翻",
+        "value": "倒车自动下翻"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "锁车自动折叠",
+        "value": "锁车自动折叠"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "自动防眩目",
+        "value": "自动防眩目"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "主驾驶位+有照明",
+        "value": "主驾驶位+有照明"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "副驾驶位+有照明",
+        "value": "副驾驶位+有照明"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "后排隐私玻璃",
+        "value": "无"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "车内遮阳帘",
+        "value": "无"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "雨量感应式雨刷",
+        "value": "标配"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "后雨刷",
+        "value": "无"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "多层隔音玻璃",
+        "value": "无"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "前风挡电加热",
+        "value": "无"
+      },
+      {
+        "category": "玻璃/后视镜",
+        "name": "可加热喷水嘴",
+        "value": "无"
+      },
+      {
+        "category": "空调/冰箱",
+        "name": "空调控制方式",
+        "value": "自动"
+      },
+      {
+        "category": "空调/冰箱",
+        "name": "后排独立空调",
+        "value": "标配"
+      },
+      {
+        "category": "空调/冰箱",
+        "name": "后排出风口",
+        "value": "标配"
+      },
+      {
+        "category": "空调/冰箱",
+        "name": "三区空调",
+        "value": "三区空调"
+      },
+      {
+        "category": "空调/冰箱",
+        "name": "车载空气净化器",
+        "value": "无"
+      },
+      {
+        "category": "空调/冰箱",
+        "name": "车内PM2.5过滤装置",
+        "value": "标配"
+      },
+      {
+        "category": "空调/冰箱",
+        "name": "负离子发生器",
+        "value": "无"
+      },
+      {
+        "category": "空调/冰箱",
+        "name": "车内香氛装置",
+        "value": "无"
+      },
+      {
+        "category": "空调/冰箱",
+        "name": "AQS空气质量管理系统",
+        "value": "无"
+      },
+      {
+        "category": "空调/冰箱",
+        "name": "车载冰箱",
+        "value": "无"
+      },
+      {
+        "category": "空调/冰箱",
+        "name": "车载冰箱功能",
+        "value": "无"
+      },
+      {
+        "category": "智能化配置",
+        "name": "iDrive",
+        "value": "iDrive"
+      },
+      {
+        "category": "智能化配置",
+        "name": "数字钥匙",
+        "value": "数字钥匙"
+      },
+      {
+        "category": "智能化配置",
+        "name": "车辆监控",
+        "value": "车辆监控"
+      },
+      {
+        "category": "智能化配置",
+        "name": "远程控制",
+        "value": "远程控制"
+      },
+      {
+        "category": "智能化配置",
+        "name": "服务预约",
+        "value": "服务预约"
+      },
+      {
+        "category": "智能化配置",
+        "name": "智能寻车助手",
+        "value": "智能寻车助手"
+      },
+      {
+        "category": "智能化配置",
+        "name": "热泵管理系统",
+        "value": "无"
+      },
+      {
+        "category": "智能化配置",
+        "name": "5",
+        "value": "5"
+      },
+      {
+        "category": "智能化配置",
+        "name": "7",
+        "value": "7"
+      },
+      {
+        "category": "智能化配置",
+        "name": "车外摄像头像素",
+        "value": "无"
+      },
+      {
+        "category": "智能化配置",
+        "name": "1",
+        "value": "1"
+      },
+      {
+        "category": "智能化配置",
+        "name": "车内摄像头像素",
+        "value": "无"
+      },
+      {
+        "category": "智能化配置",
+        "name": "超声波雷达数量(个)",
+        "value": "12"
+      },
+      {
+        "category": "智能化配置",
+        "name": "3",
+        "value": "3"
+      },
+      {
+        "category": "智能化配置",
+        "name": "亚米级高精定位系统",
+        "value": "无"
+      },
+      {
+        "category": "智能化配置",
+        "name": "高精度地图",
+        "value": "无"
+      },
+      {
+        "category": "智能化配置",
+        "name": "哨兵（千里眼）模式",
+        "value": "无"
+      },
+      {
+        "category": "智能化配置",
+        "name": "V2X通讯",
+        "value": "无"
+      }
+    ],
+    "params_error": null,
+    "params_source": "ssr"
+  }
+]

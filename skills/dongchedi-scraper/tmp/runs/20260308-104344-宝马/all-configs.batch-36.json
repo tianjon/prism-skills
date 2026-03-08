@@ -1,0 +1,41 @@
+[
+  {
+    "car_id": "41878",
+    "car_name": "xDrive25e",
+    "price": "暂无报价",
+    "year": "2020",
+    "series_name": "宝马X1 PHEV(海外)",
+    "series_id": "4234",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "253401",
+    "car_name": "xDrive30 M Sport 日本版",
+    "price": "暂无报价",
+    "year": "2026",
+    "series_name": "宝马iX1(海外)",
+    "series_id": "4669",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "47395",
+    "car_name": "基本型",
+    "price": "暂无报价",
+    "year": "2020",
+    "series_name": "宝马iX1(海外)",
+    "series_id": "4669",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  }
+]

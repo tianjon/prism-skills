@@ -1,0 +1,54 @@
+[
+  {
+    "car_id": "100380",
+    "car_name": "V 300 领航版",
+    "price": "49.68万",
+    "year": "2024",
+    "series_name": "奔驰V级",
+    "series_id": "245",
+    "brand_name": "奔驰",
+    "brand": "奔驰",
+    "level": "MPV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "100478",
+    "car_name": "V 300 尊贵版",
+    "price": "60.98万",
+    "year": "2024",
+    "series_name": "奔驰V级",
+    "series_id": "245",
+    "brand_name": "奔驰",
+    "brand": "奔驰",
+    "level": "MPV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "239225",
+    "car_name": "V 300 L 长轴距尊贵版",
+    "price": "63.98万",
+    "year": "2024",
+    "series_name": "奔驰V级",
+    "series_id": "245",
+    "brand_name": "奔驰",
+    "brand": "奔驰",
+    "level": "MPV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "100382",
+    "car_name": "V 300 L 长轴距豪华版",
+    "price": "66.98万",
+    "year": "2024",
+    "series_name": "奔驰V级",
+    "series_id": "245",
+    "brand_name": "奔驰",
+    "brand": "奔驰",
+    "level": "MPV",
+    "energy_type": "",
+    "is_target": true
+  }
+]

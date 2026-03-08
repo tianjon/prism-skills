@@ -1,0 +1,275 @@
+[
+  {
+    "name": "奥迪A6L",
+    "series_id": "99",
+    "price_range": "29.10-41.36万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪A4L",
+    "series_id": "96",
+    "price_range": "20.00-25.03万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪Q5L",
+    "series_id": "2916",
+    "price_range": "24.49-38.18万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪A8",
+    "series_id": "82",
+    "price_range": "60.81-176.53万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪A7L",
+    "series_id": "4302",
+    "price_range": "31.70-55.42万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪A3",
+    "series_id": "95",
+    "price_range": "12.57-15.85万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪A5",
+    "series_id": "76",
+    "price_range": "28.93-39.90万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪Q7",
+    "series_id": "87",
+    "price_range": "45.73-60.36万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪A5L",
+    "series_id": "24521",
+    "price_range": "23.98-28.48万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪A7",
+    "series_id": "80",
+    "price_range": "44.23-62.32万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪A5L Sportback",
+    "series_id": "24944",
+    "price_range": "25.99-38.29万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪RS 7",
+    "series_id": "94",
+    "price_range": "132.19万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪A6(进口)",
+    "series_id": "78",
+    "price_range": "38.01-43.28万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪S4",
+    "series_id": "1684",
+    "price_range": "39.10-48.88万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪A4(进口)",
+    "series_id": "75",
+    "price_range": "28.78-34.46万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪RS 6",
+    "series_id": "93",
+    "price_range": "130.84-169.69万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪S8",
+    "series_id": "83",
+    "price_range": "182.76-207.68万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪S5",
+    "series_id": "77",
+    "price_range": "50.54-56.70万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪RS 4",
+    "series_id": "1728",
+    "price_range": "74.59万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪RS 5",
+    "series_id": "92",
+    "price_range": "76.75-78.69万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪S7",
+    "series_id": "81",
+    "price_range": "88.82万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪S6",
+    "series_id": "79",
+    "price_range": "75.57-77.29万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪RS e-tron GT",
+    "series_id": "4782",
+    "price_range": "112.30万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪e-tron GT",
+    "series_id": "3115",
+    "price_range": "99.98万",
+    "level": "轿车",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪Q3",
+    "series_id": "100",
+    "price_range": "17.37-29.68万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪Q6",
+    "series_id": "5364",
+    "price_range": "31.90-47.20万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪Q8",
+    "series_id": "1646",
+    "price_range": "52.48-82.28万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪Q2L",
+    "series_id": "2963",
+    "price_range": "12.37-15.12万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪Q4 e-tron",
+    "series_id": "4334",
+    "price_range": "19.13-24.23万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪Q5L Sportback",
+    "series_id": "4989",
+    "price_range": "27.35-30.95万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪RS Q8",
+    "series_id": "4245",
+    "price_range": "132.20-155.23万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪Q5 e-tron",
+    "series_id": "5002",
+    "price_range": "21.40-34.55万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪Q3 Sportback",
+    "series_id": "4990",
+    "price_range": "18.20-20.82万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪SQ5",
+    "series_id": "86",
+    "price_range": "44.31万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪Q6L e-tron",
+    "series_id": "9440",
+    "price_range": "32.98-35.98万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪SQ7",
+    "series_id": "2185",
+    "price_range": "97.24万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪Q2L e-tron",
+    "series_id": "3337",
+    "price_range": "17.07万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪Q6L Sportback e-tron",
+    "series_id": "25079",
+    "price_range": "34.98-37.98万",
+    "level": "SUV",
+    "energy_type": ""
+  },
+  {
+    "name": "奥迪SQ5 Sportback",
+    "series_id": "6121",
+    "price_range": "63.88万",
+    "level": "SUV",
+    "energy_type": ""
+  }
+]

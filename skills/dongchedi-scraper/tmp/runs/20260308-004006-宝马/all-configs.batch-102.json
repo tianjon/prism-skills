@@ -1,0 +1,67 @@
+[
+  {
+    "car_id": "255962",
+    "car_name": "M60",
+    "price": "44.80万",
+    "year": "2026",
+    "series_name": "宝马i4",
+    "series_id": "4211",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "242476",
+    "car_name": "eDrive35",
+    "price": "42.99万",
+    "year": "2025",
+    "series_name": "宝马i4",
+    "series_id": "4211",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "100825",
+    "car_name": "eDrive40",
+    "price": "46.99万",
+    "year": "2025",
+    "series_name": "宝马i4",
+    "series_id": "4211",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "248846",
+    "car_name": "M60",
+    "price": "44.80万",
+    "year": "2025",
+    "series_name": "宝马i4",
+    "series_id": "4211",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "87194",
+    "car_name": "M760Le xDrive",
+    "price": "159.80万",
+    "year": "2023",
+    "series_name": "宝马7系PHEV",
+    "series_id": "123",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  }
+]

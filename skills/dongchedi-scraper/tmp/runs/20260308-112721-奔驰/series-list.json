@@ -1,0 +1,562 @@
+[
+  {
+    "series_id": "214",
+    "name": "奔驰E级",
+    "brand": "奔驰",
+    "price_range": "27.68-48.98万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "212",
+    "name": "奔驰C级",
+    "brand": "奔驰",
+    "price_range": "21.98-27.86万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "216",
+    "name": "奔驰GLC",
+    "brand": "奔驰",
+    "price_range": "28.78-40.13万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "264",
+    "name": "迈巴赫S级",
+    "brand": "迈巴赫",
+    "price_range": "146.60-364.30万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "224",
+    "name": "奔驰S级",
+    "brand": "奔驰",
+    "price_range": "72.98-169.40万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "228",
+    "name": "奔驰GLE(进口)",
+    "brand": "奔驰",
+    "price_range": "54.08-72.38万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "2913",
+    "name": "奔驰A级",
+    "brand": "奔驰",
+    "price_range": "12.59-15.67万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "3928",
+    "name": "奔驰GLB",
+    "brand": "奔驰",
+    "price_range": "20.29-26.79万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "230",
+    "name": "奔驰G级",
+    "brand": "奔驰",
+    "price_range": "184.90万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "233",
+    "name": "奔驰GLS",
+    "brand": "奔驰",
+    "price_range": "80.90-123.92万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "255",
+    "name": "奔驰G级AMG",
+    "brand": "奔驰",
+    "price_range": "259.45-259.55万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "3711",
+    "name": "迈巴赫GLS",
+    "brand": "迈巴赫",
+    "price_range": "149.80-278.80万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "215",
+    "name": "奔驰GLA",
+    "brand": "奔驰",
+    "price_range": "15.09-19.39万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "226",
+    "name": "奔驰GLC轿跑",
+    "brand": "奔驰",
+    "price_range": "35.18-43.60万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "256",
+    "name": "奔驰GLE AMG",
+    "brand": "奔驰",
+    "price_range": "78.88-146.68万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "3932",
+    "name": "奔驰EQB",
+    "brand": "奔驰",
+    "price_range": "17.70-25.20万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "1729",
+    "name": "奔驰EQA",
+    "brand": "奔驰",
+    "price_range": "16.20-22.00万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "1650",
+    "name": "奔驰GLC AMG",
+    "brand": "奔驰",
+    "price_range": "43.80-51.57万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "5164",
+    "name": "奔驰GLE轿跑",
+    "brand": "奔驰",
+    "price_range": "64.48-74.88万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "3935",
+    "name": "奔驰GLB AMG",
+    "brand": "奔驰",
+    "price_range": "29.97-30.51万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "258",
+    "name": "奔驰GLS AMG",
+    "brand": "奔驰",
+    "price_range": "230.70万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "6208",
+    "name": "奔驰EQE SUV",
+    "brand": "奔驰",
+    "price_range": "25.70-40.16万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "5326",
+    "name": "奔驰纯电G级",
+    "brand": "奔驰纯电",
+    "price_range": "217.00万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "10206",
+    "name": "奔驰GLC PHEV",
+    "brand": "奔驰",
+    "price_range": "36.60万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "229",
+    "name": "奔驰GLE PHEV",
+    "brand": "奔驰",
+    "price_range": "63.18万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "5324",
+    "name": "迈巴赫EQS SUV",
+    "brand": "迈巴赫",
+    "price_range": "148.60-159.49万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "5167",
+    "name": "奔驰GLC轿跑 AMG",
+    "brand": "奔驰",
+    "price_range": "52.00-69.90万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "5805",
+    "name": "奔驰EQS SUV",
+    "brand": "奔驰",
+    "price_range": "69.15万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "254",
+    "name": "奔驰GLA AMG",
+    "brand": "奔驰",
+    "price_range": "32.45万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "5165",
+    "name": "奔驰GLE轿跑 AMG",
+    "brand": "奔驰",
+    "price_range": "95.18万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "5166",
+    "name": "奔驰GLE轿跑 PHEV",
+    "brand": "奔驰",
+    "price_range": "59.10万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "5812",
+    "name": "奔驰EQE SUV AMG",
+    "brand": "奔驰",
+    "price_range": "86.34万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "220",
+    "name": "奔驰CLA(进口)",
+    "brand": "奔驰",
+    "price_range": "19.42-27.94万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "250",
+    "name": "奔驰C级AMG",
+    "brand": "奔驰",
+    "price_range": "39.80-54.98万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "222",
+    "name": "奔驰E级(进口)",
+    "brand": "奔驰",
+    "price_range": "32.92-44.00万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "3360",
+    "name": "奔驰A级AMG",
+    "brand": "奔驰",
+    "price_range": "25.03-25.56万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "248",
+    "name": "奔驰A级AMG(进口)",
+    "brand": "奔驰",
+    "price_range": "27.11-45.56万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "213",
+    "name": "奔驰C级PHEV",
+    "brand": "奔驰",
+    "price_range": "28.06万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "2716",
+    "name": "奔驰E级PHEV",
+    "brand": "奔驰",
+    "price_range": "36.86万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "5813",
+    "name": "奔驰EQE",
+    "brand": "奔驰",
+    "price_range": "24.90-39.80万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "4668",
+    "name": "奔驰EQS",
+    "brand": "奔驰",
+    "price_range": "45.20万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "249",
+    "name": "奔驰CLA AMG",
+    "brand": "奔驰",
+    "price_range": "32.07-49.59万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "225",
+    "name": "奔驰S级PHEV",
+    "brand": "奔驰",
+    "price_range": "94.53-115.93万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "8801",
+    "name": "迈巴赫S级 PHEV",
+    "brand": "迈巴赫",
+    "price_range": "201.60万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "6293",
+    "name": "奔驰S级AMG PHEV",
+    "brand": "奔驰",
+    "price_range": "267.48万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "5969",
+    "name": "奔驰C级AMG PHEV",
+    "brand": "奔驰",
+    "price_range": "119.18万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "5420",
+    "name": "奔驰EQE AMG",
+    "brand": "奔驰",
+    "price_range": "76.20万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "5171",
+    "name": "奔驰EQS AMG",
+    "brand": "奔驰",
+    "price_range": "121.70万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "25389",
+    "name": "奔驰CLA EV",
+    "brand": "奔驰",
+    "price_range": "24.90-29.99万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "260",
+    "name": "AMG GT",
+    "brand": "AMG",
+    "price_range": "74.70-192.48万",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "6050",
+    "name": "奔驰CLE级",
+    "brand": "奔驰",
+    "price_range": "33.76-47.98万",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "6051",
+    "name": "奔驰CLE级AMG",
+    "brand": "奔驰",
+    "price_range": "69.18-75.00万",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "5009",
+    "name": "AMG GT PHEV",
+    "brand": "AMG",
+    "price_range": "228.55万",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "262",
+    "name": "奔驰SL级AMG",
+    "brand": "奔驰",
+    "price_range": "196.98-199.98万",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "244",
+    "name": "威霆",
+    "brand": "威霆",
+    "price_range": "15.48-24.78万",
+    "level": "MPV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "245",
+    "name": "奔驰V级",
+    "brand": "奔驰",
+    "price_range": "33.78-51.08万",
+    "level": "MPV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  }
+]

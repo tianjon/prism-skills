@@ -1,0 +1,41 @@
+[
+  {
+    "car_id": "110590",
+    "car_name": "M5",
+    "price": "146.89万",
+    "year": "2025",
+    "series_name": "宝马M5 PHEV",
+    "series_id": "20047",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "255963",
+    "car_name": "M60 xDrive",
+    "price": "55.80万",
+    "year": "2026",
+    "series_name": "宝马i5(进口)",
+    "series_id": "5451",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "90072",
+    "car_name": "M60 xDrive",
+    "price": "55.80万",
+    "year": "2024",
+    "series_name": "宝马i5(进口)",
+    "series_id": "5451",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  }
+]

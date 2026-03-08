@@ -1,0 +1,41 @@
+[
+  {
+    "car_id": "54386",
+    "car_name": "X3 M 雷霆版",
+    "price": "90.99万",
+    "year": "2022",
+    "series_name": "宝马X3 M",
+    "series_id": "3175",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "255951",
+    "car_name": "M50",
+    "price": "59.90万",
+    "year": "2026",
+    "series_name": "宝马X3(进口)",
+    "series_id": "126",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "244893",
+    "car_name": "M50",
+    "price": "59.90万",
+    "year": "2025",
+    "series_name": "宝马X3(进口)",
+    "series_id": "126",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  }
+]

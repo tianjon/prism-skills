@@ -1,0 +1,28 @@
+[
+  {
+    "car_id": "87194",
+    "car_name": "M760Le xDrive",
+    "price": "159.80万",
+    "year": "2023",
+    "series_name": "宝马7系PHEV",
+    "series_id": "123",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "car_id": "110590",
+    "car_name": "M5",
+    "price": "146.89万",
+    "year": "2025",
+    "series_name": "宝马M5 PHEV",
+    "series_id": "20047",
+    "brand_name": "宝马",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  }
+]

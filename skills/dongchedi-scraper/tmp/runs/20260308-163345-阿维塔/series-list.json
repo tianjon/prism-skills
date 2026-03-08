@@ -1,0 +1,42 @@
+[
+  {
+    "series_id": "10033",
+    "name": "阿维塔 07",
+    "brand": "阿维塔",
+    "price_range": "19.99-28.99万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "8834",
+    "name": "阿维塔 12",
+    "brand": "阿维塔",
+    "price_range": "25.99-70.00万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "5308",
+    "name": "阿维塔 11",
+    "brand": "阿维塔",
+    "price_range": "27.99-41.99万",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  },
+  {
+    "series_id": "10230",
+    "name": "阿维塔 06",
+    "brand": "阿维塔",
+    "price_range": "18.99-25.99万",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true,
+    "is_history": false
+  }
+]

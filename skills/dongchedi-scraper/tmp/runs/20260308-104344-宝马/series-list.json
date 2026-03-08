@@ -1,0 +1,802 @@
+[
+  {
+    "series_id": "145",
+    "name": "宝马3系",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "146",
+    "name": "宝马5系",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "5273",
+    "name": "宝马X5",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "2812",
+    "name": "宝马X3",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "122",
+    "name": "宝马7系",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "148",
+    "name": "宝马X1",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "118",
+    "name": "宝马4系",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "4838",
+    "name": "宝马i3",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "136",
+    "name": "宝马M4",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "2825",
+    "name": "宝马X7",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "135",
+    "name": "宝马M3",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "24609",
+    "name": "宝马2系",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "9224",
+    "name": "宝马i5",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "120",
+    "name": "宝马5系(进口)",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "131",
+    "name": "宝马2系(进口)",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "1641",
+    "name": "宝马8系",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "4296",
+    "name": "宝马i7",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "4211",
+    "name": "宝马i4",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "123",
+    "name": "宝马7系PHEV",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "20047",
+    "name": "宝马M5 PHEV",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "5451",
+    "name": "宝马i5(进口)",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "116",
+    "name": "宝马3系(进口)",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "115",
+    "name": "宝马1系(进口)",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3929",
+    "name": "宝马5系PHEV(进口)",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "2723",
+    "name": "宝马2系旅行车PHEV(海外)",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3146",
+    "name": "宝马3系PHEV(海外)",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "25235",
+    "name": "Vision Driving Experience",
+    "brand": "Vision",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "2090",
+    "name": "Compact Sedan",
+    "brand": "Compact",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "2065",
+    "name": "VISION NEXT 100",
+    "brand": "VISION",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "9272",
+    "name": "Vision Neue Klasse",
+    "brand": "Vision",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "5323",
+    "name": "BMW i Vision Circular",
+    "brand": "BMW",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3287",
+    "name": "Gran Coupe",
+    "brand": "Gran",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "1732",
+    "name": "i Vision Dynamics",
+    "brand": "i",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "6345",
+    "name": "i Vision Dee",
+    "brand": "i",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "2648",
+    "name": "Vision Future Luxury",
+    "brand": "Vision",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "4089",
+    "name": "Garmisch ",
+    "brand": "Garmisch",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "1639",
+    "name": "宝马6系GT",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "143",
+    "name": "宝马1系",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "137",
+    "name": "宝马M5",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "2592",
+    "name": "宝马M8",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "117",
+    "name": "宝马3系GT",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "121",
+    "name": "宝马6系",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "147",
+    "name": "宝马5系PHEV",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "119",
+    "name": "宝马5系GT",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "138",
+    "name": "宝马M6",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "144",
+    "name": "宝马2系旅行车",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "133",
+    "name": "宝马i3(进口)",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "142",
+    "name": "宝马1系M",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "1675",
+    "name": "宝马2系旅行车(进口)",
+    "brand": "宝马",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3852",
+    "name": "Isetta",
+    "brand": "Isetta",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3261",
+    "name": "Active Tourer",
+    "brand": "Active",
+    "level": "轿车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "127",
+    "name": "宝马X6",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "4538",
+    "name": "宝马iX3",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "125",
+    "name": "宝马X4",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "8942",
+    "name": "宝马iX1",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "139",
+    "name": "宝马X5 M",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "4772",
+    "name": "宝马XM",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3023",
+    "name": "宝马iX",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "1783",
+    "name": "宝马X2(进口)",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3175",
+    "name": "宝马X3 M",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "126",
+    "name": "宝马X3(进口)",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "140",
+    "name": "宝马X6 M",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3176",
+    "name": "宝马X4 M",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "128",
+    "name": "宝马X5(进口)",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "129",
+    "name": "宝马X5 PHEV",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "124",
+    "name": "宝马X1(进口)",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "5303",
+    "name": "宝马iX5",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "1734",
+    "name": "宝马X7 PHEV",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "2874",
+    "name": "宝马iX3(海外)",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "4864",
+    "name": "宝马iX2",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "4343",
+    "name": "宝马X2 PHEV",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3891",
+    "name": "宝马X3 PHEV(海外)",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "4234",
+    "name": "宝马X1 PHEV(海外)",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "4669",
+    "name": "宝马iX1(海外)",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "10008",
+    "name": "Vision Neue Klasse X",
+    "brand": "Vision",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "4140",
+    "name": "i Hydrogen NEXT",
+    "brand": "i",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3708",
+    "name": "宝马X2",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "149",
+    "name": "宝马X1 PHEV",
+    "brand": "宝马",
+    "level": "SUV",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "141",
+    "name": "宝马M2",
+    "brand": "宝马",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "132",
+    "name": "宝马Z4",
+    "brand": "宝马",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "2078",
+    "name": "宝马3.0 CSL",
+    "brand": "宝马",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3695",
+    "name": "宝马Z2",
+    "brand": "宝马",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "2525",
+    "name": "Zagato Coupe",
+    "brand": "Zagato",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "6184",
+    "name": "宝马M Hybrid V8",
+    "brand": "宝马",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "5098",
+    "name": "宝马328",
+    "brand": "宝马",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3846",
+    "name": "EfficientDynamics",
+    "brand": "EfficientDynamics",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "2119",
+    "name": "i Vision Future Interaction",
+    "brand": "i",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "2389",
+    "name": "Gran Lusso",
+    "brand": "Gran",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "10257",
+    "name": "Skytop",
+    "brand": "Skytop",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "2008",
+    "name": "2002 Hommage",
+    "brand": "2002",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3751",
+    "name": "VISION M NEXT",
+    "brand": "VISION",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3218",
+    "name": "宝马GINA",
+    "brand": "宝马",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3208",
+    "name": "ConnectedDrive",
+    "brand": "ConnectedDrive",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "25539",
+    "name": "Speedtop",
+    "brand": "Speedtop",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "134",
+    "name": "宝马i8",
+    "brand": "宝马",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3888",
+    "name": "宝马M1",
+    "brand": "宝马",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "4776",
+    "name": "宝马Z3",
+    "brand": "宝马",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3677",
+    "name": "宝马Z8",
+    "brand": "宝马",
+    "level": "跑车",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "3753",
+    "name": "宝马X7皮卡",
+    "brand": "宝马",
+    "level": "皮卡",
+    "energy_type": "",
+    "is_target": true
+  },
+  {
+    "series_id": "130",
+    "name": "宝马2系多功能旅行车",
+    "brand": "宝马",
+    "level": "MPV",
+    "energy_type": "",
+    "is_target": true
+  }
+]
