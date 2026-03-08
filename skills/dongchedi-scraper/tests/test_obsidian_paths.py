@@ -46,10 +46,10 @@ class ObsidianPathStructureTest(unittest.TestCase):
             car_id="321",
             car_name="Elite 后驱增程版 39.05kWh",
             year="2026",
-            series_name="阿维塔 07",
+            series_name="示例 07",
             series_id="10033",
-            brand_name="阿维塔",
-            brand="阿维塔",
+            brand_name="示例品牌",
+            brand="示例品牌",
             price="21.99万",
         )
         self.assertEqual(config_current_note_name(config), "2026款 Elite 后驱增程版 39.05kWh")

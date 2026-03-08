@@ -13,7 +13,7 @@ class SearchResultParserTest(unittest.TestCase):
                             {
                                 "cell_type": 129,
                                 "display": {
-                                    "brand_name": "阿维塔",
+                                    "brand_name": "示例品牌",
                                     "sub_brand_list": {
                                         "item": [
                                             {
@@ -21,14 +21,14 @@ class SearchResultParserTest(unittest.TestCase):
                                                     "item": [
                                                         {
                                                             "series_id": 5308,
-                                                            "name": "阿维塔 11",
+                                                            "name": "示例 11",
                                                             "pricelimits": "27.99-41.99万",
                                                             "level": "SUV",
                                                             "is_salestop": False,
                                                         },
                                                         {
                                                             "series_id": 25692,
-                                                            "name": "阿维塔VISION XPECTRA概念车",
+                                                            "name": "示例VISION XPECTRA概念车",
                                                             "pricelimits": "未上市",
                                                             "level": "轿车",
                                                             "is_salestop": True,
@@ -49,7 +49,7 @@ class SearchResultParserTest(unittest.TestCase):
         results = extract_search_results(ssr_data)
 
         self.assertEqual([item.series_id for item in results], ["5308"])
-        self.assertEqual(results[0].name, "阿维塔 11")
+        self.assertEqual(results[0].name, "示例 11")
         self.assertEqual(results[0].price_range, "27.99-41.99万")
         self.assertEqual(results[0].level, "SUV")
 

@@ -9,10 +9,10 @@ class MarkdownFormatTest(unittest.TestCase):
         config = CarConfig(
             car_id="1",
             car_name="Elite 纯电版",
-            series_name="阿维塔 06",
+            series_name="示例 06",
             series_id="10230",
-            brand_name="阿维塔",
-            brand="阿维塔",
+            brand_name="示例品牌",
+            brand="示例品牌",
             year="2025",
             price="20.99万",
         )
@@ -48,27 +48,27 @@ class MarkdownFormatTest(unittest.TestCase):
         config = CarConfig(
             car_id="251481",
             car_name="Elite 后驱增程版 39.05kWh",
-            series_name="阿维塔 07",
+            series_name="示例 07",
             series_id="10033",
-            brand_name="阿维塔",
-            brand="阿维塔",
+            brand_name="示例品牌",
+            brand="示例品牌",
             year="2026",
             price="21.99万",
             level="SUV",
         )
         content = format_config_note(config, [])
 
-        self.assertIn("  - 阿维塔07", content)
-        self.assertNotIn("  - 阿维塔 07", content)
+        self.assertIn("  - 示例07", content)
+        self.assertNotIn("  - 示例 07", content)
 
     def test_format_config_note_adds_fixed_links(self) -> None:
         config = CarConfig(
             car_id="251481",
             car_name="Elite 后驱增程版 39.05kWh",
-            series_name="阿维塔 07",
+            series_name="示例 07",
             series_id="10033",
-            brand_name="阿维塔",
-            brand="阿维塔",
+            brand_name="示例品牌",
+            brand="示例品牌",
             year="2026",
             price="21.99万",
             level="SUV",
@@ -85,10 +85,10 @@ class MarkdownFormatTest(unittest.TestCase):
         config = CarConfig(
             car_id="251481",
             car_name="Elite 后驱增程版 39.05kWh",
-            series_name="阿维塔 07",
+            series_name="示例 07",
             series_id="10033",
-            brand_name="阿维塔",
-            brand="阿维塔",
+            brand_name="示例品牌",
+            brand="示例品牌",
             year="2026",
             price="21.99万",
             level="SUV",

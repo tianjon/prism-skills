@@ -54,7 +54,7 @@ class SearchScriptCompatibilityTest(unittest.TestCase):
         fake_browser = FakeBrowser(html)
         globals_dict = {
             "__name__": "__main__",
-            "KEYWORD": "阿维塔",
+            "KEYWORD": "示例品牌",
             "browser": fake_browser,
         }
         exec(compile(self.script_path.read_text("utf-8"), str(self.script_path), "exec"), globals_dict)
@@ -64,7 +64,7 @@ class SearchScriptCompatibilityTest(unittest.TestCase):
         fake_html = (
             '<html><script id="__NEXT_DATA__" type="application/json">'
             '{"props":{"pageProps":{"searchData":{"data":['
-            '{"series_id":5308,"display":{"series_name":"阿维塔11",'
+            '{"series_id":5308,"display":{"series_name":"示例11",'
             '"official_price":"27.99-41.99万","series_type":"中大型SUV"}}'
             ']}}}}</script></html>'
         )
@@ -77,8 +77,8 @@ class SearchScriptCompatibilityTest(unittest.TestCase):
         payload = json.loads(self.output_path.read_text("utf-8"))
         metadata = json.loads(self.metadata_path.read_text("utf-8"))
         self.assertEqual(payload[0]["series_id"], "5308")
-        self.assertEqual(payload[0]["name"], "阿维塔11")
-        self.assertEqual(metadata["keyword"], "阿维塔")
+        self.assertEqual(payload[0]["name"], "示例11")
+        self.assertEqual(metadata["keyword"], "示例品牌")
         self.assertEqual(metadata["result_count"], 1)
         self.assertIn("懂车帝搜索", metadata["title"])
         self.assertEqual(len(fake_browser.visited_urls), 1)
@@ -93,7 +93,7 @@ class SearchScriptCompatibilityTest(unittest.TestCase):
         self.assertFalse(self.output_path.exists())
         self.assertTrue(self.raw_html_path.exists())
         metadata = json.loads(self.metadata_path.read_text("utf-8"))
-        self.assertEqual(metadata["keyword"], "阿维塔")
+        self.assertEqual(metadata["keyword"], "示例品牌")
 
 
 if __name__ == "__main__":

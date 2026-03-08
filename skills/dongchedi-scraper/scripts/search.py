@@ -1,6 +1,6 @@
 """Search dongchedi for car models.
 
-Run: browser-use python "KEYWORD='阿维塔'"
+Run: browser-use python "KEYWORD='示例品牌'"
      browser-use python --file scripts/search.py
 
 Input: KEYWORD variable in browser-use python namespace
