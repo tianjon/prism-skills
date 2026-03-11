@@ -1,4 +1,4 @@
-# dongchedi-scraper Distribution Notes
+# prism-dongchedi-scraper Distribution Notes
 
 ## Purpose
 
@@ -23,7 +23,7 @@ The skill follows this runtime policy:
 ## Canonical Entry
 
 ```bash
-cd skills/dongchedi-scraper
+cd skills/prism-dongchedi-scraper
 python3 scripts/run_brand_pipeline.py --brand <brand>
 ```
 

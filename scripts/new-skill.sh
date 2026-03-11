@@ -8,8 +8,8 @@ fi
 
 name="$1"
 
-if [[ ! "$name" =~ ^[a-z0-9]+([-.][a-z0-9]+)*$ ]]; then
-  echo "Error: skill name must be kebab-case-like, e.g. wechat-poster" >&2
+if [[ ! "$name" =~ ^prism-[a-z0-9]+([-.][a-z0-9]+)*$ ]]; then
+  echo "Error: skill name must be kebab-case with a prism- prefix, e.g. prism-wechat-poster" >&2
   exit 1
 fi
 
@@ -40,7 +40,7 @@ name = sys.argv[1]
 target = Path(sys.argv[2])
 
 replacements = {
-    'your-skill-name': name,
+    'prism-your-skill-name': name,
     'Skill Name': name.replace('-', ' ').title(),
 }
 
@@ -57,6 +57,7 @@ PY
 
 mkdir -p "$target_dir/tmp"
 : > "$target_dir/tmp/.gitkeep"
+mkdir -p "$target_dir/references"
 
 echo "Created skill at: skills/$name"
-echo "Next: edit skills/$name/SKILL.md and skills/$name/README.md"
+echo "Next: read docs/skill-writing-guidelines.md, then edit skills/$name/SKILL.md and add reference files only if needed"

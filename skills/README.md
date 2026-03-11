@@ -9,10 +9,13 @@ Store all repository skills in this directory.
 - Keep implementation files local to the skill directory
 - Avoid runtime dependencies across sibling skills
 - Keep temporary outputs inside the skill's own `tmp/` directory
+- Follow `docs/skill-writing-guidelines.md` when adding or refactoring a skill
+- Do not treat local runtime artifacts such as `.venv/` as part of a skill's intended structure
 
 ## Current Entries
 
-- `dongchedi-scraper/`
+- `prism-dongchedi-scraper/`
+- `prism-doc-to-obsidian/`
 - `_template/` — starter scaffold for future skills
 
 Create a new skill with:

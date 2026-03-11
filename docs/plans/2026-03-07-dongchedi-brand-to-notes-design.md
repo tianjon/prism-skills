@@ -2,7 +2,7 @@
 
 ## Goal
 
-Refactor `dongchedi-scraper` from a loose collection of scripts into a traceable, verifiable, restartable, and publishable pipeline.
+Refactor `prism-dongchedi-scraper` from a loose collection of scripts into a traceable, verifiable, restartable, and publishable pipeline.
 
 The target user flow is:
 

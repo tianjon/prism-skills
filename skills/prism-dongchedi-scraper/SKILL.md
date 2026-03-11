@@ -1,11 +1,20 @@
 ---
-name: dongchedi-scraper
+name: prism-dongchedi-scraper
 description: Scrape vehicle configurations and structured parameters from dongchedi.com, then publish standardized notes into Obsidian. Use this skill when the user asks about dongchedi, vehicle specifications, configuration scraping, brand-wide vehicle capture, or automotive note publishing.
 ---
 
-# dongchedi-scraper
+# prism-dongchedi-scraper
 
 A brand-driven scraping skill for vehicle series, trims, and parameters from dongchedi.com.
+
+## When to Use
+
+Use this skill when the user asks to:
+
+- scrape vehicle configurations from dongchedi.com
+- capture a full brand or model series into structured notes
+- compare current trims or recent historical trims from dongchedi
+- publish automotive configuration notes into Obsidian
 
 ## Capability Summary
 
@@ -82,6 +91,14 @@ The pipeline uses this runtime selection strategy:
 4. If `uv` is required but not installed, stop and tell the user to install `uv` first
 5. If `Obsidian-cli` is required for publishing but is missing, stop and tell the user to install and verify it first
 
+## Script Entry
+
+Primary script entrypoint:
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/run_brand_pipeline.py` | End-to-end brand pipeline with runtime resolution and interactive option handling |
+
 ## Canonical Entry
 
 ```bash
@@ -127,6 +144,14 @@ The skill is deterministic in:
 - command interface
 
 The skill is not fully deterministic in live data values because dongchedi content can change over time.
+
+## Failure Handling
+
+- If Python is missing, stop and instruct the user to install Python `3.11+`.
+- If required runtime dependencies are unavailable and `uv` is missing, stop and instruct the user to install `uv`.
+- If `Obsidian-cli` is unavailable when publishing is requested, stop and instruct the user to install and verify Obsidian CLI.
+- If scraping returns empty or invalid JSON artifacts, stop and report which required file is missing or empty.
+- If live dongchedi data changes produce unstable results, describe the failed step and preserve the existing output contract.
 
 ## Directory Layout
 

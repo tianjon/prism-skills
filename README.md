@@ -1,84 +1,121 @@
 # prism-skills
 
-Skills shared for local AI coding agents.
-
-本仓库目前主要提供 `dongchedi-scraper`，用于抓取懂车帝车型配置，并通过 `Obsidian-cli` 发布到 Obsidian。
-
-## Prerequisites
-
-- Git
-- Python 3.11+
-- `uv`（用于 Python 环境管理）
-- 已安装并可正常使用的 Agent CLI：`Codex`、`Claude Code` 或 `OpenCode`
-
-## Installation
-
-### Add to Codex
-
-```bash
-rm -rf /tmp/prism-skills
-git clone git@github.com:tianjon/prism-skills.git /tmp/prism-skills
-mkdir -p ~/.codex/skills
-cp -R /tmp/prism-skills/skills/dongchedi-scraper ~/.codex/skills/dongchedi-scraper
-rm -rf /tmp/prism-skills
-```
-
-### Add to Claude Code
-
-```bash
-rm -rf /tmp/prism-skills
-git clone git@github.com:tianjon/prism-skills.git /tmp/prism-skills
-mkdir -p ~/.claude/skills
-cp -R /tmp/prism-skills/skills/dongchedi-scraper ~/.claude/skills/dongchedi-scraper
-rm -rf /tmp/prism-skills
-```
-
-### Add to OpenCode
-
-```bash
-rm -rf /tmp/prism-skills
-git clone git@github.com:tianjon/prism-skills.git /tmp/prism-skills
-mkdir -p ~/.config/opencode/skills
-cp -R /tmp/prism-skills/skills/dongchedi-scraper ~/.config/opencode/skills/dongchedi-scraper
-rm -rf /tmp/prism-skills
-```
-
-### Verify
-
-Restart the tool and confirm it can discover `dongchedi-scraper`.
+Reusable local skills for AI coding agents.
 
 ## Available Skills
 
 | Skill | Description |
 |-------|-------------|
-| `dongchedi-scraper` | Scrape vehicle configurations from dongchedi.com and publish standardized notes into Obsidian via `Obsidian-cli`. |
+| `prism-dongchedi-scraper` | Scrape vehicle configurations from dongchedi.com and publish standardized notes into Obsidian via `Obsidian-cli`. |
+| `prism-doc-to-obsidian` | Convert MinerU-supported documents into Markdown and save confirmed notes into Obsidian with indexes, tags, and cross-note links. |
 
-### dongchedi-scraper
+## Supported Agents
+
+The repository is currently structured for local skill installation in:
+
+- Codex
+- Claude Code
+- OpenCode
+
+## Requirements
+
+Base requirements:
+
+- Git
+- `uv`
+- A compatible local agent CLI such as `Codex`, `Claude Code`, or `OpenCode`
+
+Skill-specific runtime requirements:
+
+| Skill | Runtime Requirements |
+|-------|----------------------|
+| `prism-dongchedi-scraper` | Python `3.11+`, `browser-use`, `Obsidian-cli` when publishing |
+| `prism-doc-to-obsidian` | Python `3.10-3.13`, Obsidian `1.12+` with CLI enabled and running, MinerU |
+
+## Installation
+
+Clone with HTTPS by default:
 
 ```bash
-cd skills/dongchedi-scraper
+git clone https://github.com/tianjon/prism-skills.git
+cd prism-skills
+```
+
+Install one or more skills into your agent's local skill directory.
+
+### Codex
+
+```bash
+mkdir -p ~/.codex/skills
+cp -R skills/prism-dongchedi-scraper ~/.codex/skills/prism-dongchedi-scraper
+cp -R skills/prism-doc-to-obsidian ~/.codex/skills/prism-doc-to-obsidian
+```
+
+### Claude Code
+
+```bash
+mkdir -p ~/.claude/skills
+cp -R skills/prism-dongchedi-scraper ~/.claude/skills/prism-dongchedi-scraper
+cp -R skills/prism-doc-to-obsidian ~/.claude/skills/prism-doc-to-obsidian
+```
+
+### OpenCode
+
+```bash
+mkdir -p ~/.config/opencode/skills
+cp -R skills/prism-dongchedi-scraper ~/.config/opencode/skills/prism-dongchedi-scraper
+cp -R skills/prism-doc-to-obsidian ~/.config/opencode/skills/prism-doc-to-obsidian
+```
+
+Restart the agent tool and confirm it discovers the installed skills.
+
+## Quick Start
+
+### `prism-dongchedi-scraper`
+
+```bash
+cd skills/prism-dongchedi-scraper
 python3 scripts/run_brand_pipeline.py --brand BMW
 ```
 
-See `skills/dongchedi-scraper/SKILL.md` for workflow details and `skills/dongchedi-scraper/DISTRIBUTION.md` for environment notes.
+See `skills/prism-dongchedi-scraper/SKILL.md` for the full workflow and `skills/prism-dongchedi-scraper/DISTRIBUTION.md` for runtime notes.
 
-## Usage Restrictions
+### `prism-doc-to-obsidian`
 
-- Personal learning, research, evaluation, and non-commercial experiments only
-- No commercial use
-- No paid service, SaaS hosting, enterprise production use, or closed-source commercial redistribution
+Typical prompt:
 
-See `LICENSE` for full terms.
-
-## Maintainer Notes
-
-If code is published to GitHub, use this Git identity:
-
-```bash
-git config --global user.name "tianjon"
-git config --global user.email "fengyadong@gmail.com"
+```text
+Convert this file into Obsidian notes with prism-doc-to-obsidian.
+Check Python and Obsidian CLI first.
+If MinerU or required Obsidian skills are missing, install them automatically.
+Before writing, show me the proposed folder structure and file list for confirmation.
 ```
+
+See `skills/prism-doc-to-obsidian/SKILL.md` for the workflow, dependency checks, bilingual prompts, and confirmation-first publishing rules.
+
+## Repository Structure
+
+```text
+skills/
+  prism-dongchedi-scraper/
+  prism-doc-to-obsidian/
+docs/plans/
+scripts/
+```
+
+Each skill should remain self-contained under `skills/<skill-name>/`.
+
+## Contributing
+
+Issues and pull requests are welcome.
+
+When contributing:
+
+- keep each change scoped to one skill or one documentation topic
+- update the affected `SKILL.md` when behavior changes
+- add focused tests for stable parsing or transformation logic
+- include verification steps in your PR description
 
 ## License
 
-This repository uses `Personal Research Non-Commercial License 1.0`.
+This repository is licensed under the [MIT License](LICENSE).
