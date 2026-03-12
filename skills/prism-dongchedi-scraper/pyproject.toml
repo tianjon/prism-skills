@@ -1,7 +1,7 @@
 [project]
 name = "prism-dongchedi-scraper"
 version = "0.1.0"
-description = "懂车帝车型配置抓取工具 - Claude Code Skill"
+description = "懂车帝车型配置抓取与 Obsidian 发布工具"
 requires-python = ">=3.11"
 dependencies = [
     "browser-use",

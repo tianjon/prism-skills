@@ -78,6 +78,12 @@ cd skills/prism-dongchedi-scraper
 python3 scripts/run_brand_pipeline.py --brand BMW
 ```
 
+Publishing requires an explicit flag:
+
+```bash
+python3 scripts/run_brand_pipeline.py --brand BMW --publish
+```
+
 See `skills/prism-dongchedi-scraper/SKILL.md` for the full workflow and `skills/prism-dongchedi-scraper/DISTRIBUTION.md` for runtime notes.
 
 ### `prism-doc-to-obsidian`
@@ -90,6 +96,16 @@ Check Python and Obsidian CLI first.
 If MinerU or required Obsidian skills are missing, install them automatically.
 Before writing, show me the proposed folder structure and file list for confirmation.
 ```
+
+Deterministic backend (after confirmation):
+
+```bash
+cd skills/prism-doc-to-obsidian
+python3 scripts/convert_recursive.py --input <file-or-dir> --output tmp/run
+python3 scripts/import_to_obsidian.py --manifest tmp/run/manifest.json --target-root <vault-subpath>
+```
+
+Note bodies are written via `obsidian-cli`. Binary attachments are copied through the filesystem because the CLI is text-only.
 
 See `skills/prism-doc-to-obsidian/SKILL.md` for the workflow, dependency checks, bilingual prompts, and confirmation-first publishing rules.
 

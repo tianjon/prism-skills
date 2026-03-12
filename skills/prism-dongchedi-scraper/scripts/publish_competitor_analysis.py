@@ -5,12 +5,14 @@ Run: python3 scripts/publish_competitor_analysis.py [--vault <name>]
 Requires: tmp/target-models.json and tmp/competitors.json already prepared.
 Outputs: tmp/series-list.json, tmp/all-configs.json, tmp/all-configs-with-params.json,
          tmp/changes.json, and Obsidian notes.
+
+This helper reuses the same runtime/bootstrap policy as run_brand_pipeline.py.
 """
 import argparse
-import shutil
 import subprocess
-import sys
 from pathlib import Path
+
+from scripts.run_brand_pipeline import ensure_python_available, resolve_runtime
 
 module_file = globals().get("__file__")
 SKILL_DIR = Path(module_file).resolve().parent.parent if module_file else Path.cwd().resolve()
@@ -23,35 +25,29 @@ def run_step(label: str, command: list[str]) -> None:
         raise SystemExit(result.returncode)
 
 
+def resolve_runtime_pair() -> tuple[str, str]:
+    ensure_python_available()
+    return resolve_runtime()
+
+
 def resolve_browser_use() -> str:
-    executable_name = "browser-use.exe" if sys.platform == "win32" else "browser-use"
-    active_environment_binary = Path(sys.executable).resolve().parent / executable_name
-    if active_environment_binary.exists():
-        return str(active_environment_binary)
-
-    browser_use = shutil.which("browser-use")
-    if browser_use:
-        return browser_use
-
-    raise RuntimeError(
-        "browser-use is not available in the active Python environment or on PATH. "
-        "Install it with uv or activate the environment that provides browser-use first."
-    )
+    _, browser_use = resolve_runtime_pair()
+    return browser_use
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Publish competitor analysis results to Obsidian")
     parser.add_argument("--vault", default="", help="Optional Obsidian vault name")
     args = parser.parse_args()
-    browser_use = resolve_browser_use()
+    python_bin, browser_use = resolve_runtime_pair()
 
-    run_step("Build series-list", [sys.executable, "scripts/build_series_list.py"])
+    run_step("Build series-list", [python_bin, "scripts/build_series_list.py"])
     run_step("Open browser", [browser_use, "open", "https://www.dongchedi.com"])
     run_step("Collect configs", [browser_use, "python", "--file", "scripts/configs.py"])
     run_step("Collect params", [browser_use, "python", "--file", "scripts/params.py"])
 
-    diff_cmd = [sys.executable, "scripts/diff.py"]
-    store_cmd = [sys.executable, "scripts/store.py", "--competitors", "--changelog"]
+    diff_cmd = [python_bin, "scripts/diff.py"]
+    store_cmd = [python_bin, "scripts/store.py", "--competitors", "--changelog"]
     if args.vault:
         diff_cmd.extend(["--vault", args.vault])
         store_cmd.extend(["--vault", args.vault])

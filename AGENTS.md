@@ -14,10 +14,11 @@ When adding a new skill, use the same pattern and add optional `assets/` or `tes
 Most work happens inside one skill directory.
 
 - `cd skills/prism-dongchedi-scraper` — enter the current skill workspace
-- `uv venv --python 3.11` — create the recommended virtual environment
-- `uv pip install browser-use` — install the current runtime dependency
-- `browser-use install` — install browser automation support
-- `browser-use python --file scripts/search.py` — run a browser-backed scraping step
+- `uv sync` — create/update the recommended local runtime from `pyproject.toml`
+- `uv run browser-use install` — install browser automation support into that runtime
+- `python3 scripts/run_brand_pipeline.py --brand BMW` — run the canonical non-interactive brand pipeline (scrape-only by default)
+- `python3 scripts/run_brand_pipeline.py --brand BMW --publish` — publish results to Obsidian (runs diff first)
+- `uv run browser-use python --file scripts/search.py` — run a browser-backed scraping step inside the managed runtime
 - `python3 scripts/diff.py` — compare scraped data without launching a browser
 - `./scripts/new-skill.sh my-new-skill` — scaffold a new skill under `skills/` from the template
 

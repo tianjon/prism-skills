@@ -1,11 +1,15 @@
 ---
 name: prism-dongchedi-scraper
-description: Scrape vehicle configurations and structured parameters from dongchedi.com, then publish standardized notes into Obsidian. Use this skill when the user asks about dongchedi, vehicle specifications, configuration scraping, brand-wide vehicle capture, or automotive note publishing.
+description: Use when the user asks to scrape dongchedi.com vehicle configurations, collect brand or series data, compare current or recent historical trims, or publish automotive configuration notes into Obsidian.
 ---
 
 # prism-dongchedi-scraper
 
-A brand-driven scraping skill for vehicle series, trims, and parameters from dongchedi.com.
+## Overview
+
+Scrape brand, series, trim, and parameter data from dongchedi.com and optionally publish normalized notes into Obsidian.
+
+The canonical entrypoint is `scripts/run_brand_pipeline.py`. Its default mode is non-interactive so Codex can pass explicit flags and run it directly. Human operators can opt into prompts with `--interactive`.
 
 ## When to Use
 
@@ -16,146 +20,138 @@ Use this skill when the user asks to:
 - compare current trims or recent historical trims from dongchedi
 - publish automotive configuration notes into Obsidian
 
-## Capability Summary
-
-This skill currently provides:
-
-1. A single brand entrypoint through `scripts/run_brand_pipeline.py`
-2. Current-model scraping for a brand
-3. Optional recent-history supplementation through `--include-history`
-4. Structured parameter extraction from SSR data whenever possible
-5. Stable note naming that preserves model year in file names, titles, and trim labels
-6. Stable markdown rendering for parameter tables, including escaped pipes and multiline values
-7. Fixed links for every config note and series overview note:
-   - model home
-   - parameter page
-   - community page
-   - score/review page
-8. Obsidian publishing through `Obsidian-cli`
-
-## Terminology
-
-In this skill, the following terms are aliases of the same system:
-
-- `OBS`
-- `note repository`
-- `Obsidian`
-
 ## Hard Constraints
+
+### Canonical entry constraint
+
+Use `scripts/run_brand_pipeline.py` as the default skill entrypoint. Direct sub-scripts such as `search.py`, `configs.py`, and `params.py` are implementation details unless the user is explicitly debugging a single stage.
 
 ### Obsidian constraint
 
-All Obsidian operations must ultimately be performed through `Obsidian-cli`.
+All Obsidian operations must ultimately be performed through `Obsidian-cli` exposed as `obsidian`.
 
-Other wrapper skills or helpers may be used, but the final Obsidian write path must still resolve to `Obsidian-cli`.
+### Interaction constraint
+
+Codex should prefer explicit CLI flags. Do not rely on terminal prompts unless the user explicitly wants an interactive shell flow and `--interactive` is passed.
 
 ### Output consistency constraint
 
-Future runs must preserve the current output structure unless an explicit versioned output contract is introduced.
+Future runs must preserve the current note structure and file naming rules unless an explicit versioned output contract is introduced.
 
-## Output Contract
+### Taxonomy constraint
 
-The note hierarchy is stable and must remain structurally identical across runs:
-
-- one brand root per brand
-- one series folder per vehicle series
-- one current-trim folder for active trim notes
-- one monthly snapshot folder for archived trim notes
-- one series overview note per series
-- one monthly summary note per series per month
-
-The current trim note names must preserve the model year, for example:
-
-- `2026 MY 525Li M Sport Package.md`
-- `2024 MY Facelift Pro+ RWD Range-Extended.md`
-
-## Environment Checks
-
-Before running the pipeline, verify the base tools:
-
-```bash
-python3 --version
-obsidian help >/dev/null 2>&1 || echo OBSIDIAN_MISSING
-browser-use doctor 2>/dev/null || echo BROWSER_USE_MISSING
-```
-
-If Python or Obsidian CLI is missing, stop and instruct the user to complete the base environment setup first.
+The current Obsidian path layout under `汽车/品牌库/...` is a project-specific convention for this repository's vault. Preserve it for this project, but do not treat it as a universal cross-project default.
 
 ## Runtime Policy
 
 The pipeline uses this runtime selection strategy:
 
-1. Prefer a global Python environment when the required dependencies are already available there
-2. If the global environment is missing the required dependencies, provision and use a local runtime with `uv`
-3. If Python is missing entirely, stop and tell the user to install Python first
-4. If `uv` is required but not installed, stop and tell the user to install `uv` first
-5. If `Obsidian-cli` is required for publishing but is missing, stop and tell the user to install and verify it first
+1. Prefer an already-working Python environment that can import `browser_use` and `pydantic`
+2. If those dependencies are missing, provision a skill-local `uv` runtime automatically
+3. If local bootstrap is required, install Python dependencies first and then run `browser-use install`
+4. If Python is missing entirely, stop and tell the user to install Python `3.11+`
+5. If `uv` is required but not installed, stop and tell the user to install `uv`
+6. If publishing is requested and `obsidian` is unavailable, stop and tell the user to install and verify Obsidian CLI first
 
-## Script Entry
-
-Primary script entrypoint:
-
-| Script | Purpose |
-|--------|---------|
-| `scripts/run_brand_pipeline.py` | End-to-end brand pipeline with runtime resolution and interactive option handling |
-
-## Canonical Entry
+Optional manual setup for a fresh machine:
 
 ```bash
-cd ${SKILL_DIR}
-python3 scripts/run_brand_pipeline.py --brand <brand>
+cd skills/prism-dongchedi-scraper
+uv sync
+uv run browser-use install
 ```
 
-## Interactive Option Policy
+## Output Contract
 
-When the user does not explicitly pass options, the pipeline must ask for confirmation interactively instead of silently selecting user-facing defaults.
+Each run creates JSON artifacts under `tmp/runs/<timestamp>-<brand>/`.
 
-Interactive confirmation is required for:
+When publishing is enabled, the pipeline writes:
 
-- whether to include historical models
-- the historical model-year window
-- whether to extract competitors
-- whether to extract parameters
-- whether to publish into Obsidian
-- the target vault name
-- the number of series to process
-- the number of configurations to process
-- config batch size
-- parameter batch size
-- whether to keep browser sessions open
+- one current-trim note per active trim
+- one monthly snapshot note per trim
+- one series overview note per series
+- one monthly summary note per series per month
+- optional competitor analysis notes when `--with-competitors` is enabled
 
-## Common Examples
+The current project-specific note hierarchy is:
+
+- `汽车/品牌库/<品牌>/<车型>/当前款型/<款型>.md`
+- `汽车/品牌库/<品牌>/<车型>/更新记录/<YYYY-MM>/<款型>.md`
+- `汽车/品牌库/<品牌>/<车型>/00-车型总览.md`
+- `汽车/品牌库/<品牌>/<车型>/更新记录/<YYYY-MM>/00-本月更新摘要.md`
+
+Current trim note names must preserve the model year when available, for example:
+
+- `2026款 525Li M运动套装.md`
+- `2024款 Pro+ 后驱增程版.md`
+
+Publishing behavior:
+
+- scrape-only is the default; publishing only happens when `--publish` is passed
+- generated notes are overwritten with the latest rendered content
+- publishing automatically runs `scripts/diff.py` first so monthly summaries and change callouts can use `changes.json`
+- if `--limit-configs` is used during a publish run, diff skips discontinued detection to avoid false停售 results from partial data
+- discontinued trims may receive additional tags and a停售 callout
+- live values are not deterministic because dongchedi content can change
+
+## Workflow
+
+1. Run the canonical entry with explicit flags:
+
+```bash
+cd skills/prism-dongchedi-scraper
+python3 scripts/run_brand_pipeline.py --brand <brand> [flags]
+```
+
+2. Use flags to express user choices instead of relying on prompts. Common flags:
+
+- `--publish`
+- `--include-history`
+- `--with-competitors`
+- `--skip-params`
+- `--limit-series <n>`
+- `--limit-configs <n>`
+- `--configs-batch-size <n>`
+- `--vault <name>`
+- `--keep-session`
+
+3. Only use `--interactive` for a human-driven terminal session that should ask about omitted options.
+
+4. The pipeline then executes these stages:
+
+- search brand results
+- prepare target series
+- optionally collect competitors
+- build series list
+- collect configs in batches
+- optionally collect params
+- optionally diff against current Obsidian notes
+- optionally write notes to Obsidian
+
+5. If the task is scrape-only, omit `--publish` and inspect the run directory under `tmp/runs/`.
+6. Do not combine `--publish` with `--skip-params`. Publishing requires parameter extraction and will fail early if params are skipped.
+
+Common examples:
 
 ```bash
 python3 scripts/run_brand_pipeline.py --brand BMW
-python3 scripts/run_brand_pipeline.py --brand Mercedes-Benz --include-history
-python3 scripts/run_brand_pipeline.py --brand Audi --limit-series 3 --limit-configs 10
+python3 scripts/run_brand_pipeline.py --brand Mercedes-Benz --include-history --limit-series 3
+python3 scripts/run_brand_pipeline.py --brand Audi --publish --with-competitors --vault Cars
 ```
-
-## Determinism Boundary
-
-The skill is deterministic in:
-
-- output structure
-- note naming rules
-- frontmatter shape
-- fixed link layout
-- historical filtering policy
-- command interface
-
-The skill is not fully deterministic in live data values because dongchedi content can change over time.
 
 ## Failure Handling
 
-- If Python is missing, stop and instruct the user to install Python `3.11+`.
-- If required runtime dependencies are unavailable and `uv` is missing, stop and instruct the user to install `uv`.
-- If `Obsidian-cli` is unavailable when publishing is requested, stop and instruct the user to install and verify Obsidian CLI.
-- If scraping returns empty or invalid JSON artifacts, stop and report which required file is missing or empty.
-- If live dongchedi data changes produce unstable results, describe the failed step and preserve the existing output contract.
+- If Python is missing, stop and instruct the user to install Python `3.11+`
+- If required dependencies are unavailable and `uv` is missing, stop and instruct the user to install `uv`
+- If `obsidian` is unavailable when publishing is requested, stop and instruct the user to install and verify Obsidian CLI
+- If `--publish` is combined with `--skip-params`, stop early and tell the user to remove one of the flags
+- If `--interactive` is used without a TTY, stop and tell the user to re-run without `--interactive` and pass explicit flags instead
+- If scraping returns empty or invalid JSON artifacts, stop and report which required file is missing or empty
+- If dongchedi anti-bot or live site changes break extraction, report the failing stage and keep the existing output contract unchanged
 
 ## Directory Layout
 
-- `SKILL.md` — runtime contract
+- `SKILL.md` — runtime contract and workflow
 - `DISTRIBUTION.md` — distribution and reproducibility notes
 - `lib/` — reusable extraction and markdown logic
 - `scripts/` — executable entrypoints
