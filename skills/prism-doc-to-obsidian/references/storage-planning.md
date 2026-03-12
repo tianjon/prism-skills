@@ -31,6 +31,8 @@ Before writing, produce a proposal containing:
 - category index notes
 - tag scheme
 - related-note links
+- attachment folders to create or update
+- asset reference rewrite plan
 - optional `.base` files
 
 ## Index Strategy
@@ -63,6 +65,24 @@ Every imported note should link to:
 
 Category indexes should link back to note members so backlinks remain useful.
 
+## Asset Strategy
+
+Treat MinerU-extracted assets as part of the import, not as disposable leftovers.
+
+Planning rules:
+
+- preserve extracted images by default unless the user explicitly chooses to omit them
+- keep attachment placement stable and predictable inside the vault
+- when practical, co-locate a note's assets with that note or in a clearly named sibling attachment folder
+- rewrite relative asset references so they resolve after import in Obsidian
+- if assets are intentionally omitted, say so explicitly in the proposal instead of silently dropping them
+
+Verification rules:
+
+- count notes with asset references before writing
+- verify those references still resolve after writing
+- verify attachment files exist at the final vault paths
+
 ## Ambiguity Handling
 
 If classification is ambiguous, present 2-3 concrete placement options before writing.
@@ -74,3 +94,5 @@ The user can revise:
 - category names
 - tags
 - index structure
+- attachment placement
+- asset preservation policy

@@ -1,6 +1,6 @@
 ---
 name: prism-doc-to-obsidian
-description: Use when converting MinerU-supported documents into Markdown and saving them into Obsidian with confirmed folder planning, indexes, tags, and cross-note links.
+description: Use when converting MinerU-supported documents into Markdown and saving them into Obsidian with confirmed folder planning, indexes, tags, cross-note links, and preserved extracted assets.
 ---
 
 # Document To Obsidian
@@ -9,13 +9,16 @@ Convert MinerU-supported documents into Markdown, then save confirmed results in
 
 ## Overview
 
-This is a prompt-first skill. Prefer existing CLIs and installed skills over custom orchestration scripts.
+This skill is confirmation-first at the conversation level, and uses a deterministic two-stage backend to avoid common import failures:
+
+- `scripts/convert_recursive.py` converts inputs recursively and emits a manifest.
+- `scripts/import_to_obsidian.py` imports from that manifest into the active vault with stable paths, asset copying, and verification.
 
 Use this skill to:
 
 - ingest one document into Obsidian
 - ingest a directory of MinerU-supported documents into Obsidian
-- maintain topic indexes, tags, and cross-note links during import
+- maintain topic indexes, tags, cross-note links, and extracted assets during import
 
 ## When to Use
 
@@ -29,11 +32,15 @@ Use this skill when the user asks to:
 ## Hard Constraints
 
 - All final Obsidian writes must go through `obsidian-cli`.
+- Note bodies must be written via `obsidian-cli`. Binary attachments must be copied via the filesystem because the CLI is text-only.
 - Do not write to Obsidian before showing the proposed folder structure and file list.
 - The user must be able to revise folder names, note names, tags, and category placement through the conversation.
 - Support both single-file input and directory input.
+- For directory input, do not assume MinerU will recurse into subdirectories. Enumerate supported files recursively before conversion or convert each subdirectory explicitly.
 - Follow MinerU's supported input formats instead of maintaining a separate hardcoded format list.
 - Do not hardcode private paths or project-local virtual environment paths.
+- Do not silently drop MinerU-extracted assets such as images. Asset preservation or removal must be explicit in the proposal and confirmed by the user.
+- Final Obsidian notes must preserve or intentionally transform valid image/embed references so they resolve inside the vault after import.
 
 ## Required Skills
 
@@ -80,6 +87,8 @@ Before any write, it must produce a proposal that includes:
 - category indexes to create or update
 - tag scheme
 - wikilink relationships
+- extracted asset strategy, including where images or other attachments will live in the vault
+- whether asset references will stay as Markdown links or be rewritten as Obsidian embeds
 - whether a `.base` file is needed
 
 After confirmation, the skill writes notes into the active vault and updates long-lived category indexes instead of creating one-off batch-only records.
@@ -93,17 +102,38 @@ Accept either:
 - one file path
 - one directory path
 
-For directory input, preserve the meaningful parts of the source hierarchy for later storage planning.
+For directory input:
+
+- preserve the meaningful parts of the source hierarchy for later storage planning
+- discover supported files recursively before conversion
+- record which source files are expected to produce Markdown and which ones also produce extracted assets
 
 ### Step 2: Convert with MinerU
 
 Convert the input into Markdown and related assets with MinerU. Keep intermediate outputs inside `tmp/` or another disposable working location.
+
+Implementation guidance:
+
+- Use `python3 scripts/convert_recursive.py --input <file-or-dir> --output <tmp-root>` to convert recursively and generate `manifest.json`.
+- Treat `manifest.json` as the single source of truth for `source_rel_path -> markdown_path -> assets_dir` mapping.
+
+Asset handling requirements during conversion:
+
+- treat MinerU `images/` and other extracted assets as first-class outputs, not optional byproducts
+- track each Markdown file together with its sibling asset directory
+- if the input is a directory, verify that all recursively discovered source files were actually converted; do not stop after only the top-level directory contents
 
 ### Step 3: Plan Obsidian storage
 
 Read [references/storage-planning.md](references/storage-planning.md).
 
 Build a storage proposal before any write.
+
+The storage proposal must explicitly decide:
+
+- whether extracted assets are preserved in the vault
+- the attachment folder layout for those assets
+- how source Markdown asset references will be rewritten so they resolve in Obsidian
 
 ### Step 4: Confirm with the user
 
@@ -117,6 +147,8 @@ The user may revise:
 - index structure
 - tags
 - related-note links
+- attachment placement
+- whether to preserve, omit, or partially keep extracted assets
 
 ### Step 5: Write to Obsidian
 
@@ -124,11 +156,25 @@ After confirmation:
 
 - format notes according to `obsidian-markdown`
 - create or update notes through `obsidian-cli`
+- copy or create extracted assets into the planned vault locations
+- rewrite image or attachment references so they resolve inside Obsidian after import
 - create or update `.base` files only when they improve long-term navigation
+
+Verification requirements during write:
+
+- verify that each note with extracted assets still contains valid embed or image references after rewrite
+- verify that referenced asset files exist at the final vault paths
+
+Implementation guidance:
+
+- Use `python3 scripts/import_to_obsidian.py --manifest <manifest.json> --target-root <vault-subpath>` to perform the deterministic import.
+- The importer rewrites `![](images/...)` to `![[images/...]]`, copies extracted assets into a stable `images/` folder, and fails fast on broken asset references.
 
 ### Step 6: Maintain indexes and links
 
 Maintain long-lived category indexes. Connect imported notes to their categories through tags and wikilinks, and add related-note sections where the content relationship is strong.
+
+If assets were preserved, keep their placement stable so future re-imports do not break existing links.
 
 ## Prompt Assets
 
