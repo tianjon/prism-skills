@@ -1,0 +1,9 @@
+[project]
+name = "prism-doc-to-obsidian"
+version = "0.1.0"
+description = "MinerU conversion and Obsidian import helpers for prism-doc-to-obsidian"
+requires-python = ">=3.10,<3.14"
+dependencies = []
+
+[tool.uv]
+dev-dependencies = []
