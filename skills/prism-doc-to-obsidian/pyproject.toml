@@ -5,5 +5,6 @@ description = "MinerU conversion and Obsidian import helpers for prism-doc-to-ob
 requires-python = ">=3.10,<3.14"
 dependencies = []
 
-[tool.uv]
-dev-dependencies = []
+[dependency-groups]
+# uv 未来会移除 `tool.uv.dev-dependencies`，改用 PEP 735 的 dependency groups。
+dev = []

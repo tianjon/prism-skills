@@ -6,7 +6,24 @@ Use this reference when the skill must validate the local runtime or automatical
 
 ## Base Requirement Checks
 
-Check Python first:
+Check Python first.
+
+This skill supports Python `3.10` to `3.13`. On machines with old system Python, prefer using `uv`
+to provision a compatible runtime instead of upgrading the OS Python in-place.
+
+Recommended (works even if `python3` is old):
+
+```bash
+./scripts/bootstrap_env.sh
+```
+
+If you need to inspect the active runtime after bootstrapping:
+
+```bash
+uv run --active python --version
+```
+
+Fallback (only valid if your system `python3` is already compatible):
 
 ```bash
 python3 --version

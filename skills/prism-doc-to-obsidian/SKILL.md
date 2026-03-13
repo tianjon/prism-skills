@@ -1,6 +1,6 @@
 ---
 name: prism-doc-to-obsidian
-description: Use when converting documents or directories of MinerU-supported files into Obsidian notes, or when importing extracted Markdown assets into a vault with planned folder structure.
+description: Use when importing documents (PDF/Word/PPT/images, etc.) via MinerU into Obsidian notes, including extracted Markdown and assets.
 ---
 
 # Document To Obsidian
@@ -19,6 +19,17 @@ Use this skill to:
 - ingest one document into Obsidian
 - ingest a directory of MinerU-supported documents into Obsidian
 - maintain topic indexes, tags, cross-note links, and extracted assets during import
+
+## Mission
+
+- Source: local documents (PDF/Word/PPT/图片/扫描件等) only.
+- Engine: MinerU for conversion to Markdown + extracted assets.
+- Output: a planned folder structure in Obsidian, then deterministic import via `scripts/import_to_obsidian.py`.
+
+Non-goals:
+
+- Do not use this skill for web scraping outputs or non-document pipelines. This skill starts from a local file path or directory path.
+- If the user message is only "转存到 Obsidian" without mentioning documents (PDF/Word/图片/扫描件) or MinerU, do not default to this skill; ask what the source file(s) are.
 
 ## Hard Constraints
 
@@ -58,6 +69,10 @@ Minimum requirements:
 - Python `3.10` to `3.13`
 - Obsidian `1.12+` with CLI support enabled and the app already running
 - `obsidian help` must succeed
+
+Bootstrapping on machines with old system Python:
+
+- Prefer `./scripts/bootstrap_env.sh`, then use `uv run --active ...` for subsequent commands.
 
 Dependency policy:
 
