@@ -30,34 +30,52 @@ Obsidian must be at least `1.12`. If the command fails, stop and explain whether
 ## MinerU Detection
 
 ```bash
-mineru --help
+which mineru
 ```
 
-If MinerU is missing, install it automatically with the preferred environment-aware workflow. Prefer `uv` and avoid hardcoded environment paths.
+If `which mineru` returns nothing, MinerU is not installed. Install it automatically.
 
 ## MinerU Install
 
-Preferred install command:
+Preferred install command (installs MinerU as a global tool and adds it to PATH):
 
 ```bash
-uv pip install -U "mineru[all]"
+uv tool install "mineru[all]"
 ```
 
-After installation, verify:
+If `uv` is not available, fall back to:
 
 ```bash
-mineru --help
-mineru-models-download --help
+pip install -U "mineru[all]"
 ```
+
+After installation, verify with:
+
+```bash
+which mineru
+```
+
+If the command is still not found after installation, stop and report the failure.
 
 ## MinerU Model Download
 
-Trigger model download when:
+Run model download immediately after installation. The download command is idempotent — it skips files that are already present, so there is no need to detect whether models exist before running it.
 
-- MinerU is newly installed
-- MinerU is installed but local models are missing
+Default to `huggingface`. Use `modelscope` only if the user is in mainland China or explicitly requests it.
 
-Use the official model download entrypoint and follow the active environment's network constraints.
+For international networks:
+
+```bash
+mineru-models-download -s huggingface
+```
+
+For Chinese networks:
+
+```bash
+mineru-models-download -s modelscope
+```
+
+If the download fails, stop and report the exact error output.
 
 ## Obsidian Skill Detection
 
@@ -76,6 +94,7 @@ Stop immediately when:
 - Python does not meet the required version range
 - Obsidian CLI is unavailable
 - Obsidian is not running
+- `uv` and `pip` are both unavailable
 - MinerU install fails
 - MinerU model download fails
 - required Obsidian skills cannot be installed

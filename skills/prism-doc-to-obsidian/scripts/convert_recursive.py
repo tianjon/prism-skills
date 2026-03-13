@@ -99,9 +99,16 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     entries = build_manifest_entries(input_path, output_root, discovered_files)
-    if len(entries) != len(discovered_files):
+    expected_sources = {
+        path.name if input_path.is_file() else path.relative_to(input_path).as_posix()
+        for path in discovered_files
+    }
+    manifest_sources = {entry.source_file for entry in entries}
+    if manifest_sources != expected_sources:
         raise RuntimeError(
-            f"Manifest entry count mismatch: discovered={len(discovered_files)} converted={len(entries)}"
+            "Manifest coverage mismatch: "
+            f"discovered={sorted(expected_sources)} "
+            f"manifest={sorted(manifest_sources)}"
         )
 
     manifest = save_manifest(

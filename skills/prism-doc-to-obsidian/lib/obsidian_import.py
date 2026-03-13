@@ -4,10 +4,12 @@ import json
 import re
 import shutil
 import subprocess
+from dataclasses import dataclass
 from pathlib import Path
 from pathlib import PurePosixPath
-from dataclasses import dataclass
 from typing import Mapping, Sequence
+
+from lib.conversion import plan_relative_targets
 
 
 IMAGE_LINK_RE = re.compile(r"!\[[^\]]*\]\((images/[^)]+)\)")
@@ -74,35 +76,24 @@ class ImportTarget:
     target_images_dir: str
 
 
+def join_target_root(target_root: str, relative_path: str) -> str:
+    root = PurePosixPath(target_root) if target_root else PurePosixPath(".")
+    rel = PurePosixPath(relative_path)
+    return (root / rel).as_posix()
+
+
 def plan_import_targets(entries: Sequence[Mapping[str, object]], *, target_root: str) -> dict[str, ImportTarget]:
     source_files = [str(entry["source_file"]) for entry in entries]
-
-    counts: dict[tuple[str, str], int] = {}
-    for source_file in source_files:
-        path = PurePosixPath(source_file)
-        key = (path.parent.as_posix(), path.stem)
-        counts[key] = counts.get(key, 0) + 1
-
-    prefix = PurePosixPath(target_root) if target_root else PurePosixPath(".")
+    relative_targets = plan_relative_targets(source_files)
     planned: dict[str, ImportTarget] = {}
     for source_file in source_files:
-        path = PurePosixPath(source_file)
-        stem = path.stem
-        key = (path.parent.as_posix(), stem)
-
-        if counts[key] == 1:
-            dir_name = stem
-        else:
-            ext = path.suffix.lstrip(".").lower() or "file"
-            dir_name = f"{stem}__{ext}"
-
-        note_dir = prefix / path.parent / dir_name
-        note_path = note_dir / f"{stem}.md"
-        images_dir = note_dir / "images"
+        note_path, images_dir = relative_targets[source_file]
+        note_path = join_target_root(target_root, note_path)
+        images_dir = join_target_root(target_root, images_dir)
         planned[source_file] = ImportTarget(
             source_file=source_file,
-            target_note_path=note_path.as_posix(),
-            target_images_dir=images_dir.as_posix(),
+            target_note_path=note_path,
+            target_images_dir=images_dir,
         )
 
     return planned

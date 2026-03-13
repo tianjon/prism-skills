@@ -1,6 +1,6 @@
 ---
 name: prism-doc-to-obsidian
-description: Use when converting MinerU-supported documents into Markdown and saving them into Obsidian with confirmed folder planning, indexes, tags, cross-note links, and preserved extracted assets.
+description: Use when converting documents or directories of MinerU-supported files into Obsidian notes, or when importing extracted Markdown assets into a vault with planned folder structure.
 ---
 
 # Document To Obsidian
@@ -19,15 +19,6 @@ Use this skill to:
 - ingest one document into Obsidian
 - ingest a directory of MinerU-supported documents into Obsidian
 - maintain topic indexes, tags, cross-note links, and extracted assets during import
-
-## When to Use
-
-Use this skill when the user asks to:
-
-- convert a file into Obsidian notes
-- import a directory of documents into Obsidian
-- use MinerU to extract Markdown before storing documents in Obsidian
-- maintain category indexes or `.base` views while importing documents
 
 ## Hard Constraints
 
@@ -70,8 +61,8 @@ Minimum requirements:
 
 Dependency policy:
 
-- If MinerU is missing, install it automatically and trigger the model download flow.
-- If MinerU is present but local models are missing, download the models before conversion.
+- If MinerU is missing, install it automatically and run model download before conversion.
+- If MinerU is present, run model download before each conversion run (idempotent — skips files already downloaded).
 - If a required Obsidian skill is missing, install it before continuing.
 - Stop immediately after failed installation or failed model download.
 
@@ -114,7 +105,7 @@ Convert the input into Markdown and related assets with MinerU. Keep intermediat
 
 Implementation guidance:
 
-- Use `python3 scripts/convert_recursive.py --input <file-or-dir> --output <tmp-root>` to convert recursively and generate `manifest.json`.
+- Use `uv run python3 scripts/convert_recursive.py --input <file-or-dir> --output <tmp-root>` to convert recursively and generate `manifest.json`.
 - Treat `manifest.json` as the single source of truth for `source_rel_path -> markdown_path -> assets_dir` mapping.
 
 Asset handling requirements during conversion:
@@ -167,7 +158,7 @@ Verification requirements during write:
 
 Implementation guidance:
 
-- Use `python3 scripts/import_to_obsidian.py --manifest <manifest.json> --target-root <vault-subpath>` to perform the deterministic import.
+- Use `uv run python3 scripts/import_to_obsidian.py --manifest <manifest.json> --target-root <vault-subpath>` to perform the deterministic import.
 - The importer rewrites `![](images/...)` to `![[images/...]]`, copies extracted assets into a stable `images/` folder, and fails fast on broken asset references.
 
 ### Step 6: Maintain indexes and links

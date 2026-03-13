@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
-from pathlib import PurePosixPath
 
 module_file = globals().get("__file__")
 SKILL_DIR = Path(module_file).resolve().parent.parent if module_file else Path.cwd().resolve()
@@ -14,6 +13,7 @@ from lib.obsidian_import import (
     build_note_content,
     copy_all_assets,
     copy_referenced_assets,
+    join_target_root,
     plan_import_targets,
     resolve_vault_path,
     rewrite_markdown_image_embeds,
@@ -42,12 +42,6 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--chunk-size", type=int, default=3000, help="Max content chunk size for Obsidian writes")
     return parser
-
-
-def join_target_root(target_root: str, relative_path: str) -> str:
-    root = PurePosixPath(target_root) if target_root else PurePosixPath(".")
-    rel = PurePosixPath(relative_path)
-    return (root / rel).as_posix()
 
 
 def build_target_plan(manifest_entries: list[dict], target_root: str) -> dict[str, dict[str, str]]:
