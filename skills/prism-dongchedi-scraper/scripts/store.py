@@ -60,22 +60,14 @@ def obsidian_create(path: str, content: str, vault: str = "") -> bool:
     return False
 
 
-
-def obsidian_append(path: str, content: str, vault: str = "") -> bool:
+def obsidian_read(path: str, vault: str = "") -> str | None:
     try:
-        result = obsidian_cmd("append", f"path={path}", f"content={content}", vault=vault, timeout=15)
-        return result.returncode == 0
+        result = obsidian_cmd("read", f"path={path}", vault=vault, timeout=30)
+        if result.returncode != 0:
+            return None
+        return result.stdout
     except Exception:
-        return False
-
-
-
-def obsidian_property_set(path: str, name: str, value: str, value_type: str = "text", vault: str = "") -> bool:
-    try:
-        result = obsidian_cmd("property:set", f"name={name}", f"value={value}", f"type={value_type}", f"path={path}", vault=vault, timeout=10)
-        return result.returncode == 0
-    except Exception:
-        return False
+        return None
 
 
 
@@ -94,6 +86,75 @@ def build_config_note_targets(config: CarConfig, update_month: str) -> dict[str,
 
 def _note_link_target(path: str) -> str:
     return path[:-3] if path.endswith(".md") else path
+
+
+def _ensure_frontmatter_list_tag(markdown: str, tag: str) -> str:
+    """Ensure YAML frontmatter contains a list tag under `tags:`."""
+    if not markdown.startswith("---\n"):
+        return markdown
+
+    end = markdown.find("\n---\n", 4)
+    if end == -1:
+        return markdown
+
+    frontmatter = markdown[: end + 5]
+    body = markdown[end + 5 :]
+
+    lines = frontmatter.splitlines(keepends=True)
+
+    # Locate the tag block in line space.
+    # frontmatter is small; keep this straightforward and robust.
+    tag_line_i = None
+    for i, line in enumerate(lines):
+        if line.strip() == "tags:":
+            tag_line_i = i
+            break
+    if tag_line_i is None:
+        return markdown
+
+    # Collect existing tags.
+    existing: set[str] = set()
+    insert_at = tag_line_i + 1
+    for j in range(tag_line_i + 1, len(lines)):
+        stripped = lines[j].rstrip("\n")
+        if stripped.startswith("  - "):
+            existing.add(stripped[4:].strip())
+            insert_at = j + 1
+            continue
+        # Stop at first non-tag line inside frontmatter.
+        if stripped.startswith("---") or stripped and not stripped.startswith(" "):
+            break
+        if not stripped:
+            # blank line inside frontmatter: still stop tags block
+            break
+
+    if tag in existing:
+        return markdown
+
+    lines.insert(insert_at, f"  - {tag}\n")
+    new_frontmatter = "".join(lines)
+    return new_frontmatter + body
+
+
+def _ensure_discontinued_callout(markdown: str) -> str:
+    callout = format_discontinued_callout().strip()
+    if "停售提醒" in markdown or callout in markdown:
+        return markdown
+
+    if markdown.startswith("---\n"):
+        end = markdown.find("\n---\n", 4)
+        if end != -1:
+            head = markdown[: end + 5]
+            rest = markdown[end + 5 :].lstrip("\n")
+            return f"{head}\n{callout}\n\n{rest}"
+
+    return f"{callout}\n\n{markdown.lstrip()}"
+
+
+def _rewrite_discontinued_note(markdown: str) -> str:
+    updated = _ensure_frontmatter_list_tag(markdown, "停售")
+    updated = _ensure_discontinued_callout(updated)
+    return updated
 
 
 
@@ -195,12 +256,16 @@ def main() -> None:
 
     discontinued = [c for c in changes_data.get("changes", []) if c.get("change_type") == "discontinued"]
     if discontinued:
-        print(f"\nMarking {len(discontinued)} discontinued configs...")
+        print(f"\nRewriting {len(discontinued)} discontinued configs (overwrite mode)...")
         for item in discontinued:
             note_path = item.get("note_path", "")
-            obsidian_property_set(note_path, "tags", "停售", value_type="list", vault=args.vault)
-            callout = format_discontinued_callout()
-            obsidian_append(note_path, "\n" + callout, vault=args.vault)
+            if not note_path:
+                continue
+            existing = obsidian_read(note_path, vault=args.vault)
+            if not existing:
+                continue
+            rewritten = _rewrite_discontinued_note(existing)
+            obsidian_create(note_path, rewritten, vault=args.vault)
 
     if args.competitors:
         competitors_path = TMP_DIR / "competitors.json"

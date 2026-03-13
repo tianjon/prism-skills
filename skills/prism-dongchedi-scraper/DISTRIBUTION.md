@@ -14,7 +14,7 @@ This skill scrapes structured vehicle data from dongchedi.com and can publish no
 
 - Python 3.11+
 - `uv` when local runtime bootstrap is needed
-- `obsidian` available on PATH when publishing is enabled
+- `obsidian` available on PATH (publishing is the default behavior)
 - Network access to `dongchedi.com`
 
 ## Browser Automation Bootstrap
@@ -37,8 +37,8 @@ uv run browser-use install
 ## Publishing Contract
 
 - All Obsidian writes go through `obsidian`
-- Publishing is opt-in. Use `--publish` on the canonical entrypoint.
-- Publishing runs `scripts/diff.py` first to generate `changes.json` for monthly summaries and change callouts.
+- Publishing is the default behavior on the canonical entrypoint.
+- The pipeline runs `scripts/diff.py` first to generate `changes.json` for monthly summaries and change callouts.
 - When publishing with partial data (for example `--limit-configs`), diff skips discontinued detection to avoid false停售 results.
 - Generated notes overwrite the latest generated version of the same target path
 - The `汽车/品牌库/...` note layout is a project-specific convention for this repository

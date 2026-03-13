@@ -84,6 +84,8 @@ Publishing requires an explicit flag:
 python3 scripts/run_brand_pipeline.py --brand BMW --publish
 ```
 
+Note: publishing is handled by this skill itself via `scripts/diff.py` and `scripts/store.py`.
+
 See `skills/prism-dongchedi-scraper/SKILL.md` for the full workflow and `skills/prism-dongchedi-scraper/DISTRIBUTION.md` for runtime notes.
 
 ### `prism-doc-to-obsidian`

@@ -20,7 +20,6 @@ class RunBrandPipelineTest(unittest.TestCase):
         parser = build_parser()
         args = parser.parse_args([
             "--brand", "宝马",
-            "--publish",
             "--vault", "Cars",
             "--limit-series", "3",
             "--limit-configs", "2",
@@ -28,7 +27,6 @@ class RunBrandPipelineTest(unittest.TestCase):
         ])
 
         self.assertEqual(args.brand, "宝马")
-        self.assertTrue(args.publish)
         self.assertEqual(args.vault, "Cars")
         self.assertEqual(args.limit_series, 3)
         self.assertEqual(args.limit_configs, 2)
@@ -130,29 +128,30 @@ class RunBrandPipelineTest(unittest.TestCase):
              patch("scripts.run_brand_pipeline._run", side_effect=fake_run), \
              patch("scripts.run_brand_pipeline._run_configs_in_batches"), \
              patch("scripts.run_brand_pipeline.subprocess.run", return_value=MagicMock(returncode=0)):
-            exit_code = run_brand_pipeline.main(["--brand", "BMW", "--skip-params"])
+            exit_code = run_brand_pipeline.main(["--brand", "BMW"])
 
         self.assertEqual(exit_code, 0)
-        ensure_obsidian.assert_not_called()
+        ensure_obsidian.assert_called_once()
         resolve_interactive.assert_not_called()
-        self.assertFalse(any(cmd[1:3] == ["scripts/diff.py"] for cmd in commands))
-        self.assertFalse(any(cmd[1:3] == ["scripts/store.py"] for cmd in commands))
+        self.assertTrue(any(len(cmd) >= 2 and cmd[1] == "scripts/diff.py" for cmd in commands))
+        self.assertTrue(any(len(cmd) >= 2 and cmd[1] == "scripts/store.py" for cmd in commands))
 
     def test_main_uses_interactive_resolution_when_requested(self) -> None:
         with patch("scripts.run_brand_pipeline.ensure_python_available"), \
              patch("scripts.run_brand_pipeline.resolve_options_interactively", side_effect=lambda args, argv: args) as resolve_interactive, \
+             patch("scripts.run_brand_pipeline.ensure_obsidian_available"), \
              patch("scripts.run_brand_pipeline.resolve_runtime", return_value=("/tmp/python", "/tmp/browser-use")), \
              patch("scripts.run_brand_pipeline.create_run_dir", return_value=Path("/tmp/dongchedi-run")), \
              patch("scripts.run_brand_pipeline.assert_non_empty_json_list", return_value=[{"ok": True}]), \
              patch("scripts.run_brand_pipeline._run"), \
              patch("scripts.run_brand_pipeline._run_configs_in_batches"), \
              patch("scripts.run_brand_pipeline.subprocess.run", return_value=MagicMock(returncode=0)):
-            exit_code = run_brand_pipeline.main(["--brand", "BMW", "--skip-store", "--skip-params", "--interactive"])
+            exit_code = run_brand_pipeline.main(["--brand", "BMW", "--interactive"])
 
         self.assertEqual(exit_code, 0)
         resolve_interactive.assert_called_once()
 
-    def test_main_publish_runs_diff_before_store(self) -> None:
+    def test_main_runs_diff_before_store(self) -> None:
         commands: list[list[str]] = []
 
         def fake_run(cmd, env):
@@ -166,7 +165,7 @@ class RunBrandPipelineTest(unittest.TestCase):
              patch("scripts.run_brand_pipeline._run", side_effect=fake_run), \
              patch("scripts.run_brand_pipeline._run_configs_in_batches"), \
              patch("scripts.run_brand_pipeline.subprocess.run", return_value=MagicMock(returncode=0)):
-            exit_code = run_brand_pipeline.main(["--brand", "BMW", "--publish", "--vault", "Cars"])
+            exit_code = run_brand_pipeline.main(["--brand", "BMW", "--vault", "Cars"])
 
         self.assertEqual(exit_code, 0)
         ensure_obsidian.assert_called_once()
@@ -192,20 +191,17 @@ class RunBrandPipelineTest(unittest.TestCase):
              patch("scripts.run_brand_pipeline._run", side_effect=fake_run), \
              patch("scripts.run_brand_pipeline._run_configs_in_batches"), \
              patch("scripts.run_brand_pipeline.subprocess.run", return_value=MagicMock(returncode=0)):
-            exit_code = run_brand_pipeline.main(["--brand", "BMW", "--publish", "--limit-configs", "2"])
+            exit_code = run_brand_pipeline.main(["--brand", "BMW", "--limit-configs", "2"])
 
         self.assertEqual(exit_code, 0)
         self.assertIn(["/tmp/python", "scripts/diff.py", "--skip-discontinued"], commands)
 
-    def test_main_rejects_publish_without_params(self) -> None:
-        with patch("scripts.run_brand_pipeline.ensure_python_available"), \
-             patch("scripts.run_brand_pipeline.ensure_obsidian_available") as ensure_obsidian, \
-             patch("scripts.run_brand_pipeline.resolve_runtime") as resolve_runtime:
-            with self.assertRaisesRegex(RuntimeError, "Publishing requires parameter extraction"):
-                run_brand_pipeline.main(["--brand", "BMW", "--publish", "--skip-params"])
-
-        ensure_obsidian.assert_not_called()
-        resolve_runtime.assert_not_called()
+    def test_build_parser_rejects_deprecated_publish_and_history_flags(self) -> None:
+        parser = build_parser()
+        for bad in ("--publish", "--include-history", "--skip-params", "--skip-store"):
+            with self.subTest(bad=bad):
+                with self.assertRaises(SystemExit):
+                    parser.parse_args(["--brand", "BMW", bad])
 
 
 

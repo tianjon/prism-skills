@@ -37,15 +37,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run the dongchedi brand pipeline")
     parser.add_argument("--brand", required=True, help="Brand name, for example BMW")
     parser.add_argument("--vault", default="", help="Optional Obsidian vault name")
-    parser.add_argument("--publish", action="store_true", help="Publish results into Obsidian (requires params)")
     parser.add_argument("--limit-series", type=int, default=0, help="Process only the first N series, 0 means all")
     parser.add_argument("--limit-configs", type=int, default=0, help="Process only the first N configs, 0 means all")
     parser.add_argument("--configs-batch-size", type=int, default=5, help="Batch size for config extraction")
     parser.add_argument("--with-competitors", action="store_true", help="Extract competitors and publish competitor notes")
-    parser.add_argument("--include-history", action="store_true", help="Include historical/discontinued models")
     parser.add_argument("--history-window-years", type=int, default=3, help="Keep only the most recent N model years for historical models")
-    parser.add_argument("--skip-store", action="store_true", help="Deprecated. Prefer omitting --publish for scrape-only runs.")
-    parser.add_argument("--skip-params", action="store_true", help="Skip parameter extraction")
     parser.add_argument("--keep-session", action="store_true", help="Keep browser-use sessions open for manual inspection")
     parser.add_argument("--interactive", action="store_true", help="Prompt for omitted options instead of using CLI defaults")
     parser.add_argument("--tmp-root", default=str(TMP_ROOT), help="Root directory for run artifacts")
@@ -234,9 +230,7 @@ def resolve_options_interactively(args: argparse.Namespace, argv: list[str]) -> 
         raise RuntimeError(
             "Interactive mode requires a TTY. Re-run without `--interactive` and pass explicit CLI flags instead."
         )
-    if "--publish" not in argv and "--skip-store" not in argv:
-        args.publish = _prompt_bool("Publish results to Obsidian (OBS / note repository)?", False)
-    if args.publish and "--vault" not in argv:
+    if "--vault" not in argv:
         args.vault = _prompt_str("Obsidian vault name (leave empty to use the active vault)", args.vault)
     if "--limit-series" not in argv:
         args.limit_series = _prompt_int("Maximum number of series to process (0 = all)", args.limit_series)
@@ -246,12 +240,8 @@ def resolve_options_interactively(args: argparse.Namespace, argv: list[str]) -> 
         args.configs_batch_size = _prompt_int("Config batch size", args.configs_batch_size)
     if "--with-competitors" not in argv:
         args.with_competitors = _prompt_bool("Extract competitors as well?", False)
-    if "--include-history" not in argv:
-        args.include_history = _prompt_bool("Include historical / discontinued models?", False)
-    if args.include_history and "--history-window-years" not in argv:
+    if "--history-window-years" not in argv:
         args.history_window_years = _prompt_int("Historical model year window", args.history_window_years)
-    if "--skip-params" not in argv:
-        args.skip_params = not _prompt_bool("Extract parameters?", True)
     if "--keep-session" not in argv:
         args.keep_session = _prompt_bool("Keep browser sessions open for manual inspection?", False)
     return args
@@ -293,22 +283,17 @@ def main(argv: list[str] | None = None) -> int:
     ensure_python_available()
     if args.interactive:
         args = resolve_options_interactively(args, argv)
-    publish_requested = bool(args.publish and not args.skip_store)
-    if publish_requested and args.skip_params:
-        raise RuntimeError(
-            "Publishing requires parameter extraction. Re-run without `--skip-params` or without `--publish`."
-        )
-    if publish_requested:
-        ensure_obsidian_available()
+    # Publishing (and history inclusion) is now the default behavior for this skill.
+    ensure_obsidian_available()
 
     python_bin, browser_use = resolve_runtime()
     run_dir = create_run_dir(Path(args.tmp_root), args.brand)
     session_name = f"brand-{_slugify(args.brand)}-{datetime.now().strftime('%H%M%S')}"
     env = os.environ.copy()
     env["DONGCHEDI_TMP_DIR"] = str(run_dir)
-    if args.include_history:
-        env["DONGCHEDI_INCLUDE_HISTORY"] = "1"
-        env["DONGCHEDI_HISTORY_CUTOFF_YEAR"] = str(datetime.now().year - args.history_window_years + 1)
+    # Always include historical/discontinued models. Keep the most recent N model years.
+    env["DONGCHEDI_INCLUDE_HISTORY"] = "1"
+    env["DONGCHEDI_HISTORY_CUTOFF_YEAR"] = str(datetime.now().year - args.history_window_years + 1)
 
     print(f"run_dir={run_dir}")
     print(f"session={session_name}")
@@ -338,24 +323,22 @@ def main(argv: list[str] | None = None) -> int:
             trim_configs(run_dir / "all-configs.json", args.limit_configs)
             print(f"trimmed configs to first {args.limit_configs}")
 
-        if not args.skip_params:
-            _run([python_bin, "scripts/params.py"], env)
-            assert_non_empty_json_list(run_dir / "all-configs-with-params.json", "empty params extracted")
+        _run([python_bin, "scripts/params.py"], env)
+        assert_non_empty_json_list(run_dir / "all-configs-with-params.json", "empty params extracted")
 
-        if publish_requested:
-            diff_cmd = [python_bin, "scripts/diff.py"]
-            if args.limit_configs > 0:
-                diff_cmd.append("--skip-discontinued")
-            if args.vault:
-                diff_cmd.extend(["--vault", args.vault])
-            _run(diff_cmd, env)
+        diff_cmd = [python_bin, "scripts/diff.py"]
+        if args.limit_configs > 0:
+            diff_cmd.append("--skip-discontinued")
+        if args.vault:
+            diff_cmd.extend(["--vault", args.vault])
+        _run(diff_cmd, env)
 
-            store_cmd = [python_bin, "scripts/store.py", "--changelog"]
-            if args.vault:
-                store_cmd.extend(["--vault", args.vault])
-            if args.with_competitors:
-                store_cmd.append("--competitors")
-            _run(store_cmd, env)
+        store_cmd = [python_bin, "scripts/store.py", "--changelog"]
+        if args.vault:
+            store_cmd.extend(["--vault", args.vault])
+        if args.with_competitors:
+            store_cmd.append("--competitors")
+        _run(store_cmd, env)
 
         print("\nPipeline completed.")
         print(f"Artifacts: {run_dir}")

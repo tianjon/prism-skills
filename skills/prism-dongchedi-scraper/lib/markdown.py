@@ -112,6 +112,8 @@ def format_config_note(
     update_month = now.strftime("%Y-%m")
     timestamp = now.strftime("%Y-%m-%d %H:%M:%S CST")
 
+    is_discontinued = any(c.change_type == "discontinued" for c in (changes or []))
+
     tags = ["汽车", "参数配置"]
     if config.series_name:
         tags.append(config.series_name)
@@ -122,6 +124,8 @@ def format_config_note(
         tags.append(config.energy_type)
     if config.level:
         tags.append(config.level)
+    if is_discontinued:
+        tags.append("停售")
 
     tags = [_sanitize_tag(t) for t in tags if str(t).strip()]
     tags_yaml = "\n".join(f"  - {t}" for t in tags)
@@ -149,10 +153,15 @@ level: "{config.level}"
 energy_type: "{config.energy_type}"
 ---"""
 
-    callout = ""
+    callout_parts: list[str] = []
+    if is_discontinued:
+        callout_parts.append(format_discontinued_callout())
     if changes:
-        callout = format_change_callout(changes, today)
-        callout = "\n" + callout + "\n"
+        # Avoid duplicating the discontinued note: the warning callout above is more explicit.
+        change_items = [c for c in changes if c.change_type != "discontinued"]
+        if change_items:
+            callout_parts.append(format_change_callout(change_items, today))
+    callout = ("\n" + "\n\n".join(callout_parts) + "\n") if callout_parts else ""
 
     if params:
         table_rows = "\n".join(

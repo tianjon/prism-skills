@@ -1,15 +1,26 @@
 ---
 name: prism-dongchedi-scraper
-description: Use when the user asks to scrape dongchedi.com vehicle configurations, collect brand or series data, compare current or recent historical trims, or publish automotive configuration notes into Obsidian.
+description: Use when the user asks to scrape dongchedi.com vehicle configurations (车型配置) and转存/发布到 Obsidian, including brand/series collection and current vs historical trim comparisons.
 ---
 
 # prism-dongchedi-scraper
 
 ## Overview
 
-Scrape brand, series, trim, and parameter data from dongchedi.com and optionally publish normalized notes into Obsidian.
+Scrape brand, series, trim, and parameter data from dongchedi.com and publish normalized notes into Obsidian by default.
 
 The canonical entrypoint is `scripts/run_brand_pipeline.py`. Its default mode is non-interactive so Codex can pass explicit flags and run it directly. Human operators can opt into prompts with `--interactive`.
+
+## Mission
+
+- Source: dongchedi.com (懂车帝) only.
+- Output: structured JSON artifacts under `tmp/`, plus Obsidian notes (default behavior).
+- Obsidian writes: handled by this skill (`scripts/diff.py` + `scripts/store.py` + `obsidian-cli`).
+
+Non-goals:
+
+- Do not use MinerU.
+- Do not import arbitrary documents (PDF/Word/PPT/图片/扫描件) into Obsidian.
 
 ## When to Use
 
@@ -17,8 +28,8 @@ Use this skill when the user asks to:
 
 - scrape vehicle configurations from dongchedi.com
 - capture a full brand or model series into structured notes
-- compare current trims or recent historical trims from dongchedi
-- publish automotive configuration notes into Obsidian
+- compare current trims or recent historical trims from dongchedi (this pipeline always includes recent historical/discontinued trims)
+- publish / 转存 automotive configuration notes into Obsidian (for example: “抓取懂车帝并转存到 Obsidian”)
 
 ## Hard Constraints
 
@@ -65,7 +76,7 @@ uv run browser-use install
 
 Each run creates JSON artifacts under `tmp/runs/<timestamp>-<brand>/`.
 
-When publishing is enabled, the pipeline writes:
+The pipeline writes the following notes into Obsidian (default behavior):
 
 - one current-trim note per active trim
 - one monthly snapshot note per trim
@@ -87,7 +98,7 @@ Current trim note names must preserve the model year when available, for example
 
 Publishing behavior:
 
-- scrape-only is the default; publishing only happens when `--publish` is passed
+- publishing is the default
 - generated notes are overwritten with the latest rendered content
 - publishing automatically runs `scripts/diff.py` first so monthly summaries and change callouts can use `changes.json`
 - if `--limit-configs` is used during a publish run, diff skips discontinued detection to avoid false停售 results from partial data
@@ -105,10 +116,7 @@ python3 scripts/run_brand_pipeline.py --brand <brand> [flags]
 
 2. Use flags to express user choices instead of relying on prompts. Common flags:
 
-- `--publish`
-- `--include-history`
 - `--with-competitors`
-- `--skip-params`
 - `--limit-series <n>`
 - `--limit-configs <n>`
 - `--configs-batch-size <n>`
@@ -128,23 +136,21 @@ python3 scripts/run_brand_pipeline.py --brand <brand> [flags]
 - optionally diff against current Obsidian notes
 - optionally write notes to Obsidian
 
-5. If the task is scrape-only, omit `--publish` and inspect the run directory under `tmp/runs/`.
-6. Do not combine `--publish` with `--skip-params`. Publishing requires parameter extraction and will fail early if params are skipped.
+5. Inspect the run directory under `tmp/runs/` for JSON artifacts and debug outputs.
 
 Common examples:
 
 ```bash
 python3 scripts/run_brand_pipeline.py --brand BMW
-python3 scripts/run_brand_pipeline.py --brand Mercedes-Benz --include-history --limit-series 3
-python3 scripts/run_brand_pipeline.py --brand Audi --publish --with-competitors --vault Cars
+python3 scripts/run_brand_pipeline.py --brand Mercedes-Benz --limit-series 3
+python3 scripts/run_brand_pipeline.py --brand Audi --with-competitors --vault Cars
 ```
 
 ## Failure Handling
 
 - If Python is missing, stop and instruct the user to install Python `3.11+`
 - If required dependencies are unavailable and `uv` is missing, stop and instruct the user to install `uv`
-- If `obsidian` is unavailable when publishing is requested, stop and instruct the user to install and verify Obsidian CLI
-- If `--publish` is combined with `--skip-params`, stop early and tell the user to remove one of the flags
+- If `obsidian` is unavailable, stop and instruct the user to install and verify Obsidian CLI
 - If `--interactive` is used without a TTY, stop and tell the user to re-run without `--interactive` and pass explicit flags instead
 - If scraping returns empty or invalid JSON artifacts, stop and report which required file is missing or empty
 - If dongchedi anti-bot or live site changes break extraction, report the failing stage and keep the existing output contract unchanged
