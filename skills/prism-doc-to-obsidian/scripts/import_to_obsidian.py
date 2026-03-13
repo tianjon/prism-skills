@@ -10,15 +10,16 @@ sys.path.insert(0, str(SKILL_DIR))
 
 from lib.conversion import load_manifest
 from lib.obsidian_import import (
-    build_note_content,
     copy_all_assets,
     copy_referenced_assets,
+    extract_markdown_image_asset_names,
     join_target_root,
     plan_import_targets,
     resolve_vault_path,
-    rewrite_markdown_image_embeds,
+    iter_note_content,
+    iter_rewritten_markdown_image_embeds,
     verify_note_assets,
-    write_obsidian_note,
+    write_obsidian_note_iter,
 )
 
 
@@ -90,8 +91,9 @@ def main(argv: list[str] | None = None) -> int:
 
         entry = next(item for item in manifest_entries if item["source_file"] == source_file)
         markdown_path = Path(entry["markdown_path"])
-        body, asset_names = rewrite_markdown_image_embeds(markdown_path.read_text(encoding="utf-8"))
-        content = build_note_content(body)
+        asset_names = extract_markdown_image_asset_names(markdown_path)
+        body_parts = iter_rewritten_markdown_image_embeds(markdown_path)
+        content_parts = iter_note_content(body_parts)
 
         target_images_dir = Path(vault_root) / target["target_images_dir"]
         assets_dir = Path(entry["assets_dir"]) if entry.get("assets_dir") else None
@@ -102,11 +104,12 @@ def main(argv: list[str] | None = None) -> int:
         if asset_names:
             copy_referenced_assets(assets_dir, asset_names, target_images_dir)
 
-        write_obsidian_note(
+        write_obsidian_note_iter(
             target_path=target_note_path,
-            content=content,
+            content_parts=content_parts,
             vault=args.vault,
             chunk_size=args.chunk_size,
+            vault_root=vault_root,
         )
 
         if asset_names:

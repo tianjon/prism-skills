@@ -54,16 +54,24 @@ class ImportScriptTest(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            vault_root = root / "vault"
-            vault_root.mkdir()
+            vault_root_dir = root / "vault"
+            vault_root_dir.mkdir()
 
-            def fake_write_obsidian_note(*, target_path: str, content: str, vault: str = "", chunk_size: int = 3000) -> None:
-                note_path = vault_root / Path(target_path)
+            def fake_write_obsidian_note_iter(
+                *,
+                target_path: str,
+                content_parts,
+                vault: str = "",
+                chunk_size: int = 3000,
+                vault_root=None,
+                verify: bool = True,
+            ) -> None:
+                note_path = vault_root_dir / Path(target_path)
                 note_path.parent.mkdir(parents=True, exist_ok=True)
-                note_path.write_text(content, encoding="utf-8")
+                note_path.write_text("".join(content_parts), encoding="utf-8")
 
-            with patch.object(import_script, "resolve_vault_path", return_value=vault_root), patch.object(
-                import_script, "write_obsidian_note", side_effect=fake_write_obsidian_note
+            with patch.object(import_script, "resolve_vault_path", return_value=vault_root_dir), patch.object(
+                import_script, "write_obsidian_note_iter", side_effect=fake_write_obsidian_note_iter
             ):
                 rc = import_script.main(
                     [
@@ -75,7 +83,7 @@ class ImportScriptTest(unittest.TestCase):
                 )
 
             self.assertEqual(rc, 0)
-            note_path = vault_root / "Law" / "Import" / "nested" / "child" / "child.md"
+            note_path = vault_root_dir / "Law" / "Import" / "nested" / "child" / "child.md"
             self.assertTrue(note_path.exists())
             self.assertIn("![[images/foo.jpg]]", note_path.read_text(encoding="utf-8"))
             self.assertTrue((note_path.parent / "images" / "foo.jpg").exists())
@@ -120,16 +128,24 @@ class ImportScriptTest(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            vault_root = root / "vault"
-            vault_root.mkdir()
+            vault_root_dir = root / "vault"
+            vault_root_dir.mkdir()
 
-            def fake_write_obsidian_note(*, target_path: str, content: str, vault: str = "", chunk_size: int = 3000) -> None:
-                note_path = vault_root / Path(target_path)
+            def fake_write_obsidian_note_iter(
+                *,
+                target_path: str,
+                content_parts,
+                vault: str = "",
+                chunk_size: int = 3000,
+                vault_root=None,
+                verify: bool = True,
+            ) -> None:
+                note_path = vault_root_dir / Path(target_path)
                 note_path.parent.mkdir(parents=True, exist_ok=True)
-                note_path.write_text(content, encoding="utf-8")
+                note_path.write_text("".join(content_parts), encoding="utf-8")
 
-            with patch.object(import_script, "resolve_vault_path", return_value=vault_root), patch.object(
-                import_script, "write_obsidian_note", side_effect=fake_write_obsidian_note
+            with patch.object(import_script, "resolve_vault_path", return_value=vault_root_dir), patch.object(
+                import_script, "write_obsidian_note_iter", side_effect=fake_write_obsidian_note_iter
             ):
                 with self.assertRaises(FileNotFoundError):
                     import_script.main(
@@ -144,4 +160,3 @@ class ImportScriptTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

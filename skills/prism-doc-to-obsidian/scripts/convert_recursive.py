@@ -64,9 +64,26 @@ def run_mineru(
         cmd.extend(["-m", method])
     if lang:
         cmd.extend(["-l", lang])
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    # Avoid `capture_output=True` because MinerU can be very verbose and blow up memory on large conversions.
+    output_path.mkdir(parents=True, exist_ok=True)
+    log_path = output_path / "mineru.log"
+    with log_path.open("a", encoding="utf-8", errors="replace") as handle:
+        handle.write(f"\n\n# mineru run: {source_path}\n")
+        handle.write(" ".join(cmd) + "\n")
+        handle.flush()
+        result = subprocess.run(cmd, stdout=handle, stderr=handle, text=True)
     if result.returncode != 0:
-        raise RuntimeError(result.stderr or result.stdout or f"MinerU failed for {source_path}")
+        # Provide only the log tail to keep exceptions readable.
+        tail = ""
+        try:
+            with log_path.open("rb") as handle:
+                handle.seek(0, 2)
+                size = handle.tell()
+                handle.seek(max(0, size - 8192))
+                tail = handle.read().decode("utf-8", errors="replace")
+        except OSError:
+            tail = ""
+        raise RuntimeError(f"MinerU failed for {source_path}. Log tail:\n{tail}")
 
 
 def main(argv: list[str] | None = None) -> int:
