@@ -92,8 +92,11 @@ def main(argv: list[str] | None = None) -> int:
         entry = next(item for item in manifest_entries if item["source_file"] == source_file)
         markdown_path = Path(entry["markdown_path"])
         asset_names = extract_markdown_image_asset_names(markdown_path)
-        body_parts = iter_rewritten_markdown_image_embeds(markdown_path)
-        content_parts = iter_note_content(body_parts)
+        # Note content is streamed and may be written in multiple attempts (with
+        # smaller chunks) if Obsidian CLI is flaky. Keep this as a factory so we
+        # can retry deterministically.
+        def make_content_parts():
+            return iter_note_content(iter_rewritten_markdown_image_embeds(markdown_path))
 
         target_images_dir = Path(vault_root) / target["target_images_dir"]
         assets_dir = Path(entry["assets_dir"]) if entry.get("assets_dir") else None
@@ -104,13 +107,28 @@ def main(argv: list[str] | None = None) -> int:
         if asset_names:
             copy_referenced_assets(assets_dir, asset_names, target_images_dir)
 
-        write_obsidian_note_iter(
-            target_path=target_note_path,
-            content_parts=content_parts,
-            vault=args.vault,
-            chunk_size=args.chunk_size,
-            vault_root=vault_root,
-        )
+        chunk_sizes = [args.chunk_size]
+        if args.chunk_size > 1000:
+            chunk_sizes.append(1000)
+        if args.chunk_size > 500:
+            chunk_sizes.append(500)
+
+        last_error: Exception | None = None
+        for chunk_size in chunk_sizes:
+            try:
+                write_obsidian_note_iter(
+                    target_path=target_note_path,
+                    content_parts=make_content_parts(),
+                    vault=args.vault,
+                    chunk_size=chunk_size,
+                    vault_root=vault_root,
+                )
+                last_error = None
+                break
+            except RuntimeError as exc:
+                last_error = exc
+        if last_error is not None:
+            raise last_error
 
         if asset_names:
             target_note_fs_path = Path(vault_root) / target_note_path

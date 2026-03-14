@@ -14,6 +14,7 @@ from lib.obsidian_import import (
     plan_import_targets,
     rewrite_markdown_image_embeds,
     write_obsidian_note,
+    write_obsidian_note_iter,
 )
 
 
@@ -180,6 +181,72 @@ class ObsidianWriteTest(unittest.TestCase):
                     vault="obs",
                     chunk_size=3000,
                 )
+
+
+class ObsidianWriteIterTest(unittest.TestCase):
+    def test_write_obsidian_note_iter_preserves_literal_backslash_sequences(self) -> None:
+        """Regression test: Obsidian CLI interprets literal `\\n` and `\\t` sequences.
+
+        The streaming writer must preserve content such as LaTeX commands (e.g. `\\text`)
+        without accidentally turning them into real newlines/tabs.
+        """
+        with tempfile.TemporaryDirectory() as tmpdir:
+            vault_root = Path(tmpdir)
+            target_path = "Law/Test/escapes.md"
+            content = (
+                "Line1 literal \\\\n and literal \\\\t sequences.\n"
+                "LaTeX: \\\\nrightarrow and \\\\text{abc}.\n"
+                "Tab->\t<-end.\n"
+                "Space-before-newline: X \n"
+                "Done."
+            )
+
+            calls: list[list[str]] = []
+
+            def fake_run(cmd, capture_output=True, text=True, timeout=60):
+                calls.append(cmd)
+
+                command = cmd[1]
+                path_arg = next((item for item in cmd if item.startswith("path=")), "")
+                content_arg = next((item for item in cmd if item.startswith("content=")), "")
+                rel_path = path_arg.split("=", 1)[1] if path_arg else ""
+                raw = content_arg.split("=", 1)[1] if content_arg else ""
+
+                # Mimic the Obsidian CLI's behavior: interpret `\n` and `\t` sequences
+                # inside each content= argument, then trim trailing whitespace.
+                decoded = raw.replace("\\n", "\n").replace("\\t", "\t").rstrip(" \t\n")
+
+                file_path = vault_root / rel_path
+                file_path.parent.mkdir(parents=True, exist_ok=True)
+                if command == "create":
+                    file_path.write_text(decoded, encoding="utf-8")
+                elif command == "append":
+                    with file_path.open("a", encoding="utf-8") as handle:
+                        handle.write(decoded)
+
+                class Result:
+                    returncode = 0
+                    stdout = ""
+                    stderr = ""
+
+                return Result()
+
+            with patch("lib.obsidian_import.subprocess.run", side_effect=fake_run):
+                write_obsidian_note_iter(
+                    target_path=target_path,
+                    content_parts=[content],
+                    chunk_size=17,  # force chunking boundaries around backslashes/whitespace
+                    vault_root=vault_root,
+                )
+
+            written = (vault_root / target_path).read_text(encoding="utf-8")
+            self.assertEqual(written, content)
+            self.assertIn("\\nrightarrow", written)
+            self.assertIn("\\text{abc}", written)
+            self.assertIn("Tab->\t<-end.", written)
+            self.assertIn("X \nDone.", written)
+            self.assertTrue(any(cmd[1] == "create" for cmd in calls))
+            self.assertTrue(any(cmd[1] == "append" for cmd in calls))
 
 
 if __name__ == "__main__":

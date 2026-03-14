@@ -5,6 +5,7 @@ import hashlib
 import re
 import shutil
 import subprocess
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from pathlib import PurePosixPath
@@ -169,7 +170,82 @@ def build_note_content(
 
 
 def obsidian_escape_content(text: str) -> str:
-    return text.replace("\\", "\\\\").replace("\n", "\\n")
+    # Obsidian CLI interprets the literal sequences `\n` and `\t` inside the
+    # `content=` argument. This function is only responsible for encoding actual
+    # newline/tab characters into those sequences.
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    return text.replace("\t", "\\t").replace("\n", "\\n")
+
+
+_NL_SENTINEL = "\x00"
+_TAB_SENTINEL = "\x01"
+
+
+def _encode_sentinels_for_obsidian(segment: str) -> str:
+    # Convert sentinel chars to the Obsidian CLI escape sequences.
+    return segment.replace(_TAB_SENTINEL, "\\t").replace(_NL_SENTINEL, "\\n")
+
+
+def iter_obsidian_cli_safe_content_args(text: str) -> Iterable[str]:
+    """Yield `content=` argument fragments safe for Obsidian CLI.
+
+    Constraints:
+    - Obsidian CLI interprets `\\n` and `\\t` sequences anywhere inside `content=`,
+      even when they are part of longer tokens (e.g. `\\nrightarrow`, `\\text...`).
+    - The CLI also trims trailing whitespace in each call.
+
+    Strategy:
+    - Temporarily replace real newlines/tabs with sentinels, then later encode them
+      into `\\n` / `\\t` so they remain functional escapes.
+    - For literal occurrences of backslash followed by `n` or `t`, split between the
+      two characters by emitting the backslash in a separate CLI call. This prevents
+      accidental escape interpretation while preserving the final on-disk text.
+    - When we split, move any immediately preceding whitespace into the fragment that
+      also contains the backslash so it isn't trimmed.
+    """
+    if not text:
+        return
+
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    text = text.replace("\t", _TAB_SENTINEL).replace("\n", _NL_SENTINEL)
+
+    carry = ""
+    start = 0
+    i = 0
+    n = len(text)
+    while i < n:
+        j = text.find("\\", i)
+        if j == -1 or j >= n - 1:
+            break
+        nxt = text[j + 1]
+        if nxt not in ("n", "t"):
+            i = j + 1
+            continue
+
+        segment = text[start:j]
+        # Move trailing spaces/tabs from the segment into carry so they become
+        # non-trailing whitespace in the next emitted fragment.
+        k = len(segment)
+        while k > 0 and segment[k - 1] in (" ", _TAB_SENTINEL):
+            k -= 1
+        if k:
+            rendered = _encode_sentinels_for_obsidian(segment[:k])
+            if rendered:
+                yield carry + rendered
+                carry = ""
+        if k < len(segment):
+            carry += _encode_sentinels_for_obsidian(segment[k:])
+
+        # Emit the backslash itself. Next fragment will start with 'n'/'t'.
+        yield carry + "\\"
+        carry = ""
+
+        start = j + 1
+        i = j + 1
+
+    tail = _encode_sentinels_for_obsidian(text[start:])
+    if tail or carry:
+        yield carry + tail
 
 
 def chunk_text(text: str, chunk_size: int) -> list[str]:
@@ -189,8 +265,33 @@ def iter_text_chunks(parts: Iterable[str], *, chunk_size: int) -> Iterable[str]:
             continue
         buf += part
         while len(buf) >= chunk_size:
-            yield buf[:chunk_size]
+            chunk = buf[:chunk_size]
             buf = buf[chunk_size:]
+            # Post-process the chunk to match Obsidian CLI behavior and to keep
+            # our own streaming rewrites safe.
+            #
+            # 1) Obsidian CLI trims trailing whitespace in `content=` values.
+            #    Move trailing whitespace to the next chunk so it becomes
+            #    leading whitespace (which is preserved).
+            # 2) Avoid splitting on a trailing backslash because downstream we
+            #    rewrite literal `\n` / `\t` escapes, and a boundary like "\" +
+            #    "n" would hide the pattern.
+            #
+            # Note: removing a trailing backslash can reveal a trailing space,
+            # so we loop until stable.
+            while True:
+                trimmed = chunk.rstrip(" \t\n")
+                if trimmed and len(trimmed) != len(chunk):
+                    buf = chunk[len(trimmed) :] + buf
+                    chunk = trimmed
+                    continue
+                if chunk.endswith("\\") and chunk_size > 1:
+                    chunk = chunk[:-1]
+                    buf = "\\" + buf
+                    continue
+                break
+
+            yield chunk
     if buf:
         yield buf
     else:
@@ -259,30 +360,50 @@ def write_obsidian_note(
     vault: str = "",
     chunk_size: int = 3000,
 ) -> None:
-    chunks = chunk_text(content, chunk_size)
-    create = run_obsidian_cmd(
-        "create",
-        f"path={target_path}",
-        f"content={obsidian_escape_content(chunks[0])}",
-        "overwrite",
-        "silent",
-        vault=vault,
-        timeout=90,
-    )
-    if create.returncode != 0:
-        raise RuntimeError(create.stderr or create.stdout or f"Failed to create {target_path}")
+    prepared = content.replace("\r\n", "\n").replace("\r", "\n").rstrip()
+    chunks = list(iter_text_chunks([prepared], chunk_size=chunk_size))
 
-    for chunk in chunks[1:]:
-        append = run_obsidian_cmd(
-            "append",
+    first = True
+    for chunk in chunks:
+        for part in iter_obsidian_cli_safe_content_args(chunk):
+            if first:
+                create = run_obsidian_cmd(
+                    "create",
+                    f"path={target_path}",
+                    f"content={part}",
+                    "overwrite",
+                    "silent",
+                    vault=vault,
+                    timeout=90,
+                )
+                if create.returncode != 0:
+                    raise RuntimeError(create.stderr or create.stdout or f"Failed to create {target_path}")
+                first = False
+            else:
+                append = run_obsidian_cmd(
+                    "append",
+                    f"path={target_path}",
+                    f"content={part}",
+                    "inline",
+                    vault=vault,
+                    timeout=90,
+                )
+                if append.returncode != 0:
+                    raise RuntimeError(append.stderr or append.stdout or f"Failed to append {target_path}")
+
+    if first:
+        # Empty note: create deterministically.
+        create = run_obsidian_cmd(
+            "create",
             f"path={target_path}",
-            f"content={obsidian_escape_content(chunk)}",
-            "inline",
+            "content=",
+            "overwrite",
+            "silent",
             vault=vault,
             timeout=90,
         )
-        if append.returncode != 0:
-            raise RuntimeError(append.stderr or append.stdout or f"Failed to append {target_path}")
+        if create.returncode != 0:
+            raise RuntimeError(create.stderr or create.stdout or f"Failed to create {target_path}")
 
     # Read-back verification is required because large note writes can be flaky.
     read = run_obsidian_cmd(
@@ -294,7 +415,7 @@ def write_obsidian_note(
     if read.returncode != 0:
         raise RuntimeError(read.stderr or read.stdout or f"Failed to read back {target_path}")
 
-    expected = content.replace("\r\n", "\n").rstrip("\n")
+    expected = prepared.rstrip("\n")
     actual = (read.stdout or "").replace("\r\n", "\n").rstrip("\n")
     if actual != expected:
         raise RuntimeError(f"Obsidian read-back mismatch for {target_path}")
@@ -342,37 +463,75 @@ def write_obsidian_note_iter(
     """
     expected_hasher = hashlib.sha256()
 
+    # Obsidian CLI trims trailing whitespace. Ensure the final write has no
+    # trailing whitespace (including the final newline many Markdown writers add).
+    content_parts = iter_trim_trailing_whitespace(content_parts)
+
     chunk_iter = iter(iter_text_chunks(content_parts, chunk_size=chunk_size))
     try:
         first_chunk = next(chunk_iter)
     except StopIteration:
         first_chunk = ""
 
-    expected_hasher.update(first_chunk.encode("utf-8").replace(b"\r\n", b"\n"))
-    create = run_obsidian_cmd(
-        "create",
-        f"path={target_path}",
-        f"content={obsidian_escape_content(first_chunk)}",
-        "overwrite",
-        "silent",
-        vault=vault,
-        timeout=90,
-    )
-    if create.returncode != 0:
-        raise RuntimeError(create.stderr or create.stdout or f"Failed to create {target_path}")
+    expected_hasher.update(first_chunk.encode("utf-8").replace(b"\r\n", b"\n").replace(b"\r", b"\n"))
 
-    for chunk in chunk_iter:
-        expected_hasher.update(chunk.encode("utf-8").replace(b"\r\n", b"\n"))
-        append = run_obsidian_cmd(
-            "append",
+    wrote_any = False
+    for part in iter_obsidian_cli_safe_content_args(first_chunk):
+        create = run_obsidian_cmd(
+            "create",
             f"path={target_path}",
-            f"content={obsidian_escape_content(chunk)}",
-            "inline",
+            f"content={part}",
+            "overwrite",
+            "silent",
             vault=vault,
             timeout=90,
         )
-        if append.returncode != 0:
-            raise RuntimeError(append.stderr or append.stdout or f"Failed to append {target_path}")
+        if create.returncode != 0:
+            raise RuntimeError(create.stderr or create.stdout or f"Failed to create {target_path}")
+        wrote_any = True
+        break
+    if not wrote_any:
+        create = run_obsidian_cmd(
+            "create",
+            f"path={target_path}",
+            "content=",
+            "overwrite",
+            "silent",
+            vault=vault,
+            timeout=90,
+        )
+        if create.returncode != 0:
+            raise RuntimeError(create.stderr or create.stdout or f"Failed to create {target_path}")
+
+    # Append the remaining parts of the first chunk (if any), then subsequent chunks.
+    pending_parts = list(iter_obsidian_cli_safe_content_args(first_chunk))
+    # We already used the first element for create (or created empty); append the rest.
+    if pending_parts:
+        for part in pending_parts[1:]:
+            append = run_obsidian_cmd(
+                "append",
+                f"path={target_path}",
+                f"content={part}",
+                "inline",
+                vault=vault,
+                timeout=90,
+            )
+            if append.returncode != 0:
+                raise RuntimeError(append.stderr or append.stdout or f"Failed to append {target_path}")
+
+    for chunk in chunk_iter:
+        expected_hasher.update(chunk.encode("utf-8").replace(b"\r\n", b"\n").replace(b"\r", b"\n"))
+        for part in iter_obsidian_cli_safe_content_args(chunk):
+            append = run_obsidian_cmd(
+                "append",
+                f"path={target_path}",
+                f"content={part}",
+                "inline",
+                vault=vault,
+                timeout=90,
+            )
+            if append.returncode != 0:
+                raise RuntimeError(append.stderr or append.stdout or f"Failed to append {target_path}")
 
     if not verify:
         return
@@ -381,9 +540,22 @@ def write_obsidian_note_iter(
 
     if vault_root is not None:
         note_path = Path(vault_root) / target_path
-        actual_hash = sha256_file_normalized_newlines(note_path)
-        if actual_hash != expected_hash:
-            raise RuntimeError(f"Obsidian on-disk mismatch for {target_path}")
+        # Obsidian CLI can return before the app has flushed the final write to
+        # disk. Retry briefly to avoid false negatives.
+        deadline = time.monotonic() + 15.0
+        while True:
+            try:
+                actual_hash = sha256_file_normalized_newlines(note_path)
+            except FileNotFoundError:
+                if time.monotonic() >= deadline:
+                    raise RuntimeError(f"Obsidian on-disk mismatch for {target_path}")
+                time.sleep(0.25)
+                continue
+            if actual_hash == expected_hash:
+                break
+            if time.monotonic() >= deadline:
+                raise RuntimeError(f"Obsidian on-disk mismatch for {target_path}")
+            time.sleep(0.25)
         return
 
     # Backward compatible read-back verification.

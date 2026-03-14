@@ -78,10 +78,10 @@ cd skills/prism-dongchedi-scraper
 python3 scripts/run_brand_pipeline.py --brand BMW
 ```
 
-Publishing requires an explicit flag:
+By default the pipeline also publishes notes into Obsidian (overwriting generated note paths). This requires the `obsidian` CLI to be available. To target a specific vault:
 
 ```bash
-python3 scripts/run_brand_pipeline.py --brand BMW --publish
+python3 scripts/run_brand_pipeline.py --brand BMW --vault Cars
 ```
 
 Note: publishing is handled by this skill itself via `scripts/diff.py` and `scripts/store.py`.
