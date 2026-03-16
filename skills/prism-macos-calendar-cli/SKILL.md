@@ -12,8 +12,9 @@ Command-line wrappers around Calendar.app on macOS using `osascript` (AppleScrip
 This skill provides a deterministic CLI for common calendar operations on macOS:
 
 - list calendars
-- list/search events in a time range
-- create/update/delete events (with `--dry-run` support)
+- list/search events in a time range (supports `--range` shortcuts and `--limit`)
+- create/update/delete events (safe by default: requires `--apply` to write)
+- `doctor` to diagnose runtime/permissions
 
 The backend automates Calendar.app via Apple Events, so macOS Automation permissions may be required.
 
@@ -30,7 +31,9 @@ Use this skill when the user asks to:
 - macOS only. This skill automates Calendar.app via `osascript`.
 - Do not require Python code or a Python runtime.
 - Do not pass unsanitized user input into shell command strings. Pass values as argv entries to `osascript`.
-- Write operations must support `--dry-run` and must not modify Calendar when `--dry-run` is set.
+- Write operations must support a plan-first flow:
+  - default is dry-run (no changes)
+  - only write when `--apply` is provided
 - If an update/delete target is ambiguous, stop and return a structured error (do not guess).
 
 ## Runtime Policy
@@ -51,8 +54,9 @@ This skill writes no persistent files by default.
 
 The CLI writes to stdout:
 
-- `--format text` (default): human-readable output
+- `--format pretty` (default): agent-friendly human output
 - `--format json`: a single JSON object per invocation
+- `--format text`: TSV-like output
 
 JSON contract:
 
@@ -82,7 +86,8 @@ Notes:
 Collect:
 
 - command: calendars list, events list/search/create/update/delete
-- time range (`--from/--to`) for list/search
+- time range (`--from/--to` or `--range`) for list/search
+- `--limit` to cap list/search output
 - event fields (`--title/--start/--end/...`) for create/update
 - target selector (`--id` or `--uid`) for update/delete
 
@@ -98,8 +103,8 @@ cd skills/prism-macos-calendar-cli
 ### Step 3: Confirm or validate
 For write operations:
 
-- Prefer `--dry-run --format json` first to confirm the planned write.
-- Then re-run without `--dry-run` to apply the change.
+- Prefer default dry-run first (omit `--apply`) to confirm the planned write.
+- Then re-run with `--apply` to apply the change.
 
 ## Failure Handling
 
