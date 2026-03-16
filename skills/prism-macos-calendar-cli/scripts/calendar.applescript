@@ -724,69 +724,89 @@ on events_search(opt, format)
 end events_search
 
 on events_create(opt, format)
-	set calName to my opt_get(opt, "calendar", missing value)
-	set title to my opt_get(opt, "title", missing value)
-	set startS to my opt_get(opt, "start", missing value)
-	set endS to my opt_get(opt, "end", missing value)
-	if calName is missing value or title is missing value or startS is missing value or endS is missing value then
-		return my out_error("usage", "events create requires --calendar --title --start --end", missing value, format)
-	end if
-	
-	set startDate to my parse_date_or_datetime(startS, "datetime_required")
-	set endDate to my parse_date_or_datetime(endS, "datetime_required")
-	
-	set loc to my opt_get(opt, "location", "")
-	set notes to my opt_get(opt, "notes", "")
-	set theURL to my opt_get(opt, "url", "")
-	set applyWrite to my opt_has(opt, "apply")
-	set dryRun to true
-	if applyWrite then set dryRun to false
-	if my opt_has(opt, "dry_run") then set dryRun to true
-	
-	-- basic sanity
+	set stage to "init"
 	try
-		if (endDate as date) <= (startDate as date) then return my out_error("usage", "--end must be after --start", missing value, format)
-	end try
-	
-	set planned to my dict_new()
-	my dict_put(planned, "calendar", calName as text)
-	my dict_put(planned, "title", title as text)
-	my dict_put(planned, "start", my format_iso_date(startDate))
-	my dict_put(planned, "end", my format_iso_date(endDate))
-	my dict_put(planned, "location", loc as text)
-	my dict_put(planned, "notes", notes as text)
-	my dict_put(planned, "url", theURL as text)
-	my dict_put(planned, "dry_run", (NSNumber's numberWithBool:dryRun))
-	if dryRun then
-		if format is "json" then return my out_ok(planned, "json")
-		return "DRY-RUN: create event '" & (title as text) & "' in calendar '" & (calName as text) & "'"
-	end if
-	
-	my ensure_calendar_running()
-	set calObj to my get_calendar_by_name(calName as text)
-	if calObj is missing value then
+		set stage to "read_args"
+		set calName to my opt_get(opt, "calendar", missing value)
+		set evt_title to my opt_get(opt, "title", missing value)
+		set startS to my opt_get(opt, "start", missing value)
+		set endS to my opt_get(opt, "end", missing value)
+		if calName is missing value or evt_title is missing value or startS is missing value or endS is missing value then
+			return my out_error("usage", "events create requires --calendar --title --start --end", missing value, format)
+		end if
+		
+		set stage to "parse_time"
+		set startDate to my parse_date_or_datetime(startS, "datetime_required")
+		set endDate to my parse_date_or_datetime(endS, "datetime_required")
+		
+		set loc to my opt_get(opt, "location", "")
+		set notes to my opt_get(opt, "notes", "")
+		set theURL to my opt_get(opt, "url", "")
+		set applyWrite to my opt_has(opt, "apply")
+		set dryRun to true
+		if applyWrite then set dryRun to false
+		if my opt_has(opt, "dry_run") then set dryRun to true
+		
+		-- basic sanity
+		set stage to "validate_time"
+		try
+			if (endDate as date) <= (startDate as date) then return my out_error("usage", "--end must be after --start", missing value, format)
+		end try
+		
+		set stage to "build_plan"
+		set planned to my dict_new()
+		my dict_put(planned, "calendar", calName as text)
+		my dict_put(planned, "title", evt_title as text)
+		my dict_put(planned, "start", my format_iso_date(startDate))
+		my dict_put(planned, "end", my format_iso_date(endDate))
+		my dict_put(planned, "location", loc as text)
+		my dict_put(planned, "notes", notes as text)
+		my dict_put(planned, "url", theURL as text)
+		my dict_put(planned, "dry_run", (NSNumber's numberWithBool:dryRun))
+		if dryRun then
+			if format is "json" then return my out_ok(planned, "json")
+			return "DRY-RUN: create event '" & (evt_title as text) & "' in calendar '" & (calName as text) & "'"
+		end if
+		
+		set stage to "ensure_running"
+		my ensure_calendar_running()
+		set stage to "resolve_calendar"
+		set calObj to my get_calendar_by_name(calName as text)
+		if calObj is missing value then
+			set d to my dict_new()
+			my dict_put(d, "calendar", calName as text)
+			my dict_put(d, "available", my calendar_names_array())
+			return my out_error("calendar_not_found", "calendar not found: " & (calName as text), d, format)
+		end if
+		
+		set stage to "make_event:props"
+		tell application "Calendar"
+			set props to {summary:(evt_title as text), start date:(startDate as date), end date:(endDate as date)}
+		end tell
+		
+		set stage to "make_event:create"
+		tell application "Calendar"
+			if loc is not "" then set props to props & {location:(loc as text)}
+			if notes is not "" then set props to props & {description:(notes as text)}
+			if theURL is not "" then set props to props & {url:(theURL as text)}
+			set newEvent to make new event at end of events of calObj with properties props
+		end tell
+		
+		-- Return created record
+		set stage to "serialize_result"
+		set created to my event_to_record(newEvent, calName as text)
+		my strip_internal_event_keys(created, format)
+		if format is "json" then return my out_ok(created, "json")
+		if format is "pretty" then return my event_record_to_pretty_line(created, "CREATED")
+		set oneArr to my arr_new()
+		oneArr's addObject:created
+		return my events_payload_to_text(oneArr)
+	on error errMsg number errNum
 		set d to my dict_new()
-		my dict_put(d, "calendar", calName as text)
-		my dict_put(d, "available", my calendar_names_array())
-		return my out_error("calendar_not_found", "calendar not found: " & (calName as text), d, format)
-	end if
-	
-	tell application "Calendar"
-		set props to {summary:(title as text), start date:(startDate as date), end date:(endDate as date)}
-		if loc is not "" then set props to props & {location:(loc as text)}
-		if notes is not "" then set props to props & {description:(notes as text)}
-		if theURL is not "" then set props to props & {url:(theURL as text)}
-		set newEvent to make new event at end of events of calObj with properties props
-	end tell
-	
-	-- Return created record
-	set created to my event_to_record(newEvent, calName as text)
-	my strip_internal_event_keys(created, format)
-	if format is "json" then return my out_ok(created, "json")
-	if format is "pretty" then return my event_record_to_pretty_line(created, "CREATED")
-	set oneArr to my arr_new()
-	oneArr's addObject:created
-	return my events_payload_to_text(oneArr)
+		my dict_put(d, "stage", stage as text)
+		my dict_put(d, "number", errNum as integer)
+		return my out_error("internal_error", "events create failed at " & stage & ": " & (errMsg as text), d, format)
+	end try
 end events_create
 
 on resolve_event_by_selector(calObj, selectorKey, selectorVal)
