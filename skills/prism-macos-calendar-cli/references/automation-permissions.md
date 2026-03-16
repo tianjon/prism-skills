@@ -17,6 +17,7 @@ This skill controls Calendar.app using Apple Events (`osascript`). macOS may blo
 If the terminal app is not listed:
 
 - Run a read command once (for example: `./scripts/cal calendars list`) to trigger the system prompt.
+- You can also run `./scripts/cal doctor` to trigger the prompt and verify access.
 
 ## Reset (If It Gets Stuck)
 
@@ -26,4 +27,3 @@ Chinese UI hints:
 
 - 系统设置 -> 隐私与安全性 -> 自动化
 - 允许 Terminal/iTerm 控制“日历(Calendar)”
-
