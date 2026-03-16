@@ -16,6 +16,7 @@ Store all repository skills in this directory.
 
 - `prism-dongchedi-scraper/`
 - `prism-doc-to-obsidian/`
+- `prism-macos-calendar-cli/`
 - `_template/` — starter scaffold for future skills
 
 Create a new skill with:
