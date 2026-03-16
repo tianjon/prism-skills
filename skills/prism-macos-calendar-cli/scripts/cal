@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "$0")" && pwd)"
+backend="$script_dir/calendar.applescript"
+
+usage() {
+  cat <<'USAGE'
+macOS Calendar CLI (Calendar.app automation)
+
+Usage:
+  cal --help
+  cal calendars list [--format json|text]
+  cal events list --from <ISO> --to <ISO> [--calendar <name>] [--format json|text]
+  cal events search --query <text> --from <ISO> --to <ISO> [--calendar <name>] [--format json|text]
+  cal events create --calendar <name> --title <text> --start <ISO> --end <ISO> \
+    [--location <text>] [--notes <text>] [--url <text>] [--dry-run] [--format json|text]
+  cal events update (--id <id> | --uid <uid>) [--calendar <name>] \
+    [--title <text>] [--start <ISO>] [--end <ISO>] [--location <text>] [--notes <text>] [--url <text>] \
+    [--dry-run] [--format json|text]
+  cal events delete (--id <id> | --uid <uid>) [--calendar <name>] [--dry-run] [--format json|text]
+
+Notes:
+  - ISO examples: 2026-03-16, 2026-03-16T10:00, 2026-03-16T10:00:00+08:00
+  - This tool may require macOS Automation permission for your terminal to control Calendar.app.
+USAGE
+}
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "help" || "${1:-}" == "-h" || "$#" -eq 0 ]]; then
+  usage
+  exit 0
+fi
+
+if [[ ! -f "$backend" ]]; then
+  echo "Error: backend not found: $backend" >&2
+  exit 2
+fi
+
+if [[ ! -x /usr/bin/osascript ]]; then
+  echo "Error: /usr/bin/osascript not found or not executable" >&2
+  exit 2
+fi
+
+# Forward user arguments as argv entries. Do not shell-interpolate user input.
+/usr/bin/osascript "$backend" "$@"
+
