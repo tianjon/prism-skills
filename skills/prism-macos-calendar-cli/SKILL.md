@@ -1,59 +1,109 @@
 ---
 name: prism-macos-calendar-cli
-description: Use when the user asks for the workflow this skill owns, including the main trigger phrases and situations.
+description: Use when the user asks to operate macOS Calendar from the command line (list/search/create/update/delete events), especially requests like “用命令行操作日历/创建日程/修改日程/删除日程/导出日程 JSON”.
 ---
 
-# Prism Macos Calendar Cli
+# prism-macos-calendar-cli
 
-Short summary of the skill.
+Command-line wrappers around Calendar.app on macOS using `osascript` (AppleScriptObjC). No Python dependency.
 
 ## Overview
 
-Describe the core capability in 1-3 short sentences.
+This skill provides a deterministic CLI for common calendar operations on macOS:
+
+- list calendars
+- list/search events in a time range
+- create/update/delete events (with `--dry-run` support)
+
+The backend automates Calendar.app via Apple Events, so macOS Automation permissions may be required.
 
 ## When to Use
 
 Use this skill when the user asks to:
-- do action one
-- do action two
-- do action three
+- list calendars from macOS Calendar via CLI
+- search or export calendar events as JSON
+- create/update/delete calendar events from the terminal
+- "把日历操作封装为命令行脚本"
 
 ## Hard Constraints
 
-- Constraint one
-- Constraint two
+- macOS only. This skill automates Calendar.app via `osascript`.
+- Do not require Python code or a Python runtime.
+- Do not pass unsanitized user input into shell command strings. Pass values as argv entries to `osascript`.
+- Write operations must support `--dry-run` and must not modify Calendar when `--dry-run` is set.
+- If an update/delete target is ambiguous, stop and return a structured error (do not guess).
 
 ## Runtime Policy
 
-Explain how the runtime, dependencies, or external tools are selected.
+Runtime prerequisites:
+
+- macOS with Calendar.app installed.
+- `/usr/bin/osascript` available (built-in).
+
+Permissions:
+
+- Calendar automation may prompt for macOS Automation permission (Terminal/iTerm controlling Calendar).
+- See `references/automation-permissions.md` for recovery steps.
 
 ## Output Contract
 
-Describe what persistent outputs are created or updated, and what must remain stable.
+This skill writes no persistent files by default.
+
+The CLI writes to stdout:
+
+- `--format text` (default): human-readable output
+- `--format json`: a single JSON object per invocation
+
+JSON contract:
+
+- Success: `{"ok":true,"data":<payload>}`
+- Error: `{"ok":false,"error":{"code":"...","message":"...","details":{...}}}`
+
+Payload shapes:
+
+- calendars: `[{ "name": "..." }]`
+- events: `[{ "id":"...", "uid":"...", "calendar":"...", "title":"...", "start":"ISO", "end":"ISO", "location":"...", "notes":"...", "url":"..." }]`
+
+Notes:
+
+- `id` is Calendar.app's internal event id (useful for deterministic updates on the same machine).
+- `uid` is the iCalendar UID when available.
 
 ## Directory Layout
 
 - `SKILL.md` — source of truth for runtime behavior
-- `references/` — detailed prompts, schemas, or setup notes
-- `lib/` — reusable logic only when code is actually needed
-- `scripts/` — executable entrypoints only when prompt orchestration is not enough
+- `references/` — permissions and operational notes
+- `scripts/` — executable entrypoints (`bash` + `osascript`)
 - `tmp/` — disposable scratch outputs
 
 ## Workflow
 
 ### Step 1: Gather input
-Describe the required input.
+Collect:
+
+- command: calendars list, events list/search/create/update/delete
+- time range (`--from/--to`) for list/search
+- event fields (`--title/--start/--end/...`) for create/update
+- target selector (`--id` or `--uid`) for update/delete
 
 ### Step 2: Execute
 
-Describe the main flow. Start prompt-first and only add script execution if the skill truly needs deterministic code.
+Run the CLI from the skill directory:
 
-If a script exists, document it explicitly with the exact command and why the script is needed.
+```bash
+cd skills/prism-macos-calendar-cli
+./scripts/cal --help
+```
 
 ### Step 3: Confirm or validate
-Describe what must be confirmed before writing or publishing.
+For write operations:
+
+- Prefer `--dry-run --format json` first to confirm the planned write.
+- Then re-run without `--dry-run` to apply the change.
 
 ## Failure Handling
 
-- Common failure 1 — recovery guidance
-- Common failure 2 — recovery guidance
+- macOS Automation permission denied: follow `references/automation-permissions.md`.
+- Calendar.app not running: re-run the command; the backend attempts to launch Calendar.app.
+- Invalid ISO time inputs: fix the date/time string and retry.
+- Target not found or ambiguous (`--id/--uid` matches 0 or >1 events): refine selectors (add `--calendar`, use `--id`).
