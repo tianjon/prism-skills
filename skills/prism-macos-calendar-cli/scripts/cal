@@ -10,19 +10,23 @@ macOS Calendar CLI (Calendar.app automation)
 
 Usage:
   cal --help
-  cal calendars list [--format json|text]
-  cal events list --from <ISO> --to <ISO> [--calendar <name>] [--format json|text]
-  cal events search --query <text> --from <ISO> --to <ISO> [--calendar <name>] [--format json|text]
+  cal doctor [--format json|pretty|text]
+  cal calendars list [--format json|pretty|text]
+  cal events list (--range <today|tomorrow|next7|thisweek|next30> | --from <ISO> --to <ISO>) \
+    [--calendar <name>] [--limit <n>] [--format json|pretty|text]
+  cal events search --query <text> (--range <...> | --from <ISO> --to <ISO>) \
+    [--calendar <name>] [--limit <n>] [--format json|pretty|text]
   cal events create --calendar <name> --title <text> --start <ISO> --end <ISO> \
-    [--location <text>] [--notes <text>] [--url <text>] [--dry-run] [--format json|text]
+    [--location <text>] [--notes <text>] [--url <text>] [--apply] [--dry-run] [--format json|pretty|text]
   cal events update (--id <id> | --uid <uid>) [--calendar <name>] \
     [--title <text>] [--start <ISO>] [--end <ISO>] [--location <text>] [--notes <text>] [--url <text>] \
-    [--dry-run] [--format json|text]
-  cal events delete (--id <id> | --uid <uid>) [--calendar <name>] [--dry-run] [--format json|text]
+    [--apply] [--dry-run] [--format json|pretty|text]
+  cal events delete (--id <id> | --uid <uid>) [--calendar <name>] [--apply] [--dry-run] [--format json|pretty|text]
 
 Notes:
   - ISO examples: 2026-03-16, 2026-03-16T10:00, 2026-03-16T10:00:00+08:00
   - This tool may require macOS Automation permission for your terminal to control Calendar.app.
+  - Write commands are safe by default: add --apply to actually modify Calendar.
 USAGE
 }
 
@@ -30,6 +34,46 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "help" || "${1:-}" == "-h" || "$#" -eq
   usage
   exit 0
 fi
+
+expand_range() {
+  local range="$1"
+  local from=""
+  local to=""
+  local today
+  today="$(date '+%Y-%m-%d')"
+
+  case "$range" in
+    today)
+      from="$today"
+      to="$(date -v+1d '+%Y-%m-%d')"
+      ;;
+    tomorrow)
+      from="$(date -v+1d '+%Y-%m-%d')"
+      to="$(date -v+2d '+%Y-%m-%d')"
+      ;;
+    next7)
+      from="$today"
+      to="$(date -v+7d '+%Y-%m-%d')"
+      ;;
+    next30)
+      from="$today"
+      to="$(date -v+30d '+%Y-%m-%d')"
+      ;;
+    thisweek)
+      # Monday..next Monday (local time). BSD date: %u => 1..7 (Mon..Sun)
+      local dow
+      dow="$(date '+%u')"
+      from="$(date -v-"$((dow-1))"d '+%Y-%m-%d')"
+      to="$(date -v+"$((8-dow))"d '+%Y-%m-%d')"
+      ;;
+    *)
+      echo "Error: invalid --range '$range' (expected today|tomorrow|next7|thisweek|next30)" >&2
+      exit 2
+      ;;
+  esac
+
+  printf '%s\n' "$from" "$to"
+}
 
 if [[ ! -f "$backend" ]]; then
   echo "Error: backend not found: $backend" >&2
@@ -42,5 +86,40 @@ if [[ ! -x /usr/bin/osascript ]]; then
 fi
 
 # Forward user arguments as argv entries. Do not shell-interpolate user input.
-/usr/bin/osascript "$backend" "$@"
+expanded=("$@")
+if [[ "${expanded[0]:-}" == "doctor" ]]; then
+  expanded=("doctor" "run" "${expanded[@]:1}")
+fi
+if [[ "${expanded[0]:-}" == "events" && ( "${expanded[1]:-}" == "list" || "${expanded[1]:-}" == "search" ) ]]; then
+  range=""
+  has_from=0
+  has_to=0
+  out=()
+  i=0
+  while [[ $i -lt ${#expanded[@]} ]]; do
+    tok="${expanded[$i]}"
+    if [[ "$tok" == "--range" ]]; then
+      range="${expanded[$((i+1))]:-}"
+      i=$((i+2))
+      continue
+    fi
+    if [[ "$tok" == "--from" ]]; then has_from=1; fi
+    if [[ "$tok" == "--to" ]]; then has_to=1; fi
+    out+=("$tok")
+    i=$((i+1))
+  done
 
+  if [[ -n "$range" ]]; then
+    if [[ $has_from -eq 1 || $has_to -eq 1 ]]; then
+      echo "Error: use --range or --from/--to, not both" >&2
+      exit 2
+    fi
+    range_out="$(expand_range "$range")"
+    from="${range_out%%$'\n'*}"
+    to="${range_out#*$'\n'}"
+    out+=("--from" "$from" "--to" "$to")
+  fi
+  expanded=("${out[@]}")
+fi
+
+/usr/bin/osascript "$backend" "${expanded[@]}"

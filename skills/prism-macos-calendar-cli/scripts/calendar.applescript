@@ -12,6 +12,7 @@ property NSMutableDictionary : a reference to current application's NSMutableDic
 property NSMutableArray : a reference to current application's NSMutableArray
 property NSNumber : a reference to current application's NSNumber
 property NSNull : a reference to current application's NSNull
+property NSSortDescriptor : a reference to current application's NSSortDescriptor
 
 on run(argv)
 	try
@@ -21,14 +22,26 @@ on run(argv)
 		set action to item 2 of argv
 		set opt to my parse_options(argv, 3)
 		
-		set format to my opt_get(opt, "format", "text")
-		if (format is not "json") and (format is not "text") then return my out_error("bad_flag", "invalid --format; expected json|text", {format:format}, format)
+		set format to my opt_get(opt, "format", "pretty")
+		if (format is not "json") and (format is not "text") and (format is not "pretty") then
+			set d to my dict_new()
+			my dict_put(d, "format", format as text)
+			return my out_error("bad_flag", "invalid --format; expected json|pretty|text", d, "json")
+		end if
 		
-		if group is "calendars" then
+		if group is "doctor" then
+			if action is "run" then
+				return my doctor_run(opt, format)
+			else
+				return my out_error("usage", "unknown doctor action: " & action, missing value, format)
+			end if
+		else if group is "calendars" then
 			if action is "list" then
 				return my calendars_list(format)
 			else
-				return my out_error("usage", "unknown calendars action: " & action, {action:action}, format)
+				set d to my dict_new()
+				my dict_put(d, "action", action as text)
+				return my out_error("usage", "unknown calendars action: " & action, d, format)
 			end if
 		else if group is "events" then
 			if action is "list" then
@@ -42,10 +55,14 @@ on run(argv)
 			else if action is "delete" then
 				return my events_delete(opt, format)
 			else
-				return my out_error("usage", "unknown events action: " & action, {action:action}, format)
+				set d to my dict_new()
+				my dict_put(d, "action", action as text)
+				return my out_error("usage", "unknown events action: " & action, d, format)
 			end if
 		else
-			return my out_error("usage", "unknown command group: " & group, {group:group}, format)
+			set d to my dict_new()
+			my dict_put(d, "group", group as text)
+			return my out_error("usage", "unknown command group: " & group, d, format)
 		end if
 	on error errMsg number errNum
 		-- Prefer structured errors when format=json. Avoid leaking huge AppleScript traces into stdout.
@@ -67,26 +84,31 @@ on run(argv)
 			set msg to "Calendar.app is not running or cannot be launched in this environment. Try opening Calendar.app once, then re-run. (" & (errMsg as text) & ")"
 		end if
 		
-		return my out_error(code, msg, {number:errNum}, fmt)
+		set d to my dict_new()
+		my dict_put(d, "number", errNum as integer)
+		return my out_error(code, msg, d, fmt)
 	end try
 end run
 
 on sniff_format(argv)
 	repeat with i from 1 to (count of argv)
 		if (item i of argv) is "--format" then
-			if i + 1 ≤ (count of argv) then return item (i + 1) of argv
+			if i + 1 <= (count of argv) then return item (i + 1) of argv
 		end if
 	end repeat
-	return "text"
+	return "pretty"
 end sniff_format
 
 on parse_options(argv, start_index)
 	set opt to {}
 	set i to start_index
-	repeat while i ≤ (count of argv)
+	repeat while i <= (count of argv)
 		set k to item i of argv
 		if k is "--dry-run" then
 			set opt to opt & {{"dry_run", "1"}}
+			set i to i + 1
+		else if k is "--apply" then
+			set opt to opt & {{"apply", "1"}}
 			set i to i + 1
 		else if k begins with "--" then
 			if i = (count of argv) then error "flag missing value: " & k
@@ -136,6 +158,20 @@ on dict_put(d, k, v)
 		d's setObject:v forKey:(k as text)
 	end if
 end dict_put
+
+on join_lines(linesList)
+	set outText to ""
+	set is_first to true
+	repeat with s in linesList
+		if is_first then
+			set outText to (s as text)
+			set is_first to false
+		else
+			set outText to outText & linefeed & (s as text)
+		end if
+	end repeat
+	return outText
+end join_lines
 
 on json_wrap_ok(payload)
 	set root to NSMutableDictionary's dictionary()
@@ -207,6 +243,49 @@ on ensure_calendar_running()
 	end repeat
 end ensure_calendar_running
 
+on calendar_names_array()
+	tell application "Calendar"
+		set cals to calendars
+	end tell
+	set namesArr to my arr_new()
+	repeat with c in cals
+		try
+			namesArr's addObject:((name of c) as text)
+		end try
+	end repeat
+	return namesArr
+end calendar_names_array
+
+on get_calendar_by_name(calNameText)
+	tell application "Calendar"
+		set cals to calendars
+	end tell
+	repeat with c in cals
+		try
+			if ((name of c) as text) is (calNameText as text) then return c
+		end try
+	end repeat
+	return missing value
+end get_calendar_by_name
+
+on doctor_run(opt, format)
+	-- Minimal diagnostics for agent/human usage.
+	set res to my dict_new()
+	my dict_put(res, "osascript", "ok" as text)
+	
+	my ensure_calendar_running()
+	
+	tell application "Calendar"
+		set calCount to (count of calendars)
+	end tell
+	my dict_put(res, "calendars_count", calCount as integer)
+	
+	if format is "json" then return my out_ok(res, "json")
+	
+	set out_lines to {"Doctor: OK", "calendars: " & (calCount as text), "If you hit permission errors: see references/automation-permissions.md"}
+	return my join_lines(out_lines)
+end doctor_run
+
 on calendars_list(format)
 	my ensure_calendar_running()
 	tell application "Calendar"
@@ -227,15 +306,20 @@ on calendars_list(format)
 	if format is "json" then
 		return my out_ok(payload, "json")
 	else
-		set lines to {}
-		repeat with i from 0 to ((payload's |count|()) - 1)
+		set out_lines to {}
+		set n to (payload's |count|()) as integer
+		repeat with i from 0 to (n - 1)
 			set itemRec to (payload's objectAtIndex:i)
-			set lines to lines & ((itemRec's objectForKey:"name") as text)
+			set nameText to (itemRec's objectForKey:"name") as text
+			if format is "pretty" then
+				set idx to (i + 1) as integer
+				set out_lines to out_lines & {(idx as text) & ". " & nameText}
+			else
+				set out_lines to out_lines & {nameText}
+			end if
 		end repeat
-		set AppleScript's text item delimiters to linefeed
-		set outText to lines as text
-		set AppleScript's text item delimiters to ""
-		return outText
+		if (count of out_lines) = 0 then return "(no calendars)"
+		return my join_lines(out_lines)
 	end if
 end calendars_list
 
@@ -244,10 +328,7 @@ on events_payload_to_text(payload)
 	set out_lines to {"calendar\tstart\tend\ttitle\tid"}
 	set n to (payload's |count|()) as integer
 	if n = 0 then
-		set AppleScript's text item delimiters to linefeed
-		set outText to out_lines as text
-		set AppleScript's text item delimiters to ""
-		return outText
+		return my join_lines(out_lines)
 	end if
 	
 	repeat with i from 0 to (n - 1)
@@ -260,11 +341,81 @@ on events_payload_to_text(payload)
 		set out_lines to out_lines & {(calName & tab & startISO & tab & endISO & tab & titleText & tab & idText)}
 	end repeat
 	
-	set AppleScript's text item delimiters to linefeed
-	set outText to out_lines as text
-	set AppleScript's text item delimiters to ""
-	return outText
+	return my join_lines(out_lines)
 end events_payload_to_text
+
+on events_payload_to_pretty(payload)
+	-- payload: NSMutableArray of NSDictionary objects
+	set out_lines to {}
+	set n to (payload's |count|()) as integer
+	if n = 0 then return "(no events)"
+	
+	repeat with i from 0 to (n - 1)
+		set d to (payload's objectAtIndex:i)
+		set calName to (d's objectForKey:"calendar") as text
+		set startS to (d's objectForKey:"start_short") as text
+		set endS to (d's objectForKey:"end_short") as text
+		set titleText to (d's objectForKey:"title") as text
+		set idText to (d's objectForKey:"id") as text
+		set idx to (i + 1) as integer
+		set out_lines to out_lines & {(idx as text) & ". " & startS & "-" & endS & " [" & calName & "] " & titleText & " (id=" & idText & ")"}
+	end repeat
+	return my join_lines(out_lines)
+end events_payload_to_pretty
+
+on finalize_events_payload(payload, opt, format)
+	-- Sort by start_ts ascending (if present)
+	set n to (payload's |count|()) as integer
+	if n > 1 then
+		set sortDesc to (NSSortDescriptor's sortDescriptorWithKey:"start_ts" ascending:true)
+		payload's sortUsingDescriptors:{sortDesc}
+	end if
+	
+	-- Apply --limit after sorting
+	set limitS to my opt_get(opt, "limit", missing value)
+	if limitS is not missing value then
+		try
+			set limitN to (limitS as integer)
+			if limitN > 0 then
+				repeat while ((payload's |count|()) as integer) > limitN
+					payload's removeLastObject()
+				end repeat
+			end if
+		end try
+	end if
+	
+	-- Strip internal keys
+	repeat with i from 0 to (((payload's |count|()) as integer) - 1)
+		set d to (payload's objectAtIndex:i)
+		d's removeObjectForKey:"start_ts"
+		if (format is "json") or (format is "text") then
+			d's removeObjectForKey:"start_short"
+			d's removeObjectForKey:"end_short"
+		end if
+	end repeat
+end finalize_events_payload
+
+on strip_internal_event_keys(d, format)
+	if d is missing value then return
+	try
+		d's removeObjectForKey:"start_ts"
+	end try
+	if (format is "json") or (format is "text") then
+		try
+			d's removeObjectForKey:"start_short"
+			d's removeObjectForKey:"end_short"
+		end try
+	end if
+end strip_internal_event_keys
+
+on event_record_to_pretty_line(d, prefix)
+	set calName to (d's objectForKey:"calendar") as text
+	set startS to (d's objectForKey:"start_short") as text
+	set endS to (d's objectForKey:"end_short") as text
+	set titleText to (d's objectForKey:"title") as text
+	set idText to (d's objectForKey:"id") as text
+	return (prefix & ": " & startS & "-" & endS & " [" & calName & "] " & titleText & " (id=" & idText & ")")
+end event_record_to_pretty_line
 
 on normalize_iso_input(s)
 	set t to (s as text)
@@ -350,9 +501,32 @@ on format_iso_date(d)
 	return (df's stringFromDate:d) as text
 end format_iso_date
 
+on format_short_local(d)
+	set df to NSDateFormatter's alloc()'s init()
+	df's setLocale:(NSLocale's localeWithLocaleIdentifier:"en_US_POSIX")
+	df's setTimeZone:(NSTimeZone's localTimeZone())
+	df's setDateFormat:"yyyy-MM-dd HH:mm"
+	return (df's stringFromDate:d) as text
+end format_short_local
+
+on unix_ts_from_iso(iso_text)
+	-- Use Foundation parsing to avoid locale-dependent AppleScript date parsing.
+	set s to iso_text as text
+	if s is "" then return 0.0
+	set df to NSDateFormatter's alloc()'s init()
+	df's setLocale:(NSLocale's localeWithLocaleIdentifier:"en_US_POSIX")
+	df's setTimeZone:(NSTimeZone's localTimeZone())
+	df's setDateFormat:"yyyy-MM-dd'T'HH:mm:ssXXXXX"
+	set d to (df's dateFromString:s)
+	if d is missing value then return 0.0
+	set ts to (d's timeIntervalSince1970()) as real
+	return ts
+end unix_ts_from_iso
+
 on collect_events_in_range(calObj, fromDate, toDate)
 	tell application "Calendar"
-		set evts to (events of calObj whose start date ≥ (fromDate as date) and start date < (toDate as date))
+		-- Overlap semantics: start < to && end > from
+		set evts to (events of calObj whose start date < (toDate as date) and end date > (fromDate as date))
 	end tell
 	return evts
 end collect_events_in_range
@@ -421,11 +595,23 @@ on event_to_record(e, calName)
 	
 	set startISO to ""
 	set endISO to ""
+	set startShort to ""
+	set endShort to ""
+	set startTsNum to (NSNumber's numberWithDouble:0)
 	try
 		set startISO to my format_iso_date(startD)
 	end try
 	try
 		set endISO to my format_iso_date(endD)
+	end try
+	try
+		set startShort to my format_short_local(startD)
+	end try
+	try
+		set endShort to my format_short_local(endD)
+	end try
+	try
+		set startTsNum to (NSNumber's numberWithDouble:(my unix_ts_from_iso(startISO)))
 	end try
 
 	set d to my dict_new()
@@ -435,6 +621,9 @@ on event_to_record(e, calName)
 	my dict_put(d, "title", evt_title as text)
 	my dict_put(d, "start", startISO as text)
 	my dict_put(d, "end", endISO as text)
+	my dict_put(d, "start_short", startShort as text)
+	my dict_put(d, "end_short", endShort as text)
+	my dict_put(d, "start_ts", startTsNum)
 	my dict_put(d, "location", loc as text)
 	my dict_put(d, "notes", notes as text)
 	my dict_put(d, "url", theURL as text)
@@ -444,7 +633,9 @@ end event_to_record
 on events_list(opt, format)
 	set fromS to my opt_get(opt, "from", missing value)
 	set toS to my opt_get(opt, "to", missing value)
-	if fromS is missing value or toS is missing value then return my out_error("usage", "events list requires --from and --to", missing value, format)
+	if fromS is missing value or toS is missing value then
+		return my out_error("usage", "events list requires --from and --to (or use --range via scripts/cal)", missing value, format)
+	end if
 	
 	set fromDate to my parse_date_or_datetime(fromS, "range_from")
 	set toDate to my parse_date_or_datetime(toS, "range_to")
@@ -470,8 +661,10 @@ on events_list(opt, format)
 			end repeat
 		end if
 	end repeat
-	
+
+	my finalize_events_payload(payload, opt, format)
 	if format is "json" then return my out_ok(payload, "json")
+	if format is "pretty" then return my events_payload_to_pretty(payload)
 	return my events_payload_to_text(payload)
 end events_list
 
@@ -481,7 +674,9 @@ on events_search(opt, format)
 	
 	set fromS to my opt_get(opt, "from", missing value)
 	set toS to my opt_get(opt, "to", missing value)
-	if fromS is missing value or toS is missing value then return my out_error("usage", "events search requires --from and --to", missing value, format)
+	if fromS is missing value or toS is missing value then
+		return my out_error("usage", "events search requires --from and --to (or use --range via scripts/cal)", missing value, format)
+	end if
 	
 	set fromDate to my parse_date_or_datetime(fromS, "range_from")
 	set toDate to my parse_date_or_datetime(toS, "range_to")
@@ -520,9 +715,11 @@ on events_search(opt, format)
 					if matched then payload's addObject:(my event_to_record(e, calName))
 				end repeat
 			end if
-		end repeat
-	
+	end repeat
+
+	my finalize_events_payload(payload, opt, format)
 	if format is "json" then return my out_ok(payload, "json")
+	if format is "pretty" then return my events_payload_to_pretty(payload)
 	return my events_payload_to_text(payload)
 end events_search
 
@@ -541,7 +738,15 @@ on events_create(opt, format)
 	set loc to my opt_get(opt, "location", "")
 	set notes to my opt_get(opt, "notes", "")
 	set theURL to my opt_get(opt, "url", "")
-	set dryRun to my opt_has(opt, "dry_run")
+	set applyWrite to my opt_has(opt, "apply")
+	set dryRun to true
+	if applyWrite then set dryRun to false
+	if my opt_has(opt, "dry_run") then set dryRun to true
+	
+	-- basic sanity
+	try
+		if (endDate as date) <= (startDate as date) then return my out_error("usage", "--end must be after --start", missing value, format)
+	end try
 	
 	set planned to my dict_new()
 	my dict_put(planned, "calendar", calName as text)
@@ -552,11 +757,21 @@ on events_create(opt, format)
 	my dict_put(planned, "notes", notes as text)
 	my dict_put(planned, "url", theURL as text)
 	my dict_put(planned, "dry_run", (NSNumber's numberWithBool:dryRun))
-	if dryRun then return my out_ok(planned, format)
+	if dryRun then
+		if format is "json" then return my out_ok(planned, "json")
+		return "DRY-RUN: create event '" & (title as text) & "' in calendar '" & (calName as text) & "'"
+	end if
 	
 	my ensure_calendar_running()
+	set calObj to my get_calendar_by_name(calName as text)
+	if calObj is missing value then
+		set d to my dict_new()
+		my dict_put(d, "calendar", calName as text)
+		my dict_put(d, "available", my calendar_names_array())
+		return my out_error("calendar_not_found", "calendar not found: " & (calName as text), d, format)
+	end if
+	
 	tell application "Calendar"
-		set calObj to first calendar whose name is (calName as text)
 		set props to {summary:(title as text), start date:(startDate as date), end date:(endDate as date)}
 		if loc is not "" then set props to props & {location:(loc as text)}
 		if notes is not "" then set props to props & {description:(notes as text)}
@@ -566,7 +781,12 @@ on events_create(opt, format)
 	
 	-- Return created record
 	set created to my event_to_record(newEvent, calName as text)
-	return my out_ok(created, format)
+	my strip_internal_event_keys(created, format)
+	if format is "json" then return my out_ok(created, "json")
+	if format is "pretty" then return my event_record_to_pretty_line(created, "CREATED")
+	set oneArr to my arr_new()
+	oneArr's addObject:created
+	return my events_payload_to_text(oneArr)
 end events_create
 
 on resolve_event_by_selector(calObj, selectorKey, selectorVal)
@@ -620,17 +840,27 @@ on find_event(opt, format)
 	end repeat
 	
 	if (count of found) = 0 then
-		return {ok:false, err:(my out_error("not_found", "no matching event", {id:idVal, uid:uidVal, calendar:calNameFilter}, format))}
+		set d to my dict_new()
+		if idVal is not missing value then my dict_put(d, "id", idVal as text)
+		if uidVal is not missing value then my dict_put(d, "uid", uidVal as text)
+		if calNameFilter is not missing value then my dict_put(d, "calendar", calNameFilter as text)
+		my dict_put(d, "hint", "Try adding --calendar to narrow scope, or use events search/list to find the event id." as text)
+		return {ok:false, err:(my out_error("not_found", "no matching event", d, format))}
 	end if
 	if (count of found) > 1 then
 		-- Return candidates to help the caller disambiguate.
-		set payload to {}
+		set payload to my arr_new()
 		repeat with itemRec in found
 			set e to (event of itemRec)
 			set calName to (calendarName of itemRec) as text
-			set payload to payload & {my event_to_record(e, calName)}
+			set r to my event_to_record(e, calName)
+			my strip_internal_event_keys(r, "json")
+			payload's addObject:r
 		end repeat
-		return {ok:false, err:(my out_error("ambiguous", "multiple events matched; refine with --calendar or use --id", {matches:payload}, format))}
+		set d to my dict_new()
+		my dict_put(d, "matches", payload)
+		my dict_put(d, "hint", "Refine with --calendar, or prefer --id (most deterministic on this machine)." as text)
+		return {ok:false, err:(my out_error("ambiguous", "multiple events matched; refine with --calendar or use --id", d, format))}
 	end if
 	
 	set one to item 1 of found
@@ -638,7 +868,10 @@ on find_event(opt, format)
 end find_event
 
 on events_update(opt, format)
-	set dryRun to my opt_has(opt, "dry_run")
+	set applyWrite to my opt_has(opt, "apply")
+	set dryRun to true
+	if applyWrite then set dryRun to false
+	if my opt_has(opt, "dry_run") then set dryRun to true
 	set foundRes to my find_event(opt, format)
 	if (ok of foundRes) is false then return (err of foundRes)
 	
@@ -664,7 +897,8 @@ on events_update(opt, format)
 		my dict_put(planned, "selector", sel)
 		my dict_put(planned, "updates", updates)
 		my dict_put(planned, "dry_run", (NSNumber's numberWithBool:true))
-		return my out_ok(planned, format)
+		if format is "json" then return my out_ok(planned, "json")
+		return "DRY-RUN: update event in '" & calName & "' (use --apply to write)"
 	end if
 	
 	-- Apply updates
@@ -689,11 +923,19 @@ on events_update(opt, format)
 	end tell
 	
 	set updated to my event_to_record(e, calName)
-	return my out_ok(updated, format)
+	my strip_internal_event_keys(updated, format)
+	if format is "json" then return my out_ok(updated, "json")
+	if format is "pretty" then return my event_record_to_pretty_line(updated, "UPDATED")
+	set oneArr to my arr_new()
+	oneArr's addObject:updated
+	return my events_payload_to_text(oneArr)
 end events_update
 
 on events_delete(opt, format)
-	set dryRun to my opt_has(opt, "dry_run")
+	set applyWrite to my opt_has(opt, "apply")
+	set dryRun to true
+	if applyWrite then set dryRun to false
+	if my opt_has(opt, "dry_run") then set dryRun to true
 	set foundRes to my find_event(opt, format)
 	if (ok of foundRes) is false then return (err of foundRes)
 	
@@ -708,7 +950,8 @@ on events_delete(opt, format)
 		my dict_put(sel, "uid", my opt_get(opt, "uid", "") as text)
 		my dict_put(planned, "selector", sel)
 		my dict_put(planned, "dry_run", (NSNumber's numberWithBool:true))
-		return my out_ok(planned, format)
+		if format is "json" then return my out_ok(planned, "json")
+		return "DRY-RUN: delete event in '" & calName & "' (use --apply to write)"
 	end if
 	
 	tell application "Calendar"
@@ -718,5 +961,6 @@ on events_delete(opt, format)
 	set res to my dict_new()
 	my dict_put(res, "deleted", (NSNumber's numberWithBool:true))
 	my dict_put(res, "calendar", calName as text)
-	return my out_ok(res, format)
+	if format is "json" then return my out_ok(res, "json")
+	return "DELETED: event in '" & calName & "'"
 end events_delete
