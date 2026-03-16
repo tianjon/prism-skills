@@ -1,20 +1,17 @@
-# Skill Template
+# prism-macos-calendar-cli
 
-Use this directory as the base scaffold for a new skill.
+Operate macOS Calendar.app from the command line using built-in `osascript` (AppleScriptObjC). No Python dependency.
 
-## Included Files
+## Quickstart
 
-- `SKILL.md` — skill metadata and runtime contract
-- `references/` — detailed prompts, schemas, or setup notes when needed
-- `lib/` — reusable implementation logic only when code is actually needed
-- `scripts/` — executable entry scripts only when prompt orchestration is not enough
-- `tmp/` — local scratch outputs
+```bash
+cd skills/prism-macos-calendar-cli
+./scripts/cal --help
+./scripts/cal calendars list --format json
+./scripts/cal events list --from 2026-03-16 --to 2026-03-17 --format json
+./scripts/cal events create --calendar '日历' --title 'Test' --start '2026-03-16T10:00:00+08:00' --end '2026-03-16T10:30:00+08:00' --dry-run --format json
+```
 
-## Suggested Workflow
+If Automation permission is denied, see `references/automation-permissions.md`.
 
-1. Rename the directory in kebab-case with a `prism-` prefix, for example `skills/prism-wechat-poster/`
-2. Read `docs/skill-writing-guidelines.md`
-3. Update `SKILL.md` metadata and the required sections
-4. Start prompt-first; add `scripts/` or `lib/` only if the skill truly needs deterministic code
-5. Add only the files the skill actually needs
-6. Keep setup and runtime policy inside the new skill's `SKILL.md`
+For the full contract and failure handling, read `SKILL.md`.
