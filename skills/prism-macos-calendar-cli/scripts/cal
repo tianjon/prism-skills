@@ -27,6 +27,7 @@ Notes:
   - ISO examples: 2026-03-16, 2026-03-16T10:00, 2026-03-16T10:00:00+08:00
   - This tool may require macOS Automation permission for your terminal to control Calendar.app.
   - Write commands are safe by default: add --apply to actually modify Calendar.
+  - Optional: set PRISM_CALENDAR_DEFAULT='<calendar name>' to avoid passing --calendar for events list/search/create.
 USAGE
 }
 
@@ -45,26 +46,26 @@ expand_range() {
   case "$range" in
     today)
       from="$today"
-      to="$(date -v+1d '+%Y-%m-%d')"
+      to="$today"
       ;;
     tomorrow)
       from="$(date -v+1d '+%Y-%m-%d')"
-      to="$(date -v+2d '+%Y-%m-%d')"
+      to="$from"
       ;;
     next7)
       from="$today"
-      to="$(date -v+7d '+%Y-%m-%d')"
+      to="$(date -v+6d '+%Y-%m-%d')"
       ;;
     next30)
       from="$today"
-      to="$(date -v+30d '+%Y-%m-%d')"
+      to="$(date -v+29d '+%Y-%m-%d')"
       ;;
     thisweek)
-      # Monday..next Monday (local time). BSD date: %u => 1..7 (Mon..Sun)
+      # Monday..Sunday (local time). BSD date: %u => 1..7 (Mon..Sun)
       local dow
       dow="$(date '+%u')"
       from="$(date -v-"$((dow-1))"d '+%Y-%m-%d')"
-      to="$(date -v+"$((8-dow))"d '+%Y-%m-%d')"
+      to="$(date -v+"$((7-dow))"d '+%Y-%m-%d')"
       ;;
     *)
       echo "Error: invalid --range '$range' (expected today|tomorrow|next7|thisweek|next30)" >&2
@@ -120,6 +121,20 @@ if [[ "${expanded[0]:-}" == "events" && ( "${expanded[1]:-}" == "list" || "${exp
     out+=("--from" "$from" "--to" "$to")
   fi
   expanded=("${out[@]}")
+fi
+
+# Optional ergonomic default: inject --calendar if user didn't specify it.
+if [[ -n "${PRISM_CALENDAR_DEFAULT:-}" && "${expanded[0]:-}" == "events" && ( "${expanded[1]:-}" == "list" || "${expanded[1]:-}" == "search" || "${expanded[1]:-}" == "create" ) ]]; then
+  has_cal=0
+  for tok in "${expanded[@]}"; do
+    if [[ "$tok" == "--calendar" ]]; then
+      has_cal=1
+      break
+    fi
+  done
+  if [[ $has_cal -eq 0 ]]; then
+    expanded+=("--calendar" "$PRISM_CALENDAR_DEFAULT")
+  fi
 fi
 
 /usr/bin/osascript "$backend" "${expanded[@]}"

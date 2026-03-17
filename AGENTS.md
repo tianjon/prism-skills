@@ -16,8 +16,8 @@ Most work happens inside one skill directory.
 - `cd skills/prism-dongchedi-scraper` — enter the current skill workspace
 - `uv sync` — create/update the recommended local runtime from `pyproject.toml`
 - `uv run browser-use install` — install browser automation support into that runtime
-- `python3 scripts/run_brand_pipeline.py --brand BMW` — run the canonical non-interactive brand pipeline (scrape-only by default)
-- `python3 scripts/run_brand_pipeline.py --brand BMW --publish` — publish results to Obsidian (runs diff first)
+- `python3 scripts/run_brand_pipeline.py --brand BMW` — run the canonical non-interactive brand pipeline (publishes to Obsidian by default)
+- `python3 scripts/run_brand_pipeline.py --brand BMW --vault Cars` — publish into a specific Obsidian vault (runs diff first)
 - `uv run browser-use python --file scripts/search.py` — run a browser-backed scraping step inside the managed runtime
 - `python3 scripts/diff.py` — compare scraped data without launching a browser
 - `./scripts/new-skill.sh my-new-skill` — scaffold a new skill under `skills/` from the template

@@ -38,6 +38,24 @@ class ConversionDiscoveryTest(unittest.TestCase):
                 ],
             )
 
+    def test_discover_supported_inputs_includes_common_mineru_document_formats_by_default(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir).resolve()
+            (root / "brief.docx").write_text("docx", encoding="utf-8")
+            (root / "deck.pptx").write_text("pptx", encoding="utf-8")
+            (root / "sheet.xlsx").write_text("xlsx", encoding="utf-8")
+
+            files = discover_supported_inputs(root)
+
+            self.assertEqual(
+                [path.relative_to(root).as_posix() for path in files],
+                [
+                    "brief.docx",
+                    "deck.pptx",
+                    "sheet.xlsx",
+                ],
+            )
+
     def test_build_conversion_batches_groups_by_direct_parent(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir).resolve()

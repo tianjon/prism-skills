@@ -14,14 +14,20 @@ property NSNumber : a reference to current application's NSNumber
 property NSNull : a reference to current application's NSNull
 property NSSortDescriptor : a reference to current application's NSSortDescriptor
 
+-- Cached objects for performance (avoid alloc/init per event).
+property _df_iso_out : missing value
+property _df_short_local : missing value
+property _df_parse : missing value
+property _epoch_date : missing value
+
 on run(argv)
 	try
 		if (count of argv) < 2 then return my out_error("usage", "missing command. Try: cal --help", missing value, "text")
-		
+
 		set group to item 1 of argv
 		set action to item 2 of argv
 		set opt to my parse_options(argv, 3)
-		
+
 		set format to my opt_get(opt, "format", "pretty")
 		if (format is not "json") and (format is not "text") and (format is not "pretty") then
 			set d to my dict_new()
@@ -59,7 +65,7 @@ on run(argv)
 				my dict_put(d, "action", action as text)
 				return my out_error("usage", "unknown events action: " & action, d, format)
 			end if
-		else
+	else
 			set d to my dict_new()
 			my dict_put(d, "group", group as text)
 			return my out_error("usage", "unknown command group: " & group, d, format)
@@ -73,7 +79,7 @@ on run(argv)
 				set fmt to my sniff_format(argv)
 			end if
 		end try
-		
+
 		set code to "internal_error"
 		set msg to errMsg as text
 		if errNum is -1743 then
@@ -227,17 +233,27 @@ on out_error(code, message, details, format)
 end out_error
 
 on ensure_calendar_running()
+	-- Fast path: already running/scriptable.
+	try
+		tell application "Calendar" to get name
+		return
+	on error errMsg number errNum
+		-- Permission denied: fail fast (do not wait/retry).
+		if errNum is -1743 then error errMsg number errNum
+	end try
+
 	-- Launch Calendar without requiring Apple Events first.
 	try
 		do shell script "/usr/bin/open -a Calendar"
 	end try
-	
+
 	-- Then wait briefly so subsequent scripting calls do not fail with -600.
-	repeat with i from 1 to 20
+	repeat with i from 1 to 60
 		try
 			tell application "Calendar" to get name
-			exit repeat
-		on error
+			return
+		on error errMsg number errNum
+			if errNum is -1743 then error errMsg number errNum
 			delay 0.1
 		end try
 	end repeat
@@ -256,17 +272,31 @@ on calendar_names_array()
 	return namesArr
 end calendar_names_array
 
-on get_calendar_by_name(calNameText)
+on get_calendars_by_name(calNameText)
 	tell application "Calendar"
+		set matches to {}
+		try
+			set matches to (calendars whose name is (calNameText as text))
+		end try
+		if (count of matches) > 0 then return matches
 		set cals to calendars
 	end tell
+	set matched to {}
 	repeat with c in cals
 		try
-			if ((name of c) as text) is (calNameText as text) then return c
+			if ((name of c) as text) is (calNameText as text) then set matched to matched & {c}
 		end try
 	end repeat
-	return missing value
-end get_calendar_by_name
+	return matched
+end get_calendars_by_name
+
+on duplicate_calendar_error(calName, matches, format)
+	set d to my dict_new()
+	my dict_put(d, "calendar", calName as text)
+	my dict_put(d, "matches", count of matches)
+	my dict_put(d, "available", my calendar_names_array())
+	return my out_error("ambiguous_calendar", "multiple calendars matched name: " & calName, d, format)
+end duplicate_calendar_error
 
 on doctor_run(opt, format)
 	-- Minimal diagnostics for agent/human usage.
@@ -375,15 +405,15 @@ on finalize_events_payload(payload, opt, format)
 	set limitS to my opt_get(opt, "limit", missing value)
 	if limitS is not missing value then
 		try
-			set limitN to (limitS as integer)
-			if limitN > 0 then
-				repeat while ((payload's |count|()) as integer) > limitN
-					payload's removeLastObject()
-				end repeat
-			end if
-		end try
-	end if
-	
+				set limitN to (limitS as integer)
+				if limitN > 0 then
+					repeat while ((payload's |count|()) as integer) > limitN
+						payload's removeLastObject()
+					end repeat
+				end if
+			end try
+		end if
+
 	-- Strip internal keys
 	repeat with i from 0 to (((payload's |count|()) as integer) - 1)
 		set d to (payload's objectAtIndex:i)
@@ -437,17 +467,74 @@ on trim_text(t)
 	return trimmed
 end trim_text
 
+on get_parse_formatter()
+	if _df_parse is missing value then
+		set _df_parse to NSDateFormatter's alloc()'s init()
+		_df_parse's setLocale:(NSLocale's localeWithLocaleIdentifier:"en_US_POSIX")
+		_df_parse's setTimeZone:(NSTimeZone's localTimeZone())
+	end if
+	return _df_parse
+end get_parse_formatter
+
+on get_iso_out_formatter()
+	if _df_iso_out is missing value then
+		set _df_iso_out to NSDateFormatter's alloc()'s init()
+		_df_iso_out's setLocale:(NSLocale's localeWithLocaleIdentifier:"en_US_POSIX")
+		_df_iso_out's setTimeZone:(NSTimeZone's localTimeZone())
+		_df_iso_out's setDateFormat:"yyyy-MM-dd'T'HH:mm:ssXXXXX"
+	end if
+	return _df_iso_out
+end get_iso_out_formatter
+
+on get_short_local_formatter()
+	if _df_short_local is missing value then
+		set _df_short_local to NSDateFormatter's alloc()'s init()
+		_df_short_local's setLocale:(NSLocale's localeWithLocaleIdentifier:"en_US_POSIX")
+		_df_short_local's setTimeZone:(NSTimeZone's localTimeZone())
+		_df_short_local's setDateFormat:"yyyy-MM-dd HH:mm"
+	end if
+	return _df_short_local
+end get_short_local_formatter
+
+on local_epoch_date()
+	if _epoch_date is not missing value then return _epoch_date
+	set epoch to current date
+	set year of epoch to 1970
+	set month of epoch to month 1
+	set day of epoch to 1
+	set hours of epoch to 0
+	set minutes of epoch to 0
+	set seconds of epoch to 0
+	set _epoch_date to epoch
+	return epoch
+end local_epoch_date
+
+on unix_ts_from_date(d)
+	if d is missing value then return 0.0
+	-- Prefer Foundation if bridged object supports it.
+	try
+		set nsd to d
+		return ((nsd's timeIntervalSince1970()) as real)
+	on error
+		-- Fallback: seconds since local epoch (order-preserving for sorting).
+		try
+			set epoch to my local_epoch_date()
+			return (((d as date) - epoch) as real)
+		on error
+			return 0.0
+		end try
+	end try
+end unix_ts_from_date
+
 on parse_date_or_datetime(iso_text, mode)
 	-- mode:
 	--  - "range_from": date-only allowed -> start of day local
 	--  - "range_to": date-only allowed -> next day start local
 	--  - "datetime_required": date-only rejected
 	set s to my normalize_iso_input(iso_text)
+	set df to my get_parse_formatter()
 	if (length of s) = 10 then
 		if mode is "datetime_required" then error "datetime required, got date-only: " & s
-		set df to NSDateFormatter's alloc()'s init()
-		df's setLocale:(NSLocale's localeWithLocaleIdentifier:"en_US_POSIX")
-		df's setTimeZone:(NSTimeZone's localTimeZone())
 		df's setDateFormat:"yyyy-MM-dd"
 		set d to (df's dateFromString:s)
 		if d is missing value then error "invalid date: " & s
@@ -467,26 +554,20 @@ on parse_date_or_datetime(iso_text, mode)
 	
 	if withTZ then
 		-- Let AppleScriptObjC parse ISO8601 with timezone via NSDateFormatter.
-		set df2 to NSDateFormatter's alloc()'s init()
-		df2's setLocale:(NSLocale's localeWithLocaleIdentifier:"en_US_POSIX")
-		df2's setTimeZone:(NSTimeZone's localTimeZone())
 		-- Support seconds and optional timezone.
 		set candidates to {"yyyy-MM-dd'T'HH:mm:ssXXXXX", "yyyy-MM-dd'T'HH:mmXXXXX"}
 		repeat with fmt in candidates
-			df2's setDateFormat:fmt
-			set d2 to (df2's dateFromString:s)
+			df's setDateFormat:fmt
+			set d2 to (df's dateFromString:s)
 			if d2 is not missing value then return d2
 		end repeat
 		error "invalid ISO datetime: " & s
 	else
 		-- Treat as local time when timezone missing.
-		set df3 to NSDateFormatter's alloc()'s init()
-		df3's setLocale:(NSLocale's localeWithLocaleIdentifier:"en_US_POSIX")
-		df3's setTimeZone:(NSTimeZone's localTimeZone())
 		set candidates2 to {"yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd'T'HH:mm"}
 		repeat with fmt2 in candidates2
-			df3's setDateFormat:fmt2
-			set d3 to (df3's dateFromString:s)
+			df's setDateFormat:fmt2
+			set d3 to (df's dateFromString:s)
 			if d3 is not missing value then return d3
 		end repeat
 		error "invalid local datetime: " & s
@@ -494,18 +575,12 @@ on parse_date_or_datetime(iso_text, mode)
 end parse_date_or_datetime
 
 on format_iso_date(d)
-	set df to NSDateFormatter's alloc()'s init()
-	df's setLocale:(NSLocale's localeWithLocaleIdentifier:"en_US_POSIX")
-	df's setTimeZone:(NSTimeZone's localTimeZone())
-	df's setDateFormat:"yyyy-MM-dd'T'HH:mm:ssXXXXX"
+	set df to my get_iso_out_formatter()
 	return (df's stringFromDate:d) as text
 end format_iso_date
 
 on format_short_local(d)
-	set df to NSDateFormatter's alloc()'s init()
-	df's setLocale:(NSLocale's localeWithLocaleIdentifier:"en_US_POSIX")
-	df's setTimeZone:(NSTimeZone's localTimeZone())
-	df's setDateFormat:"yyyy-MM-dd HH:mm"
+	set df to my get_short_local_formatter()
 	return (df's stringFromDate:d) as text
 end format_short_local
 
@@ -513,9 +588,7 @@ on unix_ts_from_iso(iso_text)
 	-- Use Foundation parsing to avoid locale-dependent AppleScript date parsing.
 	set s to iso_text as text
 	if s is "" then return 0.0
-	set df to NSDateFormatter's alloc()'s init()
-	df's setLocale:(NSLocale's localeWithLocaleIdentifier:"en_US_POSIX")
-	df's setTimeZone:(NSTimeZone's localTimeZone())
+	set df to my get_parse_formatter()
 	df's setDateFormat:"yyyy-MM-dd'T'HH:mm:ssXXXXX"
 	set d to (df's dateFromString:s)
 	if d is missing value then return 0.0
@@ -531,7 +604,11 @@ on collect_events_in_range(calObj, fromDate, toDate)
 	return evts
 end collect_events_in_range
 
-on event_to_record(e, calName)
+on event_to_record(e, calName, format)
+	set wantIso to ((format is "json") or (format is "text"))
+	set wantShort to (format is "pretty")
+	set wantHeavy to (format is "json")
+
 	set evt_title to ""
 	set startD to missing value
 	set endD to missing value
@@ -552,38 +629,6 @@ on event_to_record(e, calName)
 			set endD to (end date of e)
 		end try
 		try
-			set vLoc to (location of e)
-			if vLoc is missing value then
-				set loc to ""
-			else
-				set loc to vLoc as text
-			end if
-		end try
-		try
-			set vDesc to (description of e)
-			if vDesc is missing value then
-				set notes to ""
-			else
-				set notes to vDesc as text
-			end if
-		end try
-		try
-			set vUrl to (url of e)
-			if vUrl is missing value then
-				set theURL to ""
-			else
-				set theURL to vUrl as text
-			end if
-		end try
-		try
-			set vUid to (uid of e)
-			if vUid is missing value then
-				set theUID to ""
-			else
-				set theUID to vUid as text
-			end if
-		end try
-		try
 			set vId to (id of e)
 			if vId is missing value then
 				set theID to ""
@@ -591,27 +636,66 @@ on event_to_record(e, calName)
 				set theID to vId as text
 			end if
 		end try
+
+		if wantHeavy then
+			try
+				set vLoc to (location of e)
+				if vLoc is missing value then
+					set loc to ""
+				else
+					set loc to vLoc as text
+				end if
+			end try
+			try
+				set vDesc to (description of e)
+				if vDesc is missing value then
+					set notes to ""
+				else
+					set notes to vDesc as text
+				end if
+			end try
+			try
+				set vUrl to (url of e)
+				if vUrl is missing value then
+					set theURL to ""
+				else
+					set theURL to vUrl as text
+				end if
+			end try
+			try
+				set vUid to (uid of e)
+				if vUid is missing value then
+					set theUID to ""
+				else
+					set theUID to vUid as text
+				end if
+			end try
+		end if
 	end tell
-	
+
 	set startISO to ""
 	set endISO to ""
 	set startShort to ""
 	set endShort to ""
 	set startTsNum to (NSNumber's numberWithDouble:0)
+	if wantIso then
+		try
+			set startISO to my format_iso_date(startD)
+		end try
+		try
+			set endISO to my format_iso_date(endD)
+		end try
+	end if
+	if wantShort then
+		try
+			set startShort to my format_short_local(startD)
+		end try
+		try
+			set endShort to my format_short_local(endD)
+		end try
+	end if
 	try
-		set startISO to my format_iso_date(startD)
-	end try
-	try
-		set endISO to my format_iso_date(endD)
-	end try
-	try
-		set startShort to my format_short_local(startD)
-	end try
-	try
-		set endShort to my format_short_local(endD)
-	end try
-	try
-		set startTsNum to (NSNumber's numberWithDouble:(my unix_ts_from_iso(startISO)))
+		set startTsNum to (NSNumber's numberWithDouble:(my unix_ts_from_date(startD)))
 	end try
 
 	set d to my dict_new()
@@ -645,28 +729,88 @@ on events_list(opt, format)
 	my ensure_calendar_running()
 	
 	set payload to my arr_new()
-	tell application "Calendar"
-		set cals to calendars
-	end tell
-	
-	repeat with c in cals
-		set calName to ""
-		try
-			tell application "Calendar" to set calName to (name of c) as text
-		end try
-		if calNameFilter is missing value or calName is (calNameFilter as text) then
+	if calNameFilter is not missing value then
+		set calName to (calNameFilter as text)
+		set matches to my get_calendars_by_name(calName)
+		if (count of matches) = 0 then
+			set d to my dict_new()
+			my dict_put(d, "calendar", calName as text)
+			my dict_put(d, "available", my calendar_names_array())
+			return my out_error("calendar_not_found", "calendar not found: " & calName, d, format)
+		end if
+		repeat with calObj in matches
+			set evts to my collect_events_in_range(calObj, fromDate, toDate)
+			repeat with e in evts
+				payload's addObject:(my event_to_record(e, calName, format))
+			end repeat
+		end repeat
+	else
+		tell application "Calendar"
+			set cals to calendars
+		end tell
+
+		repeat with c in cals
+			set calName to ""
+			try
+				tell application "Calendar" to set calName to (name of c) as text
+			end try
 			set evts to my collect_events_in_range(c, fromDate, toDate)
 			repeat with e in evts
-				payload's addObject:(my event_to_record(e, calName))
+				payload's addObject:(my event_to_record(e, calName, format))
 			end repeat
-		end if
-	end repeat
+		end repeat
+	end if
 
 	my finalize_events_payload(payload, opt, format)
 	if format is "json" then return my out_ok(payload, "json")
 	if format is "pretty" then return my events_payload_to_pretty(payload)
 	return my events_payload_to_text(payload)
 end events_list
+
+on collect_events_in_range_matching_query(calObj, fromDate, toDate, qText)
+	tell application "Calendar"
+		-- Overlap semantics: start < to && end > from
+		set evts to (events of calObj whose start date < (toDate as date) and end date > (fromDate as date) and (summary contains (qText as text) or description contains (qText as text)))
+	end tell
+	return evts
+end collect_events_in_range_matching_query
+
+on append_events_matching_query(payload, calObj, calName, fromDate, toDate, qText, format)
+	-- Try to push the query down into Calendar (much faster on large datasets).
+	try
+		set evts to my collect_events_in_range_matching_query(calObj, fromDate, toDate, qText)
+		repeat with e in evts
+			payload's addObject:(my event_to_record(e, calName, format))
+		end repeat
+		return
+	end try
+
+	-- Fallback: local matching (still avoid pulling heavy fields unless needed).
+	set evts2 to my collect_events_in_range(calObj, fromDate, toDate)
+	repeat with e in evts2
+		set titleText to ""
+		set notesText to ""
+		try
+			tell application "Calendar" to set titleText to (summary of e) as text
+		end try
+
+		set matched to false
+		ignoring case
+			if titleText contains (qText as text) then set matched to true
+		end ignoring
+
+		if matched is false then
+			try
+				tell application "Calendar" to set notesText to (description of e) as text
+			end try
+			ignoring case
+				if notesText contains (qText as text) then set matched to true
+			end ignoring
+		end if
+
+		if matched then payload's addObject:(my event_to_record(e, calName, format))
+	end repeat
+end append_events_matching_query
 
 on events_search(opt, format)
 	set q to my opt_get(opt, "query", missing value)
@@ -685,37 +829,31 @@ on events_search(opt, format)
 	my ensure_calendar_running()
 	
 	set payload to my arr_new()
-	tell application "Calendar"
-		set cals to calendars
-	end tell
-	
-	repeat with c in cals
-		set calName to ""
-		try
-			tell application "Calendar" to set calName to (name of c) as text
-		end try
-		if calNameFilter is missing value or calName is (calNameFilter as text) then
-			set evts to my collect_events_in_range(c, fromDate, toDate)
-			repeat with e in evts
-				set titleText to ""
-				set notesText to ""
-				try
-					tell application "Calendar" to set titleText to (summary of e) as text
-				end try
-				try
-					tell application "Calendar" to set notesText to (description of e) as text
-				end try
-				
-				set matched to false
-				ignoring case
-					if titleText contains (q as text) then set matched to true
-					if notesText contains (q as text) then set matched to true
-				end ignoring
-				
-					if matched then payload's addObject:(my event_to_record(e, calName))
-				end repeat
-			end if
-	end repeat
+	if calNameFilter is not missing value then
+		set calName to (calNameFilter as text)
+		set matches to my get_calendars_by_name(calName)
+		if (count of matches) = 0 then
+			set d to my dict_new()
+			my dict_put(d, "calendar", calName as text)
+			my dict_put(d, "available", my calendar_names_array())
+			return my out_error("calendar_not_found", "calendar not found: " & calName, d, format)
+		end if
+		repeat with calObj in matches
+			my append_events_matching_query(payload, calObj, calName, fromDate, toDate, q, format)
+		end repeat
+	else
+		tell application "Calendar"
+			set cals to calendars
+		end tell
+
+		repeat with c in cals
+			set calName to ""
+			try
+				tell application "Calendar" to set calName to (name of c) as text
+			end try
+			my append_events_matching_query(payload, c, calName, fromDate, toDate, q, format)
+		end repeat
+	end if
 
 	my finalize_events_payload(payload, opt, format)
 	if format is "json" then return my out_ok(payload, "json")
@@ -769,15 +907,17 @@ on events_create(opt, format)
 		end if
 		
 		set stage to "ensure_running"
-		my ensure_calendar_running()
-		set stage to "resolve_calendar"
-		set calObj to my get_calendar_by_name(calName as text)
-		if calObj is missing value then
-			set d to my dict_new()
-			my dict_put(d, "calendar", calName as text)
-			my dict_put(d, "available", my calendar_names_array())
-			return my out_error("calendar_not_found", "calendar not found: " & (calName as text), d, format)
-		end if
+			my ensure_calendar_running()
+			set stage to "resolve_calendar"
+			set matches to my get_calendars_by_name(calName as text)
+			if (count of matches) = 0 then
+				set d to my dict_new()
+				my dict_put(d, "calendar", calName as text)
+				my dict_put(d, "available", my calendar_names_array())
+				return my out_error("calendar_not_found", "calendar not found: " & (calName as text), d, format)
+			end if
+			if (count of matches) > 1 then return my duplicate_calendar_error(calName as text, matches, format)
+			set calObj to item 1 of matches
 		
 		set stage to "make_event:props"
 		tell application "Calendar"
@@ -794,7 +934,7 @@ on events_create(opt, format)
 		
 		-- Return created record
 		set stage to "serialize_result"
-		set created to my event_to_record(newEvent, calName as text)
+		set created to my event_to_record(newEvent, calName as text, format)
 		my strip_internal_event_keys(created, format)
 		if format is "json" then return my out_ok(created, "json")
 		if format is "pretty" then return my event_record_to_pretty_line(created, "CREATED")
@@ -833,18 +973,18 @@ on find_event(opt, format)
 	set calNameFilter to my opt_get(opt, "calendar", missing value)
 	my ensure_calendar_running()
 	
-	tell application "Calendar"
-		set cals to calendars
-	end tell
-	
 	set found to {}
 	set foundCalName to ""
-	repeat with c in cals
-		set calName to ""
-		try
-			tell application "Calendar" to set calName to (name of c) as text
-		end try
-		if calNameFilter is missing value or calName is (calNameFilter as text) then
+	if calNameFilter is not missing value then
+		set calName to (calNameFilter as text)
+		set matches to my get_calendars_by_name(calName)
+		if (count of matches) = 0 then
+			set d to my dict_new()
+			my dict_put(d, "calendar", calName as text)
+			my dict_put(d, "available", my calendar_names_array())
+			return {ok:false, err:(my out_error("calendar_not_found", "calendar not found: " & calName, d, format))}
+		end if
+		repeat with c in matches
 			set candidates to {}
 			if idVal is not missing value then
 				set candidates to my resolve_event_by_selector(c, "id", idVal)
@@ -856,8 +996,30 @@ on find_event(opt, format)
 					set found to found & {{event:e, calendarName:calName}}
 				end repeat
 			end if
-		end if
-	end repeat
+			end repeat
+	else
+		tell application "Calendar"
+			set cals to calendars
+		end tell
+
+		repeat with c in cals
+			set calName to ""
+			try
+				tell application "Calendar" to set calName to (name of c) as text
+			end try
+			set candidates to {}
+			if idVal is not missing value then
+				set candidates to my resolve_event_by_selector(c, "id", idVal)
+			else
+				set candidates to my resolve_event_by_selector(c, "uid", uidVal)
+			end if
+			if (count of candidates) > 0 then
+				repeat with e in candidates
+					set found to found & {{event:e, calendarName:calName}}
+				end repeat
+			end if
+		end repeat
+	end if
 	
 	if (count of found) = 0 then
 		set d to my dict_new()
@@ -873,7 +1035,7 @@ on find_event(opt, format)
 		repeat with itemRec in found
 			set e to (event of itemRec)
 			set calName to (calendarName of itemRec) as text
-			set r to my event_to_record(e, calName)
+			set r to my event_to_record(e, calName, "json")
 			my strip_internal_event_keys(r, "json")
 			payload's addObject:r
 		end repeat
@@ -942,7 +1104,7 @@ on events_update(opt, format)
 		end repeat
 	end tell
 	
-	set updated to my event_to_record(e, calName)
+	set updated to my event_to_record(e, calName, format)
 	my strip_internal_event_keys(updated, format)
 	if format is "json" then return my out_ok(updated, "json")
 	if format is "pretty" then return my event_record_to_pretty_line(updated, "UPDATED")

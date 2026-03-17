@@ -7,7 +7,21 @@ from pathlib import PurePosixPath
 from typing import Iterable, Sequence
 
 
-DEFAULT_DISCOVERABLE_EXTENSIONS = (".pdf", ".png", ".jpg", ".jpeg")
+DEFAULT_DISCOVERABLE_EXTENSIONS = (
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".ppt",
+    ".pptx",
+    ".xls",
+    ".xlsx",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".bmp",
+    ".tif",
+    ".tiff",
+)
 
 
 @dataclass(frozen=True)
