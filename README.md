@@ -8,6 +8,7 @@ Reusable local skills for AI coding agents.
 |-------|-------------|
 | `prism-dongchedi-scraper` | Scrape vehicle configurations from dongchedi.com and publish standardized notes into Obsidian via `Obsidian-cli`. |
 | `prism-doc-to-obsidian` | Convert MinerU-supported documents into Markdown and save confirmed notes into Obsidian with indexes, tags, and cross-note links. |
+| `prism-macos-calendar-cli` | Operate macOS Calendar.app from the command line (list/search/create/update/delete events) using built-in `osascript` (no Python). |
 
 ## Supported Agents
 
@@ -31,6 +32,7 @@ Skill-specific runtime requirements:
 |-------|----------------------|
 | `prism-dongchedi-scraper` | Python `3.11+`, `browser-use`, `Obsidian-cli` when publishing |
 | `prism-doc-to-obsidian` | Python `3.10-3.13`, Obsidian `1.12+` with CLI enabled and running, MinerU |
+| `prism-macos-calendar-cli` | macOS with Calendar.app, `/usr/bin/osascript` (may require macOS Automation permission) |
 
 ## Installation
 
@@ -49,6 +51,7 @@ Install one or more skills into your agent's local skill directory.
 mkdir -p ~/.codex/skills
 cp -R skills/prism-dongchedi-scraper ~/.codex/skills/prism-dongchedi-scraper
 cp -R skills/prism-doc-to-obsidian ~/.codex/skills/prism-doc-to-obsidian
+cp -R skills/prism-macos-calendar-cli ~/.codex/skills/prism-macos-calendar-cli
 ```
 
 ### Claude Code
@@ -57,6 +60,7 @@ cp -R skills/prism-doc-to-obsidian ~/.codex/skills/prism-doc-to-obsidian
 mkdir -p ~/.claude/skills
 cp -R skills/prism-dongchedi-scraper ~/.claude/skills/prism-dongchedi-scraper
 cp -R skills/prism-doc-to-obsidian ~/.claude/skills/prism-doc-to-obsidian
+cp -R skills/prism-macos-calendar-cli ~/.claude/skills/prism-macos-calendar-cli
 ```
 
 ### OpenCode
@@ -65,6 +69,7 @@ cp -R skills/prism-doc-to-obsidian ~/.claude/skills/prism-doc-to-obsidian
 mkdir -p ~/.config/opencode/skills
 cp -R skills/prism-dongchedi-scraper ~/.config/opencode/skills/prism-dongchedi-scraper
 cp -R skills/prism-doc-to-obsidian ~/.config/opencode/skills/prism-doc-to-obsidian
+cp -R skills/prism-macos-calendar-cli ~/.config/opencode/skills/prism-macos-calendar-cli
 ```
 
 Restart the agent tool and confirm it discovers the installed skills.
@@ -117,6 +122,7 @@ See `skills/prism-doc-to-obsidian/SKILL.md` for the workflow, dependency checks,
 skills/
   prism-dongchedi-scraper/
   prism-doc-to-obsidian/
+  prism-macos-calendar-cli/
 docs/plans/
 scripts/
 ```
