@@ -9,6 +9,8 @@ Reusable local skills for AI coding agents.
 | `prism-dongchedi-scraper` | Scrape vehicle configurations from dongchedi.com and publish standardized notes into Obsidian via `Obsidian-cli`. |
 | `prism-doc-to-obsidian` | Convert MinerU-supported documents into Markdown and save confirmed notes into Obsidian with indexes, tags, and cross-note links. |
 | `prism-macos-calendar-cli` | Operate macOS Calendar.app from the command line (list/search/create/update/delete events) using built-in `osascript` (no Python). |
+| `prism-ev-strategy-evolution` | Analyze one brand's pure EV and range-extended EV strategy evolution from Obsidian vehicle notes, including discontinued models and price/configuration/mass tradeoffs. |
+| `prism-brand-launch-research` | Research all press conferences and launch events for a Chinese auto brand across a date range, producing a chronological event timeline and strategic analysis report in Obsidian. |
 
 ## Supported Agents
 
@@ -33,6 +35,8 @@ Skill-specific runtime requirements:
 | `prism-dongchedi-scraper` | Python `3.11+`, `browser-use`, `Obsidian-cli` when publishing |
 | `prism-doc-to-obsidian` | Python `3.10-3.13`, Obsidian `1.12+` with CLI enabled and running, MinerU |
 | `prism-macos-calendar-cli` | macOS with Calendar.app, `/usr/bin/osascript` (may require macOS Automation permission) |
+| `prism-ev-strategy-evolution` | Obsidian `1.12+` with CLI enabled and running |
+| `prism-brand-launch-research` | `agent-reach` or `browser-use`, Obsidian `1.12+` with CLI enabled and running |
 
 ## Installation
 
@@ -52,6 +56,8 @@ mkdir -p ~/.codex/skills
 cp -R skills/prism-dongchedi-scraper ~/.codex/skills/prism-dongchedi-scraper
 cp -R skills/prism-doc-to-obsidian ~/.codex/skills/prism-doc-to-obsidian
 cp -R skills/prism-macos-calendar-cli ~/.codex/skills/prism-macos-calendar-cli
+cp -R skills/prism-ev-strategy-evolution ~/.codex/skills/prism-ev-strategy-evolution
+cp -R skills/prism-brand-launch-research ~/.codex/skills/prism-brand-launch-research
 ```
 
 ### Claude Code
@@ -61,6 +67,8 @@ mkdir -p ~/.claude/skills
 cp -R skills/prism-dongchedi-scraper ~/.claude/skills/prism-dongchedi-scraper
 cp -R skills/prism-doc-to-obsidian ~/.claude/skills/prism-doc-to-obsidian
 cp -R skills/prism-macos-calendar-cli ~/.claude/skills/prism-macos-calendar-cli
+cp -R skills/prism-ev-strategy-evolution ~/.claude/skills/prism-ev-strategy-evolution
+cp -R skills/prism-brand-launch-research ~/.claude/skills/prism-brand-launch-research
 ```
 
 ### OpenCode
@@ -70,6 +78,8 @@ mkdir -p ~/.config/opencode/skills
 cp -R skills/prism-dongchedi-scraper ~/.config/opencode/skills/prism-dongchedi-scraper
 cp -R skills/prism-doc-to-obsidian ~/.config/opencode/skills/prism-doc-to-obsidian
 cp -R skills/prism-macos-calendar-cli ~/.config/opencode/skills/prism-macos-calendar-cli
+cp -R skills/prism-ev-strategy-evolution ~/.config/opencode/skills/prism-ev-strategy-evolution
+cp -R skills/prism-brand-launch-research ~/.config/opencode/skills/prism-brand-launch-research
 ```
 
 Restart the agent tool and confirm it discovers the installed skills.
@@ -116,6 +126,35 @@ Note bodies are written via `obsidian-cli`. Binary attachments are copied throug
 
 See `skills/prism-doc-to-obsidian/SKILL.md` for the workflow, dependency checks, bilingual prompts, and confirmation-first publishing rules.
 
+### `prism-ev-strategy-evolution`
+
+Typical prompt:
+
+```text
+Use prism-ev-strategy-evolution to analyze ZEEKR from Obsidian.
+Read all models under 汽车/品牌库/ZEEKR, including discontinued models.
+Separate pure EV and range-extended EV lines.
+Explain the relationship between configuration, price, and vehicle mass.
+Write the result to 汽车/配置分析/三电分析/ZEEKR.
+```
+
+This skill is intentionally prompt-first. It relies on `obsidian-cli`, reasoning, and the prompt assets in `references/` instead of fixed-rule analysis scripts.
+
+See `skills/prism-ev-strategy-evolution/SKILL.md` for the workflow and output contract.
+
+### `prism-brand-launch-research`
+
+Typical prompt:
+
+```text
+Use prism-brand-launch-research to research ZEEKR from 2023-01-01 to today.
+Write the timeline and strategic analysis to Obsidian.
+```
+
+This skill is prompt-first. It uses `agent-reach` (or `browser-use`) for multi-source web search and `obsidian-cli` for writing results to Obsidian. No Python required.
+
+See `skills/prism-brand-launch-research/SKILL.md` for the workflow and output contract.
+
 ## Repository Structure
 
 ```text
@@ -123,6 +162,8 @@ skills/
   prism-dongchedi-scraper/
   prism-doc-to-obsidian/
   prism-macos-calendar-cli/
+  prism-ev-strategy-evolution/
+  prism-brand-launch-research/
 docs/plans/
 scripts/
 ```
