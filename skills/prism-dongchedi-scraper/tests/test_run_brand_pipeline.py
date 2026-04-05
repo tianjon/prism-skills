@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import ANY, MagicMock, patch
 
 from scripts import run_brand_pipeline
 from scripts.run_brand_pipeline import (
@@ -11,6 +11,7 @@ from scripts.run_brand_pipeline import (
     build_parser,
     create_run_dir,
     ensure_obsidian_available,
+    materialize_seed_artifacts,
     trim_target_models,
 )
 
@@ -31,6 +32,15 @@ class RunBrandPipelineTest(unittest.TestCase):
         self.assertEqual(args.limit_series, 3)
         self.assertEqual(args.limit_configs, 2)
         self.assertTrue(args.interactive)
+
+    def test_build_parser_accepts_series_seed_file(self) -> None:
+        parser = build_parser()
+        args = parser.parse_args([
+            "--brand", "小米汽车",
+            "--series-seed-file", "/tmp/xiaomi-series.json",
+        ])
+
+        self.assertEqual(args.series_seed_file, "/tmp/xiaomi-series.json")
 
     def test_build_parser_rejects_reserved_params_batch_option(self) -> None:
         parser = build_parser()
@@ -195,6 +205,70 @@ class RunBrandPipelineTest(unittest.TestCase):
 
         self.assertEqual(exit_code, 0)
         self.assertIn(["/tmp/python", "scripts/diff.py", "--skip-discontinued"], commands)
+
+    def test_materialize_seed_artifacts_writes_seeded_search_and_target_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            run_dir = Path(tmpdir)
+            series_seed = [
+                {
+                    "series_id": "6187",
+                    "name": "小米SU7",
+                    "price_range": "21.59-30.39万",
+                    "level": "中大型车",
+                    "energy_type": "纯电动",
+                    "brand": "小米汽车",
+                }
+            ]
+
+            materialize_seed_artifacts(run_dir, "小米汽车", series_seed)
+
+            search_results = json.loads((run_dir / "search-results.json").read_text("utf-8"))
+            target_models = json.loads((run_dir / "target-models.json").read_text("utf-8"))
+            self.assertEqual(search_results[0]["series_id"], "6187")
+            self.assertEqual(target_models[0]["name"], "小米SU7")
+            self.assertEqual(target_models[0]["brand"], "小米汽车")
+
+    def test_main_with_series_seed_file_skips_browser_search(self) -> None:
+        commands: list[list[str]] = []
+
+        def fake_run(cmd, env):
+            commands.append(cmd)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            run_dir = Path(tmpdir) / "run"
+            run_dir.mkdir()
+            seed_path = Path(tmpdir) / "xiaomi-series.json"
+            seed_path.write_text(
+                json.dumps([
+                    {
+                        "series_id": "6187",
+                        "name": "小米SU7",
+                        "price_range": "21.59-30.39万",
+                        "level": "中大型车",
+                        "energy_type": "纯电动",
+                        "brand": "小米汽车",
+                    }
+                ], ensure_ascii=False),
+                encoding="utf-8",
+            )
+
+            with patch("scripts.run_brand_pipeline.ensure_python_available"), \
+                 patch("scripts.run_brand_pipeline.ensure_obsidian_available"), \
+                 patch("scripts.run_brand_pipeline.resolve_runtime", return_value=("/tmp/python", "/tmp/browser-use")), \
+                 patch("scripts.run_brand_pipeline.create_run_dir", return_value=run_dir), \
+                 patch("scripts.run_brand_pipeline.assert_non_empty_json_list", return_value=[{"ok": True}]), \
+                 patch("scripts.run_brand_pipeline._run", side_effect=fake_run), \
+                 patch("scripts.run_brand_pipeline._run_configs_in_batches") as run_configs, \
+                 patch("scripts.run_brand_pipeline.subprocess.run", return_value=MagicMock(returncode=0)):
+                exit_code = run_brand_pipeline.main([
+                    "--brand", "小米汽车",
+                    "--series-seed-file", str(seed_path),
+                ])
+
+        self.assertEqual(exit_code, 0)
+        self.assertFalse(any(cmd and cmd[0] == "/tmp/browser-use" for cmd in commands))
+        self.assertFalse(any(len(cmd) >= 2 and cmd[1] == "scripts/prepare_targets.py" for cmd in commands))
+        run_configs.assert_called_once_with("/tmp/python", ANY, run_dir, 5)
 
     def test_build_parser_rejects_deprecated_publish_and_history_flags(self) -> None:
         parser = build_parser()

@@ -37,6 +37,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run the dongchedi brand pipeline")
     parser.add_argument("--brand", required=True, help="Brand name, for example BMW")
     parser.add_argument("--vault", default="", help="Optional Obsidian vault name")
+    parser.add_argument("--series-seed-file", default="", help="Optional JSON file with preconfirmed series metadata to bypass brand search")
     parser.add_argument("--limit-series", type=int, default=0, help="Process only the first N series, 0 means all")
     parser.add_argument("--limit-configs", type=int, default=0, help="Process only the first N configs, 0 means all")
     parser.add_argument("--configs-batch-size", type=int, default=5, help="Batch size for config extraction")
@@ -117,6 +118,66 @@ def assert_non_empty_json_list(path: Path, message: str) -> list[dict]:
     if not isinstance(payload, list) or not payload:
         raise RuntimeError(message)
     return payload
+
+
+def load_series_seed_file(seed_path: str) -> list[dict]:
+    path = Path(seed_path).expanduser().resolve()
+    payload = json.loads(path.read_text("utf-8"))
+    if not isinstance(payload, list) or not payload:
+        raise RuntimeError(f"series seed file must contain a non-empty JSON list: {path}")
+
+    normalized = []
+    for index, item in enumerate(payload):
+        if not isinstance(item, dict):
+            raise RuntimeError(f"series seed entry #{index + 1} must be an object: {path}")
+        series_id = str(item.get("series_id", "")).strip()
+        name = str(item.get("name", "")).strip()
+        if not series_id or not name:
+            raise RuntimeError(f"series seed entry #{index + 1} must include non-empty `series_id` and `name`: {path}")
+        normalized.append(
+            {
+                "series_id": series_id,
+                "name": name,
+                "price_range": str(item.get("price_range", "")).strip(),
+                "level": str(item.get("level", "")).strip(),
+                "energy_type": str(item.get("energy_type", "")).strip(),
+                "brand": str(item.get("brand", "")).strip(),
+                "is_target": bool(item.get("is_target", True)),
+                "is_history": bool(item.get("is_history", False)),
+            }
+        )
+    return normalized
+
+
+def materialize_seed_artifacts(run_dir: Path, brand: str, series_seed: list[dict]) -> None:
+    search_results = [
+        {
+            "name": item["name"],
+            "series_id": item["series_id"],
+            "price_range": item.get("price_range", ""),
+            "level": item.get("level", ""),
+            "energy_type": item.get("energy_type", ""),
+        }
+        for item in series_seed
+    ]
+    target_models = [
+        {
+            **search_item,
+            "brand": item.get("brand", ""),
+            "is_target": item.get("is_target", True),
+            "is_history": item.get("is_history", False),
+        }
+        for search_item, item in zip(search_results, series_seed)
+    ]
+    metadata = {
+        "keyword": brand,
+        "mode": "series-seed-file",
+        "result_count": len(search_results),
+        "fetched_at": datetime.now().isoformat(),
+    }
+    (run_dir / "search-results.json").write_text(json.dumps(search_results, ensure_ascii=False, indent=2), encoding="utf-8")
+    (run_dir / "search-metadata.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
+    (run_dir / "target-models.json").write_text(json.dumps(target_models, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 
@@ -254,7 +315,7 @@ def _run(cmd: list[str], env: dict[str, str]) -> None:
 
 
 
-def _run_configs_in_batches(browser_use: str, session_name: str, env: dict[str, str], run_dir: Path, batch_size: int) -> None:
+def _run_configs_in_batches(python_bin: str, env: dict[str, str], run_dir: Path, batch_size: int) -> None:
     series_list = json.loads((run_dir / "series-list.json").read_text("utf-8"))
     batches = build_param_batches(len(series_list), batch_size)
     batch_paths = []
@@ -264,13 +325,8 @@ def _run_configs_in_batches(browser_use: str, session_name: str, env: dict[str, 
         batch_env["DONGCHEDI_CONFIGS_OFFSET"] = str(offset)
         batch_env["DONGCHEDI_CONFIGS_LIMIT"] = str(limit)
         batch_env["DONGCHEDI_CONFIGS_OUTPUT"] = output_name
-        batch_session = f"{session_name}-configs-{batch_index}"
-        print(f"configs batch {batch_index + 1}/{len(batches)}: offset={offset}, limit={limit}, session={batch_session}")
-        try:
-            _run([browser_use, "--session", batch_session, "open", "https://www.dongchedi.com"], batch_env)
-            _run([browser_use, "--session", batch_session, "python", "--file", "scripts/configs.py"], batch_env)
-        finally:
-            subprocess.run([browser_use, "--session", batch_session, "close"], cwd=SKILL_DIR, env=batch_env, check=False)
+        print(f"configs batch {batch_index + 1}/{len(batches)}: offset={offset}, limit={limit}")
+        _run([python_bin, "scripts/configs.py"], batch_env)
         batch_paths.append(run_dir / output_name)
     merge_json_list_outputs(batch_paths, run_dir / "all-configs.json")
 
@@ -294,6 +350,7 @@ def main(argv: list[str] | None = None) -> int:
     # Always include historical/discontinued models. Keep the most recent N model years.
     env["DONGCHEDI_INCLUDE_HISTORY"] = "1"
     env["DONGCHEDI_HISTORY_CUTOFF_YEAR"] = str(datetime.now().year - args.history_window_years + 1)
+    seed_series = load_series_seed_file(args.series_seed_file) if args.series_seed_file else []
 
     print(f"run_dir={run_dir}")
     print(f"session={session_name}")
@@ -301,22 +358,30 @@ def main(argv: list[str] | None = None) -> int:
     print(f"browser_use={browser_use}")
 
     try:
-        _run([browser_use, "--session", session_name, "open", "https://www.dongchedi.com"], env)
-        _run([browser_use, "--session", session_name, "python", f"KEYWORD = {args.brand!r}"], env)
-        _run([browser_use, "--session", session_name, "python", "--file", "scripts/search.py"], env)
-        assert_non_empty_json_list(run_dir / "search-results.json", "empty search results")
-
-        _run([python_bin, "scripts/prepare_targets.py"], env)
+        if seed_series:
+            materialize_seed_artifacts(run_dir, args.brand, seed_series)
+        else:
+            _run([browser_use, "--session", session_name, "open", "https://www.dongchedi.com"], env)
+            _run([browser_use, "--session", session_name, "python", f"KEYWORD = {args.brand!r}"], env)
+            _run([browser_use, "--session", session_name, "python", "--file", "scripts/search.py"], env)
+            try:
+                assert_non_empty_json_list(run_dir / "search-results.json", "empty search results")
+            except RuntimeError as exc:
+                raise RuntimeError(
+                    "empty search results. If dongchedi brand search is blocked or returns captcha, "
+                    "rerun with --series-seed-file <json>."
+                ) from exc
+            _run([python_bin, "scripts/prepare_targets.py"], env)
         if args.limit_series > 0:
             trim_target_models(run_dir / "target-models.json", args.limit_series)
             print(f"trimmed target models to first {args.limit_series}")
         assert_non_empty_json_list(run_dir / "target-models.json", "empty target models")
 
         if args.with_competitors:
-            _run([browser_use, "--session", session_name, "python", "--file", "scripts/competitors.py"], env)
+            _run([python_bin, "scripts/competitors.py"], env)
 
         _run([python_bin, "scripts/build_series_list.py"], env)
-        _run_configs_in_batches(browser_use, session_name, env, run_dir, args.configs_batch_size)
+        _run_configs_in_batches(python_bin, env, run_dir, args.configs_batch_size)
         assert_non_empty_json_list(run_dir / "all-configs.json", "empty configs extracted")
 
         if args.limit_configs > 0:

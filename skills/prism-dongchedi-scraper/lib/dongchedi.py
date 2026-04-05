@@ -26,6 +26,14 @@ def series_url(series_id: str) -> str:
     return f"https://www.dongchedi.com/auto/series/{series_id}"
 
 
+def series_car_list_url(series_id: str, city_name: str = "北京") -> str:
+    """Build the series config-list API URL."""
+    return (
+        "https://www.dongchedi.com/motor/pc/car/series/car_list"
+        f"?series_id={quote(str(series_id))}&city_name={quote(city_name)}"
+    )
+
+
 def params_url(car_id: str) -> str:
     """Build dongchedi params page URL."""
     return f"https://www.dongchedi.com/auto/params-carIds-{car_id}"
@@ -329,6 +337,17 @@ def filter_recent_history_configs(configs: list[CarConfig], cutoff_year: int) ->
     return kept
 
 
+def _normalize_text_field(raw_value) -> str:
+    """Normalize series-level metadata fields into plain strings."""
+    if raw_value is None:
+        return ""
+    if isinstance(raw_value, str):
+        return raw_value
+    if isinstance(raw_value, (int, float, bool)):
+        return str(raw_value)
+    return ""
+
+
 def extract_series_info(ssr_data: dict) -> dict:
     """Extract series-level info (level, energy_type, price) from SSR data.
 
@@ -344,23 +363,27 @@ def extract_series_info(ssr_data: dict) -> dict:
 
     series_info = page_props.get("seriesInfo", {}) if isinstance(page_props, dict) else {}
     if isinstance(series_info, dict):
-        info["name"] = series_info.get("series_name", "") or info["name"]
-        info["level"] = series_info.get("series_type", "") or info["level"]
-        info["energy_type"] = series_info.get("energy_type", "") or info["energy_type"]
-        info["price_range"] = series_info.get("official_price", "") or info["price_range"]
+        info["name"] = _normalize_text_field(series_info.get("series_name", "")) or info["name"]
+        info["level"] = _normalize_text_field(series_info.get("series_type", "")) or info["level"]
+        info["energy_type"] = _normalize_text_field(series_info.get("energy_type", "")) or info["energy_type"]
+        info["price_range"] = _normalize_text_field(series_info.get("official_price", "")) or info["price_range"]
 
-    info["name"] = info["name"] or page_props.get("seriesName", "")
+    info["name"] = info["name"] or _normalize_text_field(page_props.get("seriesName", ""))
 
     series_home_head = page_props.get("seriesHomeHead", {})
     if isinstance(series_home_head, dict):
-        info["level"] = info["level"] or series_home_head.get("series_type", "")
-        info["price_range"] = info["price_range"] or series_home_head.get("sub_title", "") or series_home_head.get("official_price", "")
+        info["level"] = info["level"] or _normalize_text_field(series_home_head.get("series_type", ""))
+        info["price_range"] = (
+            info["price_range"]
+            or _normalize_text_field(series_home_head.get("sub_title", ""))
+            or _normalize_text_field(series_home_head.get("official_price", ""))
+        )
 
     overview_data = page_props.get("overviewData", {})
     if isinstance(overview_data, dict):
-        info["energy_type"] = info["energy_type"] or overview_data.get("energy_type", "")
-        info["level"] = info["level"] or overview_data.get("series_type", "")
-        info["price_range"] = info["price_range"] or overview_data.get("official_price", "")
+        info["energy_type"] = info["energy_type"] or _normalize_text_field(overview_data.get("energy_type", ""))
+        info["level"] = info["level"] or _normalize_text_field(overview_data.get("series_type", ""))
+        info["price_range"] = info["price_range"] or _normalize_text_field(overview_data.get("official_price", ""))
 
     return info
 

@@ -33,10 +33,17 @@ def obsidian_cmd(command: str, *params: str, vault: str = "", timeout: int = 30)
     return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
 
 
+def _output_indicates_missing_file(output: str) -> bool:
+    normalized = (output or "").strip().lower()
+    return normalized.startswith("error: file ") and " not found" in normalized
+
+
 def obsidian_read_property(path: str, prop: str, vault: str = "") -> str:
     try:
         result = obsidian_cmd("property:read", f"name={prop}", f"path={path}", vault=vault, timeout=10)
-        return result.stdout.strip() if result.returncode == 0 else ""
+        if result.returncode != 0 or _output_indicates_missing_file(result.stdout):
+            return ""
+        return result.stdout.strip()
     except Exception:
         return ""
 
@@ -44,7 +51,7 @@ def obsidian_read_property(path: str, prop: str, vault: str = "") -> str:
 def obsidian_note_exists(path: str, vault: str = "") -> bool:
     try:
         result = obsidian_cmd("read", f"path={path}", vault=vault, timeout=10)
-        return result.returncode == 0
+        return result.returncode == 0 and not _output_indicates_missing_file(result.stdout)
     except Exception:
         return False
 

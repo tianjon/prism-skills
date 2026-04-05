@@ -9,6 +9,8 @@ import importlib
 import json
 import os
 import sys
+import time
+import urllib.request
 from pathlib import Path
 
 module_file = globals().get("__file__")
@@ -27,16 +29,41 @@ ensure_not_captcha_interstitial = dongchedi.ensure_not_captcha_interstitial
 classify_competitor = dongchedi.classify_competitor
 from lib.types import CarModel
 
+
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+
+
+def fetch_html(url: str) -> str:
+    browser_obj = globals().get("browser")
+    if browser_obj is not None:
+        browser_obj.goto(url)
+        browser_obj.wait(3)
+        return browser_obj.html
+
+    last_error = None
+    for attempt in range(3):
+        try:
+            request = urllib.request.Request(
+                url,
+                headers={
+                    "User-Agent": USER_AGENT,
+                    "Accept-Language": "zh-CN,zh;q=0.9",
+                },
+            )
+            with urllib.request.urlopen(request, timeout=30) as response:
+                return response.read().decode("utf-8", errors="ignore")
+        except Exception as exc:
+            last_error = exc
+            time.sleep(1 + attempt)
+    raise last_error
+
 targets = [CarModel(**m) for m in json.loads((TMP_DIR / "target-models.json").read_text("utf-8"))]
 result = {}
 
 for target in targets:
     print(f"\n--- {target.name} (series_id={target.series_id}) ---")
 
-    browser.goto(series_url(target.series_id))
-    browser.wait(3)
-
-    html = browser.html
+    html = fetch_html(series_url(target.series_id))
     ensure_not_captcha_interstitial(html, f"series page {target.series_id}")
     ssr_data = parse_ssr_data(html)
 

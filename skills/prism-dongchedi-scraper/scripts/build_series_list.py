@@ -36,6 +36,29 @@ def _targets_only_entries(target_models: list[CarModel]) -> list[dict]:
     ]
 
 
+def _merge_seed_metadata(entries: list[dict], raw_target_items: list[dict]) -> list[dict]:
+    metadata_by_series_id = {
+        str(item.get("series_id", "")): item
+        for item in raw_target_items
+        if str(item.get("series_id", "")).strip()
+    }
+
+    for entry in entries:
+        if not entry.get("is_target"):
+            continue
+        metadata = metadata_by_series_id.get(str(entry.get("series_id", "")))
+        if not metadata:
+            continue
+        if metadata.get("brand"):
+            entry["brand"] = metadata["brand"]
+        for field in ("price_range", "level", "energy_type"):
+            if metadata.get(field):
+                entry[field] = metadata[field]
+        if "is_history" in metadata:
+            entry["is_history"] = bool(metadata.get("is_history"))
+    return entries
+
+
 
 def main() -> None:
     target_path = TMP_DIR / "target-models.json"
@@ -44,7 +67,8 @@ def main() -> None:
     if not target_path.exists():
         raise FileNotFoundError(f"{target_path} not found. Prepare target models first.")
 
-    target_models = [CarModel(**item) for item in json.loads(target_path.read_text("utf-8"))]
+    raw_target_items = json.loads(target_path.read_text("utf-8"))
+    target_models = [CarModel(**item) for item in raw_target_items]
 
     if competitors_path.exists():
         competitors_data = json.loads(competitors_path.read_text("utf-8"))
@@ -52,6 +76,7 @@ def main() -> None:
     else:
         competitors_data = {}
         entries = _targets_only_entries(target_models)
+    entries = _merge_seed_metadata(entries, raw_target_items)
 
     output_path = TMP_DIR / "series-list.json"
     output_path.write_text(json.dumps(entries, ensure_ascii=False, indent=2), encoding="utf-8")

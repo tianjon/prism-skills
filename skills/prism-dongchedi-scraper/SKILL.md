@@ -117,6 +117,7 @@ python3 scripts/run_brand_pipeline.py --brand <brand> [flags]
 2. Use flags to express user choices instead of relying on prompts. Common flags:
 
 - `--with-competitors`
+- `--series-seed-file <json>`
 - `--limit-series <n>`
 - `--limit-configs <n>`
 - `--configs-batch-size <n>`
@@ -144,6 +145,22 @@ Common examples:
 python3 scripts/run_brand_pipeline.py --brand BMW
 python3 scripts/run_brand_pipeline.py --brand Mercedes-Benz --limit-series 3
 python3 scripts/run_brand_pipeline.py --brand Audi --with-competitors --vault Cars
+python3 scripts/run_brand_pipeline.py --brand Xiaomi --series-seed-file tmp/xiaomi-series.json --vault Cars
+```
+
+Series seed files are JSON lists of preconfirmed series metadata used to bypass brand search when dongchedi search is blocked, for example:
+
+```json
+[
+  {
+    "series_id": "6187",
+    "name": "小米SU7",
+    "price_range": "21.59-30.39万",
+    "level": "中大型车",
+    "energy_type": "纯电动",
+    "brand": "小米汽车"
+  }
+]
 ```
 
 ## Failure Handling
@@ -153,7 +170,7 @@ python3 scripts/run_brand_pipeline.py --brand Audi --with-competitors --vault Ca
 - If `obsidian` is unavailable, stop and instruct the user to install and verify Obsidian CLI
 - If `--interactive` is used without a TTY, stop and tell the user to re-run without `--interactive` and pass explicit flags instead
 - If scraping returns empty or invalid JSON artifacts, stop and report which required file is missing or empty
-- If dongchedi anti-bot or live site changes break extraction, report the failing stage and keep the existing output contract unchanged
+- If dongchedi anti-bot or live site changes break brand search, rerun with `--series-seed-file` so the pipeline can continue with preconfirmed series metadata while preserving the same output contract
 
 ## Directory Layout
 

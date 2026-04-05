@@ -103,6 +103,29 @@ class SeriesConfigParserTest(unittest.TestCase):
         self.assertEqual(info["price_range"], "25.20-39.98万")
         self.assertEqual(info["energy_type"], "汽油")
 
+    def test_extract_series_info_normalizes_non_string_series_type(self) -> None:
+        ssr_data = {
+            "props": {
+                "pageProps": {
+                    "seriesName": "智己LS6",
+                    "seriesHomeHead": {
+                        "series_type": 1,
+                        "sub_title": "21.29-28.49万",
+                    },
+                    "overviewData": {
+                        "energy_type": "增程式",
+                    },
+                }
+            }
+        }
+
+        info = extract_series_info(ssr_data)
+
+        self.assertEqual(info["name"], "智己LS6")
+        self.assertEqual(info["level"], "1")
+        self.assertEqual(info["price_range"], "21.29-28.49万")
+        self.assertEqual(info["energy_type"], "增程式")
+
 
 if __name__ == "__main__":
     unittest.main()
