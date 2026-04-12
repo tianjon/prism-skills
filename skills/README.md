@@ -21,6 +21,8 @@ Store all repository skills in this directory.
 - `prism-brand-launch-research/`
 - `_template/` — starter scaffold for future skills
 
+Repository-wide permission expectations are documented in `docs/permissions-matrix.md`.
+
 Create a new skill with:
 
 ```bash

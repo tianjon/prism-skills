@@ -45,5 +45,6 @@ Write requests stay safe by default:
 - `create/update/delete` should still be previewed via dry-run before writing
 
 If Automation permission is denied, see `references/automation-permissions.md`.
+For the repository-wide minimum permission matrix, see `../../docs/permissions-matrix.md`.
 
 For the full contract and failure handling, read `SKILL.md`.

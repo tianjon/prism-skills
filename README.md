@@ -32,11 +32,27 @@ Skill-specific runtime requirements:
 
 | Skill | Runtime Requirements |
 |-------|----------------------|
-| `prism-dongchedi-scraper` | Python `3.11+`, `browser-use`, `Obsidian-cli` when publishing |
-| `prism-doc-to-obsidian` | Python `3.10-3.13`, Obsidian `1.12+` with CLI enabled and running, MinerU |
-| `prism-macos-calendar-cli` | macOS with Calendar.app, `/usr/bin/osascript` (may require macOS Automation permission) |
-| `prism-ev-strategy-evolution` | Obsidian `1.12+` with CLI enabled and running |
-| `prism-brand-launch-research` | `agent-reach` or `browser-use`, Obsidian `1.12+` with CLI enabled and running |
+| `prism-dongchedi-scraper` | Python `3.11+`, `browser-use`, network access to `dongchedi.com`, browser automation support, `Obsidian-cli` and vault write access for the default pipeline |
+| `prism-doc-to-obsidian` | Python `3.10-3.13`, Obsidian `1.12+` with CLI enabled and running, MinerU, network access for MinerU/model bootstrap when needed, and filesystem write access to the target vault |
+| `prism-macos-calendar-cli` | macOS with Calendar.app, `/usr/bin/osascript`, GUI session access, and macOS Automation permission for the calling terminal |
+| `prism-ev-strategy-evolution` | Obsidian `1.12+` with CLI enabled and running, plus read/write access to the active vault |
+| `prism-brand-launch-research` | `agent-reach` or `browser-use`, external web access, Obsidian `1.12+` with CLI enabled and running, plus read/write access to the active vault |
+
+## Sandbox And Permissions
+
+These skills are functional-first. They may require permissions outside the current repository, because several workflows intentionally operate on live desktop apps, network services, or an external Obsidian vault.
+
+Common permission patterns:
+
+- `obsidian`-based skills write to the real vault, not this repository, so a workspace-only filesystem sandbox is usually insufficient.
+- `prism-dongchedi-scraper` may create or repair a local Python runtime, install `browser-use`, open a browser session, access `dongchedi.com`, and then write notes into Obsidian.
+- `prism-doc-to-obsidian` may create a virtualenv under `$HOME/.base-env/`, install MinerU, download models, and copy extracted assets into the target vault.
+- `prism-macos-calendar-cli` is macOS-only and depends on Apple Events / Automation permission to control Calendar.app.
+- Prompt-first research skills such as `prism-brand-launch-research` still require live web access plus Obsidian read/write access, even though they do not ship Python scripts.
+
+If your agent runs inside a strict sandbox, expect to grant the minimum required network, GUI automation, and out-of-workspace filesystem permissions per skill.
+
+For a per-skill breakdown, see [docs/permissions-matrix.md](docs/permissions-matrix.md).
 
 ## Installation
 
@@ -88,18 +104,21 @@ Restart the agent tool and confirm it discovers the installed skills.
 
 ### `prism-dongchedi-scraper`
 
+The canonical entrypoint is publish-first, not scrape-only. Running the command below will scrape live data, diff against existing Obsidian notes, and write the rendered result back into the vault.
+
 ```bash
 cd skills/prism-dongchedi-scraper
 python3 scripts/run_brand_pipeline.py --brand BMW
 ```
 
-By default the pipeline also publishes notes into Obsidian (overwriting generated note paths). This requires the `obsidian` CLI to be available. To target a specific vault:
+This default run publishes notes into Obsidian and overwrites the generated target note paths. This requires the `obsidian` CLI to be available. To target a specific vault:
 
 ```bash
 python3 scripts/run_brand_pipeline.py --brand BMW --vault Cars
 ```
 
-Note: publishing is handled by this skill itself via `scripts/diff.py` and `scripts/store.py`.
+Note: the canonical entrypoint itself is responsible for publishing via `scripts/diff.py` and `scripts/store.py`; there is no scrape-only mode on that default path.
+This default pipeline also assumes network access, browser automation, and write access to the real Obsidian vault.
 
 See `skills/prism-dongchedi-scraper/SKILL.md` for the full workflow and `skills/prism-dongchedi-scraper/DISTRIBUTION.md` for runtime notes.
 
@@ -123,6 +142,7 @@ python3 scripts/import_to_obsidian.py --manifest tmp/run/manifest.json --target-
 ```
 
 Note bodies are written via `obsidian-cli`. Binary attachments are copied through the filesystem because the CLI is text-only.
+On sandboxed agents, this usually also requires write access outside the repository because the destination vault is external.
 
 See `skills/prism-doc-to-obsidian/SKILL.md` for the workflow, dependency checks, bilingual prompts, and confirmation-first publishing rules.
 

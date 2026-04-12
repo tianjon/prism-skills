@@ -51,6 +51,8 @@ Permissions:
 
 - Calendar automation may prompt for macOS Automation permission (Terminal/iTerm controlling Calendar).
 - See `references/automation-permissions.md` for recovery steps.
+- The CLI also assumes a macOS GUI session where Calendar.app can be launched or activated.
+- Repository-local filesystem access is not enough for this skill; the critical permission boundary is Apple Events / Automation access to Calendar.app.
 
 ## Output Contract
 

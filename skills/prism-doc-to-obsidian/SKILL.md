@@ -81,6 +81,13 @@ Dependency policy:
 - If a required Obsidian skill is missing, install it before continuing.
 - Stop immediately after failed installation or failed model download.
 
+Sandbox and permission expectations:
+
+- Bootstrapping may create a virtualenv under `$HOME/.base-env/` and may download Python/tooling via `uv`.
+- MinerU installation and model download require network access unless already preinstalled and cached.
+- Final note bodies go through `obsidian-cli`, but extracted assets are copied into the real vault through the filesystem, so repository-only write access is not sufficient.
+- On sandboxed agents, expect both out-of-workspace filesystem permission and network permission for first-run setup.
+
 ## Output Contract
 
 This skill always follows a confirmation-first write model.

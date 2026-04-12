@@ -62,7 +62,14 @@ The pipeline uses this runtime selection strategy:
 3. If local bootstrap is required, install Python dependencies first and then run `browser-use install`
 4. If Python is missing entirely, stop and tell the user to install Python `3.11+`
 5. If `uv` is required but not installed, stop and tell the user to install `uv`
-6. If publishing is requested and `obsidian` is unavailable, stop and tell the user to install and verify Obsidian CLI first
+6. On the canonical entrypoint, publishing is part of the default run; if `obsidian` is unavailable, stop and tell the user to install and verify Obsidian CLI first
+
+Sandbox and permission expectations:
+
+- The canonical entrypoint is functional-first and publishes to Obsidian by default, so it requires write access to the real vault rather than repository-local storage only.
+- If dependencies are missing, the entrypoint may create a local `.venv`, install packages with `uv pip`, and run `browser-use install`.
+- Scraping requires live network access to `dongchedi.com`.
+- Browser automation requires a runnable browser/GUI environment compatible with `browser-use`.
 
 Optional manual setup for a fresh machine:
 
@@ -133,9 +140,9 @@ python3 scripts/run_brand_pipeline.py --brand <brand> [flags]
 - optionally collect competitors
 - build series list
 - collect configs in batches
-- optionally collect params
-- optionally diff against current Obsidian notes
-- optionally write notes to Obsidian
+- collect params
+- diff against current Obsidian notes
+- write notes to Obsidian
 
 5. Inspect the run directory under `tmp/runs/` for JSON artifacts and debug outputs.
 

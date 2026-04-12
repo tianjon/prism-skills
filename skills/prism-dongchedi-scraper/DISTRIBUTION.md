@@ -9,6 +9,7 @@ This skill scrapes structured vehicle data from dongchedi.com and can publish no
 - Default: non-interactive CLI execution driven by explicit flags
 - Optional: `--interactive` for a human terminal session
 - Canonical entrypoint: `scripts/run_brand_pipeline.py`
+- The canonical entrypoint is publish-first: it does not stop at JSON artifacts, and it writes the final result into Obsidian by default
 
 ## Environment Requirements
 
@@ -38,6 +39,7 @@ uv run browser-use install
 
 - All Obsidian writes go through `obsidian`
 - Publishing is the default behavior on the canonical entrypoint.
+- The canonical entrypoint should be treated as a full scrape + diff + publish pipeline, not as a scrape-only helper.
 - The pipeline runs `scripts/diff.py` first to generate `changes.json` for monthly summaries and change callouts.
 - When publishing with partial data (for example `--limit-configs`), diff skips discontinued detection to avoid false停售 results.
 - Generated notes overwrite the latest generated version of the same target path
