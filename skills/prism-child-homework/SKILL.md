@@ -1,13 +1,13 @@
 ---
 name: prism-child-homework
-description: Use when the user wants to check a child's math homework from a photo — grade the answers, explain mistakes in age-appropriate student-readable language, generate targeted practice with spaced review, train reflection habits, and maintain a longitudinal Obsidian archive with scientifically-grounded weekly/monthly/yearly summaries. Trigger phrases include 批改/检查/看看数学作业, 讲解这道题, 生成练习题, 本周/本月/今年作业总结, or any message that attaches a homework photo and asks for feedback.
+description: Use when the user wants to check a child's math homework from a photo — grade the answers, explain mistakes in age-appropriate student-readable language, generate targeted practice with spaced review, attach an olympiad-aligned math-modeling enrichment class, train reflection habits, and maintain a longitudinal Obsidian archive with scientifically-grounded weekly/monthly/yearly summaries. Trigger phrases include 批改/检查/看看数学作业, 讲解这道题, 生成练习题, 本周/本月/今年作业总结, or any message that attaches a homework photo and asks for feedback.
 ---
 
 # prism-child-homework
 
 ## Overview
 
-批改照片里的数学作业，用**孩子年龄能读懂的语言**讲解错题，生成针对性练习，并维护 Obsidian 中的长期档案。技能内部把教学法和儿童认知心理学结构化地嵌入诊断与练习设计，但写给孩子和家长看的文字里不出现任何学术术语。
+批改照片里的数学作业，用**孩子年龄能读懂的语言**讲解错题，生成针对性练习，额外附一节**数学建模专题课**（向奥赛靠齐的拔高内容），并维护 Obsidian 中的长期档案。技能内部把教学法和儿童认知心理学结构化地嵌入诊断与练习设计，但写给孩子和家长看的文字里不出现任何学术术语。
 
 内部分析维度（对用户不可见）：
 
@@ -68,7 +68,7 @@ description: Use when the user wants to check a child's math homework from a pho
 
 ### 输出模式（核心）
 
-本技能**每次批改同时产出两种模式**的批改记录，分文件落到不同子目录：
+本技能**每次批改必须同时产出三份文件**，全部落到同一个日期子目录下的三个并列子目录：
 
 - **简洁模式**（`批改记录/YYYY-MM/YYYY-MM-DD/简洁模式/{UNIT_TOPIC}_{INDEX}.md`）
   - 用 **5-callout 套装**（`[!failure]` + 2×`[!tip]` + `[!question]` + `[!success]-`）
@@ -85,13 +85,23 @@ description: Use when the user wants to check a child's math homework from a pho
   - 适合想系统跟踪学习过程、回读历史错题的家庭
   - 模板在 `references/summary-templates.md`
 
-### 两种模式的关系
+- **数学建模专题课**（`批改记录/YYYY-MM/YYYY-MM-DD/数学建模/{UNIT_TOPIC}_{INDEX}.md`）
+  - 承接当日 `UNIT_TOPIC`，把课堂概念推到**奥赛靠齐**的难度，练"把实际情境翻译成数学式子"
+  - 必含四块：①建模主题说明 ②建模三步法（抽象→建模→求解/验证）③核心概念讲解 ④**奥赛级练习题**（折叠答案 + 思路）
+  - 难度按年龄阶段分级对标奥赛（A · 趣味幼苗组 / B · 希望杯预备 / C · 华杯初赛级 / D · 华杯决赛入门 & AMC 8 预备 / E · AMC 8/10 & 华杯决赛）
+  - **超出课标**，允许使用课本尚未正式引入但可以通过具象/画图理解的概念（如抽屉原理、穷举构造、奇偶性、不定方程思想）
+  - 正文仍用自然中文，禁用词表同批改记录，不出现"奥赛级别"以外的内部术语（"抽屉原理"等**专有数学名词**允许）
+  - 文末短回顾：2 个"建模视角"问题（见 `references/math-modeling-class.md`）
+  - 模板与难度矩阵在 `references/math-modeling-class.md`
 
-- **每次批改都必须同时产出两份**（简洁 + 完整）——绝不可只产一份
-- **档案 / 索引 / 错题本 / 回访队列 / 周月年报 全部共用**，不分模式（只在批改记录层有两份文件）
-- 两份批改记录的**末尾互相 wikilink**：简洁版末尾链到完整版，完整版末尾链到简洁版
-- 档案 frontmatter 里的 `输出模式` 字段**保留**但**不再决定产出**——仅作为家长主用视图偏好标记
+### 三份文件的关系
+
+- **每次批改必须同时产出三份**（简洁 + 完整 + 数学建模）——少一份即视为不合格
+- **档案 / 索引 / 错题本 / 回访队列 / 周月年报 全部共用**，不分模式
+- **互相 wikilink**：简洁↔完整末尾互链；数学建模末尾链到简洁 + 完整；完整末尾在"关联"区增加链到数学建模
+- 档案 frontmatter 里的 `输出模式` 字段**保留**但**不再决定产出**——仅作为家长主用视图偏好标记（仅对 简洁/完整 二选一生效，不影响建模课）
 - 简洁模式和完整模式**内容必须一致**（同样的错题、同样的根因诊断、同样的正确率、同样的回访安排），只在**展开深度**上不同
+- 数学建模课**独立于批改诊断内容**：不复述错题，不参与回访队列；只借用当日 `UNIT_TOPIC` 作为建模切入点
 
 ### 年龄匹配与上下文载入（核心）
 
@@ -200,9 +210,26 @@ description: Use when the user wants to check a child's math homework from a pho
 - 档案根目录按下列优先级解析：
   1. 用户当前对话中显式提供的路径
   2. `孩子档案.md` 中记录的 `档案根目录`
-  3. 默认：`教育/孩子作业/`（仅作首次引导建议，不写死）
+  3. 环境变量 `$CHILD_HOMEWORK_ARCHIVE_ROOT`
+  4. 阻塞式询问用户（首次建档路径）；不得写死
 - **首次运行必须阻塞式确认**：孩子昵称、**年龄**、（可选）当前年级、档案根目录。不要静默生成。
 - 跨自然周 / 月 / 年边界时，先补齐过期总结，再处理本次作业。
+
+### 环境变量
+
+技能不得在文档或脚本中写死任何个人机器路径。下列变量用于解析绝对/相对位置：
+
+| 变量 | 含义 | 未设置时的行为 |
+|---|---|---|
+| `CHILD_HOMEWORK_VAULT_ROOT` | Obsidian vault 根的**绝对路径**。用于直接 `ls` / `cp` 等绕过 obsidian-cli 的文件系统操作（图片写入、大文件后备写回、列目录）。 | 回退到 `obsidian vault` 命令查询到的路径。仍无法解析则停止并告知。 |
+| `CHILD_HOMEWORK_ARCHIVE_ROOT` | 档案根目录。可以是**相对 vault 的子路径**（如 `教育/家庭作业/数学`）或绝对路径。 | 回退到 `孩子档案.md` 的 `档案根目录`；仍缺失则阻塞式询问用户。 |
+| `BAOYU_GEMINI_CLI` | `baoyu-danger-gemini-web` 技能 CLI 入口的**绝对路径**。 | 默认 `$HOME/.claude/skills/baoyu-danger-gemini-web/scripts/main.ts`。若该默认路径不存在则停止配图并告知。 |
+
+引用规则：
+
+- shell 命令里统一写 `"$CHILD_HOMEWORK_VAULT_ROOT"` / `"$CHILD_HOMEWORK_ARCHIVE_ROOT"` / `"$BAOYU_GEMINI_CLI"`；不要在文档里给出 `/Users/<name>/...` 这类绝对示例。
+- 组合 vault 绝对路径与相对档案根时用 `"$CHILD_HOMEWORK_VAULT_ROOT/$CHILD_HOMEWORK_ARCHIVE_ROOT"`。
+- 档案 frontmatter 写入的 `档案根目录` 字段仍存明文字符串（否则跨会话读不回来）——环境变量只影响运行时解析路径，不影响 vault 内落地内容。
 
 ## Output Contract
 
@@ -213,6 +240,7 @@ Obsidian 档案默认目录（所有路径均在 `档案根目录` 之下）：
 - `_回访队列.md` — 学习队列（活跃错题到期表）
 - `批改记录/YYYY-MM/YYYY-MM-DD/简洁模式/{UNIT_TOPIC}_{INDEX}.md` — **每次批改必须产出**，5-callout 套装（3 块讲解）
 - `批改记录/YYYY-MM/YYYY-MM-DD/完整模式/{UNIT_TOPIC}_{INDEX}.md` — **每次批改必须产出**，8-callout 套装（6 块讲解 + 正确题点评 + 技能诊断摘要）
+- `批改记录/YYYY-MM/YYYY-MM-DD/数学建模/{UNIT_TOPIC}_{INDEX}.md` — **每次批改必须产出**，建模主题 + 三步法讲解 + 奥赛级练习题（折叠答案），模板见 `references/math-modeling-class.md`
 - `错题本/{TOPIC}.md` — 按课标知识点一份文件（追加累积）
 - `练习题/{UNIT_TOPIC}/{知识点}.md` — 按细分知识点累积归档
 - `总结/周报/YYYY-Www.md`、`总结/月报/YYYY-MM.md`、`总结/年报/YYYY.md` — 覆盖式
@@ -231,13 +259,15 @@ Obsidian 档案默认目录（所有路径均在 `档案根目录` 之下）：
 
 行为要求：
 
-- 档案、索引、回访队列、周/月/年总结为**覆盖式更新**；批改记录、错题本、练习题、专题、里程碑、图片为**追加式写入**。
-- **每次批改必须同时产出两份批改记录**（简洁模式 + 完整模式）——绝不可只产一份。两份**末尾互相 wikilink**；内容一致（同样的错题、同样的根因诊断、同样的正确率），仅**展开深度**不同。
-- 每份批改记录必须包含：整体情况 + 核心知识点图 + 原始照片（折叠） + 逐题速览表 + 逐题讲解（简洁 5-callout / 完整 8-callout） + 🪞 我的回顾 + 🎓 今日家长侧 + 🔗 关联。
-- 错题本条目必须反向链接到触发它的批改记录（简洁版，因为错题本是简洁索引）。
+- 档案、索引、回访队列、周/月/年总结为**覆盖式更新**；批改记录（含建模课）、错题本、练习题、专题、里程碑、图片为**追加式写入**。
+- **每次批改必须同时产出三份文件**（简洁模式 + 完整模式 + 数学建模）——少一份即视为不合格。
+  - 简洁 ↔ 完整末尾互相 wikilink；完整末尾在 🔗 关联区额外链到数学建模；数学建模末尾链到简洁 + 完整。
+- 每份批改记录（简洁 / 完整）必须包含：整体情况 + 核心知识点图 + 原始照片（折叠） + 逐题速览表 + 逐题讲解（简洁 5-callout / 完整 8-callout） + 🪞 我的回顾 + 🎓 今日家长侧 + 🔗 关联。
+- 数学建模文件必须包含：建模主题说明 + 建模三步法讲解 + 核心概念深化 + 奥赛级练习题（≥3 题，折叠答案 + 思路）+ 🔭 建模视角回顾（2 个问题）+ 🔗 关联（链回简洁 / 完整批改记录）。
+- 错题本条目必须反向链接到触发它的批改记录（简洁版）。
 - 总结生成前必须通过 `obsidian-cli` 列出该周期内的所有批改记录再汇总，不凭记忆。
-- 练习题必须附答案与简要思路，放在可折叠 callout 中，答案默认不展开。
-- 详细模板：简洁模式见 `references/summary-templates-concise.md`、完整模式见 `references/summary-templates.md`。
+- 练习题（含建模课内练习）必须附答案与简要思路，放在可折叠 callout 中，答案默认不展开。
+- 详细模板：简洁模式见 `references/summary-templates-concise.md`、完整模式见 `references/summary-templates.md`、数学建模课见 `references/math-modeling-class.md`。
 
 ## Workflow
 
@@ -295,6 +325,11 @@ Obsidian 档案默认目录（所有路径均在 `档案根目录` 之下）：
 
 - **核心知识点图解** 1 张（本次核心概念可视化，存到 `图片/核心知识点图解/{UNIT_TOPIC}_{知识点}.png`）。若该知识点图解已存在（跨批次共享）可复用，不重复生成。
 - **错题图** N 张（每道新错题一张，存到 `图片/错题/{UNIT_TOPIC}_{知识点}.png`）。若相同知识点已有图可共享时也可复用。
+- **数学建模课配图**（多张，规则见 `references/math-modeling-class.md` §6）：
+  - 必画 3 张 —— 建模主图 / 抽象图 / 核心建模图（对应三步法的三块 callout 和主图位置）
+  - 按需 2 张 —— 求解图 / 奥赛压轴题图
+  - 全部存到 `图片/建模/{UNIT_TOPIC}_{主题关键词}_{图位}.png`
+  - 风格按 `image-generation.md` 的阶段适配；视觉语言按主攻素养维度挑选（M1 抽象→左右分栏、M2 推理→逻辑链、M3 想象→立体格点、M4 归纳→表格+规律、M5 迁移→双图并排）
 - **总结图**（仅跨周期触发时）
 
 Cookie 过期先跑 `--login`；单张失败重试一次；连续 5 次失败放弃配图但不阻塞批改正文。
@@ -312,7 +347,7 @@ Cookie 过期先跑 `--login`；单张失败重试一次；连续 5 次失败放
 
 所有写入统一用 `obsidian create path="..." content="..." [overwrite] silent`：
 
-- **新建**（无 overwrite）：**批改记录（简洁 + 完整两份都必须产出）**、练习题、专题总结、里程碑
+- **新建**（无 overwrite）：**批改记录（简洁 + 完整 + 数学建模三份都必须产出）**、练习题、专题总结、里程碑
 - **覆盖**（加 overwrite）：孩子档案、索引、回访队列、周/月/年报
 - **追加**：错题本用"读-拼接-覆盖"模式（读出来→在内存里拼接新错题→覆盖写回）。obsidian-cli 的 `append` 命令不可靠
 
@@ -321,12 +356,13 @@ Cookie 过期先跑 `--login`；单张失败重试一次；连续 5 次失败放
 图片在 Step 5.5 已经直接 `cp` 到 vault 的 `图片/` 目录（二进制文件，绕过 obsidian-cli）。
 
 写回内容要点：
-- **批改记录（简洁 + 完整必须同时写）**：两份同数据同结论，差别只在展开深度
+- **批改记录（简洁 + 完整 + 数学建模必须同时写）**：
   - 简洁：5-callout 错题套装（为什么错 / 正确做法 / 验证 3 道）
   - 完整：8-callout 错题套装（再加 举一反三 / 容易混 / 小口诀 / 知识点延伸 / 正确题点评 / 技能诊断摘要）
-  - 两份文件**末尾互相 wikilink**（简洁末尾链到完整、完整末尾链到简洁）
+  - 简洁 ↔ 完整末尾互相 wikilink；完整末尾 🔗 关联区加链到数学建模
+  - 数学建模：建模主题 + 三步法 + 奥赛级练习题（折叠答案）+ 🔭 建模视角回顾；末尾链回简洁 + 完整
 - 错题本：每道新错题一条，正文只用自然语言，技术 tag 进 frontmatter；链接指向**简洁版**批改记录（因错题本本身是简洁索引）
-- 孩子档案：更新统计 / 节点命中数；**保留 `<!-- 家长备注开始 -->` / `<!-- 家长备注结束 -->` 之间内容**
+- 孩子档案：更新统计 / 节点命中数 / **建模思维图谱**（M1~M5 的近30天 + 累计计数、薄弱维度、均衡度）；**保留 `<!-- 家长备注开始 -->` / `<!-- 家长备注结束 -->` 之间内容**
 - 索引 / 回访队列：纯覆盖
 - 概念节点进入"掌握" → 追加专题文件；反思等级跃迁 → 追加里程碑文件
 
@@ -351,8 +387,9 @@ Cookie 过期先跑 `--login`；单张失败重试一次；连续 5 次失败放
 ### Step 8: 回应用户
 
 - 整体情况：本次正确率、这次主要卡在哪、相比近期的一句话。
-- Obsidian 中批改记录、练习题、回访题（若有）的 wikilink。
+- Obsidian 中批改记录（简洁 / 完整）、数学建模专题课、练习题、回访题（若有）的 wikilink。
 - 1~2 条家长侧建议：按年龄阶段取自 `pedagogy-by-stage.md`（活动 / 讨论题 / 复述题）。
+- 简短介绍本次建模课的主题和第一道练习题，让家长和孩子知道今天"额外学了什么"。
 - 关键字段缺失或冲突 → 在回应末尾列"待补充信息"。
 
 ## Failure Handling
@@ -367,6 +404,7 @@ Cookie 过期先跑 `--login`；单张失败重试一次；连续 5 次失败放
 - 孩子长期未上传（≥ 14 天）→ 把过期 ≥ 14 天的回访条目重置到 R1，在队列顶部加 `> [!warning]` 告知家长。
 - 周 / 月 / 年周期内无批改 → 生成"本周期无数据"占位总结。
 - 用户提供的年龄与档案差异大（> 2 岁）→ 停下来询问是否更新档案与阶段映射，不要静默覆盖（阶段切换影响讲解风格，必须显式确认）。
+- 数学建模课生成失败（如 Claude 无法找到合适建模角度）→ 不阻塞批改主流程；在对话里告知家长，数学建模文件写入占位内容（含建模主题 + "本次建模课内容生成失败，请重新触发" 的 `[!warning]`）。
 
 ## Directory Layout
 
@@ -382,4 +420,5 @@ Cookie 过期先跑 `--login`；单张失败重试一次；连续 5 次失败放
 - `references/summary-templates.md` — **完整模式**的 Markdown 模板（六模块讲解、分文件）
 - `references/summary-templates-concise.md` — **简洁模式**的 Markdown 模板（三块讲解、合并文件、配对练习）
 - `references/image-generation.md` — 配图生成规则
+- `references/math-modeling-class.md` — **数学建模专题课**的难度矩阵、建模三步法框架、Markdown 模板、奥赛题分级指南
 - `tmp/` — 执行过程中的临时产物，不进入 Obsidian

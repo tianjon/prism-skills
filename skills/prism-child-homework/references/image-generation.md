@@ -15,10 +15,10 @@
 
 ## 调用方式
 
-baoyu-danger-gemini-web 的 CLI 入口是 `/Users/yr/.claude/skills/baoyu-danger-gemini-web/scripts/main.ts`。基本命令：
+baoyu-danger-gemini-web 的 CLI 入口由环境变量 `$BAOYU_GEMINI_CLI` 指定（未设置时默认 `$HOME/.claude/skills/baoyu-danger-gemini-web/scripts/main.ts`，见 `SKILL.md` 的 **Runtime Policy · 环境变量** 段）。基本命令：
 
 ```bash
-npx -y bun /Users/yr/.claude/skills/baoyu-danger-gemini-web/scripts/main.ts \
+npx -y bun "${BAOYU_GEMINI_CLI:-$HOME/.claude/skills/baoyu-danger-gemini-web/scripts/main.ts}" \
   --prompt "{prompt text}" \
   --image "{output path}.png" \
   --model gemini-3-pro
@@ -27,12 +27,14 @@ npx -y bun /Users/yr/.claude/skills/baoyu-danger-gemini-web/scripts/main.ts \
 **首次或 cookie 过期**时必须先运行 `--login` 刷新 cookie：
 
 ```bash
-npx -y bun /Users/yr/.claude/skills/baoyu-danger-gemini-web/scripts/main.ts --login
+npx -y bun "${BAOYU_GEMINI_CLI:-$HOME/.claude/skills/baoyu-danger-gemini-web/scripts/main.ts}" --login
 ```
 
 如果生成命令报 `SECURE_1PSIDTS could get expired` 或 `socket connection was closed`，大概率是 cookie 过期。跑一次 login 再重试。
 
 每张图约 10-20 秒，偶尔失败后重试一次通常能成。
+
+**⚠️ 串行调用（硬约束）**：baoyu-danger-gemini-web 基于逆向的 Gemini Web API，**不支持并发会话**。并发调用会触发 `The socket connection was closed unexpectedly`。每次只能跑一张——起 background → 等通知 → 确认 → 再起下一张。Step 5.5 的多张图、重试降级、整批重生成都要用这个队列节奏。
 
 ## 图片存储
 

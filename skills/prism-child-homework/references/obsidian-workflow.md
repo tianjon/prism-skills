@@ -1,6 +1,6 @@
 # Obsidian Workflow
 
-本文件定义 `prism-child-homework` 在 Obsidian 中的**档案结构、文件命名、字段 schema 与 `obsidian-cli` 的实用调用范式**。所有路径相对于 `档案根目录`（默认 `教育/家庭作业/数学/`，用户可覆盖）。
+本文件定义 `prism-child-homework` 在 Obsidian 中的**档案结构、文件命名、字段 schema 与 `obsidian-cli` 的实用调用范式**。所有路径相对于 `档案根目录`——由环境变量 `$CHILD_HOMEWORK_ARCHIVE_ROOT` 或档案 frontmatter 里的 `档案根目录` 字段决定，用户首次建档时指定；文档里不写死任何具体路径。环境变量约定见 `SKILL.md` 的 **Runtime Policy · 环境变量** 段。
 
 ## 档案目录结构
 
@@ -14,9 +14,11 @@
 │   └── YYYY-MM/
 │       └── YYYY-MM-DD/
 │           ├── 简洁模式/
-│           │   └── {UNIT_TOPIC}_{INDEX}.md          # 输出模式=简洁 时产出
-│           └── 完整模式/
-│               └── {UNIT_TOPIC}_{INDEX}.md          # 输出模式=完整 时产出
+│           │   └── {UNIT_TOPIC}_{INDEX}.md          # 每次批改必产
+│           ├── 完整模式/
+│           │   └── {UNIT_TOPIC}_{INDEX}.md          # 每次批改必产
+│           └── 数学建模/
+│               └── {UNIT_TOPIC}_{INDEX}.md          # 每次批改必产（建模三步法 + 奥赛题）
 │
 ├── 错题本/
 │   └── {TOPIC}.md                                    # 按课标知识点命名；追加累积
@@ -99,8 +101,10 @@
 # 方法 1（推荐）：搜 frontmatter 类型 tag
 obsidian search query="类型: 批改记录" limit=50
 
-# 方法 2：直接搜 vault 文件系统（vault 路径已知时）
-ls "/Users/yr/ai/obs/教育/家庭作业/数学/批改记录/2026-04/2026-04-18/"
+# 方法 2：直接搜 vault 文件系统
+#   $CHILD_HOMEWORK_VAULT_ROOT   = vault 绝对路径（未设置时由 `obsidian vault` 解析）
+#   $CHILD_HOMEWORK_ARCHIVE_ROOT = 档案根目录（相对 vault 的子路径）
+ls "$CHILD_HOMEWORK_VAULT_ROOT/$CHILD_HOMEWORK_ARCHIVE_ROOT/批改记录/2026-04/2026-04-18/"
 
 # 方法 3：按 tag 搜
 obsidian search query="tag:#批改/{{昵称}}" limit=50
@@ -112,10 +116,10 @@ obsidian-cli 不支持直接写二进制。流程：
 
 ```bash
 # 1. Gemini 生成到 skill tmp/
-npx bun <gemini-cli> --image /tmp/xxx.png ...
+npx bun "$BAOYU_GEMINI_CLI" --image /tmp/xxx.png ...
 
 # 2. cp 到 vault 对应目录（绕过 obsidian-cli 是必要例外）
-cp /tmp/xxx.png "/Users/yr/ai/obs/教育/家庭作业/数学/图片/错题/长方体和正方体_体积单位.png"
+cp /tmp/xxx.png "$CHILD_HOMEWORK_VAULT_ROOT/$CHILD_HOMEWORK_ARCHIVE_ROOT/图片/错题/长方体和正方体_体积单位.png"
 ```
 
 Markdown 文件**必须经 obsidian-cli**，图片是**必要例外**。
@@ -163,6 +167,23 @@ tags:
   近30天平均等级: L0~L5
   近30天提问次数: <integer>
   最近一次升级: YYYY-MM-DD | 尚无
+建模思维图谱:                  # 数学建模课沿五维素养追踪
+  近30天:
+    M1: <integer>              # 抽象
+    M2: <integer>              # 推理
+    M3: <integer>              # 想象
+    M4: <integer>              # 归纳
+    M5: <integer>              # 迁移
+  累计:
+    M1: <integer>
+    M2: <integer>
+    M3: <integer>
+    M4: <integer>
+    M5: <integer>
+  薄弱维度:
+    - <M1~M5 中低于阈值的维度>
+  均衡度: 五维均衡 | 偏科:<MX>
+  最近建模课: <相对路径>
 回访队列指针: <相对路径>
 aliases:
   - <昵称>数学档案
@@ -269,8 +290,10 @@ Step 3-5 业务逻辑
 
 Step 5.5 配图（Gemini Web → cp 到 图片/错题/、图片/核心知识点图解/）
 
-Step 6 写回（按 输出模式 选模板）：
-  create 批改记录/YYYY-MM/YYYY-MM-DD/{UNIT_TOPIC}_{INDEX}_{模式}.md
+Step 6 写回（三份批改文件必须同时产出）：
+  create 批改记录/YYYY-MM/YYYY-MM-DD/简洁模式/{UNIT_TOPIC}_{INDEX}.md
+  create 批改记录/YYYY-MM/YYYY-MM-DD/完整模式/{UNIT_TOPIC}_{INDEX}.md
+  create 批改记录/YYYY-MM/YYYY-MM-DD/数学建模/{UNIT_TOPIC}_{INDEX}.md  ← 新增
   create 错题本/{TOPIC}.md（读-拼-写）
   create 练习题/{UNIT_TOPIC}/{知识点}.md（读-拼-写，按触发的知识点）
   create 孩子档案.md（覆盖；保留家长备注）
