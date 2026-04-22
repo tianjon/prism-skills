@@ -81,15 +81,33 @@
 
 ## Obsidian CLI 实用指令
 
-### 可用命令
+**可执行名就是 `obsidian`**（不是 `obsidian-cli`）——同一个 binary 同时是 GUI 和 CLI 入口，按 argv 分发。完整命令集跑 `obsidian --help`。
+
+### 常用命令
 
 | 指令 | 用途 |
 |---|---|
-| `obsidian vault` | 查看当前 vault 名、路径、大小 |
-| `obsidian help [<command>]` | 查看命令语义 |
-| `obsidian read path="<相对路径>"` | 读取文件 |
-| `obsidian create path="<路径>" content="..." [overwrite] [silent]` | 新建或覆盖写入（文本） |
-| `obsidian search query="<kw>" [limit=N]` | 全库搜索关键字 |
+| `obsidian --help` | 列出所有子命令 |
+| `obsidian vault` | 当前活动 vault 名 / 路径 / 文件数 / 大小（TSV 输出）|
+| `obsidian read path="<相对路径>"` | 按路径读文件 |
+| `obsidian read file="<短名>"` | 按 wikilink 短名解析读 |
+| `obsidian create path="..." content="..." [overwrite] [silent]` | 新建或覆盖写入（文本）|
+| `obsidian append path="..." content="..."` | 追加文本（**实测不稳**，错题本类累积文件用"读-拼-覆盖"代替）|
+| `obsidian search query="<kw>" [limit=N]` | 全库搜索 |
+| `obsidian backlinks file="..." [counts] [total]` | 反链查询 |
+| `obsidian aliases ...` | 别名列出 |
+| `obsidian bases` / `base:query` / `base:create` | Bases 操作 |
+
+### 解析 vault 路径
+
+`obsidian vault` 输出 TSV，第二列是路径：
+
+```bash
+VAULT_ROOT="$(obsidian vault | awk '/^path\t/ {print $2}')"
+# 示例：VAULT_ROOT=/Users/yr/ai/obs
+```
+
+这也是 `$CHILD_HOMEWORK_VAULT_ROOT` 未设置时的回退来源。
 
 ### 已知不存在的指令
 

@@ -206,7 +206,8 @@ description: Use when the user wants to check a child's math homework from a pho
 ## Runtime Policy
 
 - 依赖 Claude 自带的视觉能力识别作业照片，不调用额外 OCR 工具。
-- Obsidian 必须处于运行状态且 `obsidian-cli` 可用；否则终止并告知。
+- Obsidian 必须处于运行状态且 `obsidian` CLI 可用；否则终止并告知。
+- **术语澄清**：本文档中出现的 "obsidian-cli" 指的就是命令行工具 **`obsidian`**。可执行名就是 `obsidian`（`which obsidian` 在 macOS 上定位到 `Obsidian.app` 内嵌的同名 binary；按 argv 分发：无子命令启动 GUI，带子命令作 CLI 用）。常用命令：`obsidian vault` / `obsidian read` / `obsidian create` / `obsidian search` / `obsidian append` / `obsidian backlinks`，完整列表见 `obsidian --help`。
 - 档案根目录按下列优先级解析：
   1. 用户当前对话中显式提供的路径
   2. `孩子档案.md` 中记录的 `档案根目录`

@@ -19,6 +19,8 @@ Store all repository skills in this directory.
 - `prism-macos-calendar-cli/`
 - `prism-ev-strategy-evolution/`
 - `prism-brand-launch-research/`
+- `prism-child-homework/`
+- `prism-guwen-tutor/`
 - `_template/` — starter scaffold for future skills
 
 Repository-wide permission expectations are documented in `docs/permissions-matrix.md`.
