@@ -1,6 +1,6 @@
 # Image Generation
 
-本技能通过 `baoyu-danger-gemini-web` 技能调用 Gemini Web API 生成配图。每次批改在**批改主图、错题图、周期总结图**三个位置各生成一张，让孩子对抽象概念有具象的"看一次"，提升理解和记忆。
+本技能通过 `baoyu-imagine` 技能调用官方图像 API（OpenAI GPT Image 2 / Google / DashScope / Replicate 等，由 baoyu-imagine 的 EXTEND.md 决定 provider）生成配图。每次批改在**批改主图、错题图、周期总结图**三个位置各生成一张，让孩子对抽象概念有具象的"看一次"，提升理解和记忆。
 
 ## 为什么要配图
 
@@ -15,26 +15,35 @@
 
 ## 调用方式
 
-baoyu-danger-gemini-web 的 CLI 入口由环境变量 `$BAOYU_GEMINI_CLI` 指定（未设置时默认 `$HOME/.claude/skills/baoyu-danger-gemini-web/scripts/main.ts`，见 `SKILL.md` 的 **Runtime Policy · 环境变量** 段）。基本命令：
+baoyu-imagine 的 CLI 入口由环境变量 `$BAOYU_IMAGINE_CLI` 指定（未设置时默认 `$HOME/.claude/skills/baoyu-imagine/scripts/main.ts`，见 `SKILL.md` 的 **Runtime Policy · 环境变量** 段）。
+
+**首次运行（阻塞）**：baoyu-imagine 在生成前会强制读取 EXTEND.md（位于 `.baoyu-skills/baoyu-imagine/EXTEND.md` 或 `$HOME/.baoyu-skills/baoyu-imagine/EXTEND.md` 等），首次没有就会引导用户选 provider / model / quality / 保存位置后写入。本技能在第一次跑配图遇到首次设置时直接走 baoyu-imagine 的引导流程，不要绕过。
+
+基本命令（单张）：
 
 ```bash
-npx -y bun "${BAOYU_GEMINI_CLI:-$HOME/.claude/skills/baoyu-danger-gemini-web/scripts/main.ts}" \
+npx -y bun "${BAOYU_IMAGINE_CLI:-$HOME/.claude/skills/baoyu-imagine/scripts/main.ts}" \
   --prompt "{prompt text}" \
   --image "{output path}.png" \
-  --model gemini-3-pro
+  --ar 4:3 \
+  --quality 2k
 ```
 
-**首次或 cookie 过期**时必须先运行 `--login` 刷新 cookie：
+可选参数：`--provider <google|openai|...>` 显式指定供应商；`--model <id>` 指定模型；`--ref <files...>` 加参考图（仅部分 provider/model 支持，详见 baoyu-imagine SKILL.md）。
+
+**批量并发生成**（推荐用于 Step 5.5 的多张图）：
 
 ```bash
-npx -y bun "${BAOYU_GEMINI_CLI:-$HOME/.claude/skills/baoyu-danger-gemini-web/scripts/main.ts}" --login
+npx -y bun "${BAOYU_IMAGINE_CLI:-$HOME/.claude/skills/baoyu-imagine/scripts/main.ts}" \
+  --batchfile "/tmp/child-homework-batch.json" \
+  --jobs 4
 ```
 
-如果生成命令报 `SECURE_1PSIDTS could get expired` 或 `socket connection was closed`，大概率是 cookie 过期。跑一次 login 再重试。
+`batchfile` 是一个 JSON 数组，每项含 `prompt` / `image` / 可选的 `ar` / `model` 等字段；具体 schema 详见 baoyu-imagine 的 `references/usage-examples.md`。批量模式自带每个 provider 的限速与重试。
 
-每张图约 10-20 秒，偶尔失败后重试一次通常能成。
+每张图约 10-30 秒（视 provider 与 quality 而定），偶尔失败后重试一次通常能成。
 
-**⚠️ 串行调用（硬约束）**：baoyu-danger-gemini-web 基于逆向的 Gemini Web API，**不支持并发会话**。并发调用会触发 `The socket connection was closed unexpectedly`。每次只能跑一张——起 background → 等通知 → 确认 → 再起下一张。Step 5.5 的多张图、重试降级、整批重生成都要用这个队列节奏。
+**并发策略**：baoyu-imagine 走官方 API，默认就支持并发。Step 5.5 多张图首选 `--batchfile + --jobs`，让限速与重试由 baoyu-imagine 内部处理；只有当批改/错题/建模图必须按顺序写回 Markdown 时才退回单张串行。
 
 ## 图片存储
 
@@ -133,7 +142,7 @@ npx -y bun "${BAOYU_GEMINI_CLI:-$HOME/.claude/skills/baoyu-danger-gemini-web/scr
 | D · 六年级 | 图示为主、少插图 | 中低 | 精准 |
 | E · 初中 | diagram、公式、少装饰 | 低 | 正式 |
 
-提示词里明确写"风格：{阶段对应}"，让 Gemini 生成符合年龄的画面。
+提示词里明确写"风格：{阶段对应}"，让模型生成符合年龄的画面。
 
 ## 在 Markdown 里的嵌入
 
@@ -202,10 +211,11 @@ Obsidian wikilink 语法：
 
 ## 失败处理
 
-- Cookie 过期 → 自动跑 `--login` 刷新，再重试一次。如果 login 也失败，跳过配图（批改流程继续），在批改记录里放一行 `> [!note] 本次配图生成失败（cookie 刷新未完成），请稍后手动重试` 并告知用户。
-- Gemini 返回空或质量不达标 → 重试一次用更具体的提示词；仍不行就跳过该张，标记"待补图"。
+- baoyu-imagine 首次运行未配置 EXTEND.md → 跟随其交互引导完成配置（provider / model / quality / 保存位置），写入后再触发配图。在引导完成前批改流程可继续，配图位放占位 callout（见下文 Markdown 降级）。
+- API key 缺失 / 鉴权失败 → 跳过配图（批改流程继续），在批改记录里放一行 `> [!note] 本次配图生成失败（baoyu-imagine 鉴权失败），请检查 provider 的 API key 后手动重试` 并告知用户。
+- Provider 返回空或质量不达标 → 重试一次用更具体的提示词；仍不行就跳过该张，标记"待补图"。
 - 超过 5 张连续失败 → 停止本次批改的图片生成，走纯文本流程，完整批改记录里加显著的 `⚠️ 配图流水线异常` 提示。
-- 图片文件超过 2 MB（单张）→ 这通常是正常的 Gemini 输出，Obsidian 能处理，但可以用 `sips -Z 1200` 压一下：
+- 图片文件超过 2 MB（单张）→ 这通常是正常的高质量输出，Obsidian 能处理，但可以用 `sips -Z 1200` 压一下：
 
 ```bash
 sips -Z 1200 "{path}.png" --out "{path}.png"
@@ -216,8 +226,8 @@ sips -Z 1200 "{path}.png" --out "{path}.png"
 单批次生成量（以一次 13 道错题的体量为例）：
 
 - 1 张批改主图 + 13 张错题图 = **14 张**
-- 时间：约 3~5 分钟（串行，10-20s / 张）
-- 成本：由 Gemini Web API 决定，单张约等于一次网页对话的计算量
+- 时间：串行约 3~7 分钟（10-30s / 张）；用 `--batchfile --jobs 4` 通常 1~2 分钟跑完
+- 成本：由所选 provider 决定（OpenAI GPT Image 2 / Google Gemini / DashScope 等），按官方计价
 
 若一次批改错题太多（> 10），可以考虑：
 - 只生成根因前 3 位的错题图（最高优先级的主薄弱），其余条目先不生成
@@ -235,7 +245,7 @@ prism-child-homework (Step 5 写回前)
     ↓
   按模板生成 prompt
     ↓
-  调用 baoyu-danger-gemini-web CLI
+  调用 baoyu-imagine CLI（单张 --image / 多张 --batchfile）
     ↓
   文件落地到 tmp/
     ↓

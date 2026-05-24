@@ -1,0 +1,9 @@
+[project]
+name = "prism-gpt-image-2"
+version = "0.1.0"
+description = "OpenAI-compatible image generation (gpt-image-2 default), routed through Anspire AI gateway or OpenAI."
+requires-python = ">=3.10,<3.14"
+dependencies = []
+
+[dependency-groups]
+dev = []

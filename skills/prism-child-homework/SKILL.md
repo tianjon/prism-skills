@@ -44,7 +44,7 @@ description: Use when the user wants to check a child's math homework from a pho
 | 讲解单题 | "这题为什么错"、"帮我讲一下第 3 题" | 走 Step 3（只批改 + 讲解），不一定要生成练习 |
 | 生成练习 | "出几道练习"、"给她做点类似的题"、"针对薄弱点练一练" | 走 Step 1 + Step 4，不需要照片 |
 | 查看总结 | "这周她怎么样"、"看下本月总结"、"生成周报" | 走 Step 7 |
-| 重新生成图 | "第 X 题的图不满意，重画"、"换一张图" | 只调用 `baoyu-danger-gemini-web` 重生成指定图（其他流程跳过） |
+| 重新生成图 | "第 X 题的图不满意，重画"、"换一张图" | 只调用 `baoyu-imagine` 重生成指定图（其他流程跳过） |
 | 更新档案 | "她升到六年级了"、"出生年月是 xxxx-xx-xx"、"改一下档案" | 只更新 `孩子档案.md` 相应字段，不产生新批改记录 |
 | 首次建档 | 没有档案却提到孩子学习 | 阻塞式问昵称、出生年月、年级、根目录，建档 |
 | 多孩切换 | "这次是另一个孩子的作业" | 阻塞式询问应切到哪个档案根目录；若不存在则走首次建档 |
@@ -55,7 +55,7 @@ description: Use when the user wants to check a child's math homework from a pho
 
 - 所有 Obsidian 读写必须通过 `obsidian-cli` 技能，禁止直接操作文件系统。
 - 写入 Obsidian 前必须调用 `obsidian-markdown` 技能校准排版：callout、highlight、inline code、task list、短名 wikilink。不输出素面 Markdown。
-- 每次批改必须通过 `baoyu-danger-gemini-web` 技能生成配图：1 张批改主图 + N 张错题图（每道错题一张）。周/月/年总结触发时各生成 1 张总结图。规则见 `references/image-generation.md`。
+- 每次批改必须通过 `baoyu-imagine` 技能生成配图：1 张批改主图 + N 张错题图（每道错题一张）。周/月/年总结触发时各生成 1 张总结图。规则见 `references/image-generation.md`。
 - **数学符号优先用 Unicode + inline code**（`` `50 × 50 × 4 = 10000 cm³` ``）。以 `\t` / `\n` 开头的 LaTeX 命令会被 `obsidian-cli` 的 `content=` 参数破坏，用 Unicode 替代。
 - 写入 Obsidian 的正文一律使用中文。
 
@@ -224,11 +224,11 @@ description: Use when the user wants to check a child's math homework from a pho
 |---|---|---|
 | `CHILD_HOMEWORK_VAULT_ROOT` | Obsidian vault 根的**绝对路径**。用于直接 `ls` / `cp` 等绕过 obsidian-cli 的文件系统操作（图片写入、大文件后备写回、列目录）。 | 回退到 `obsidian vault` 命令查询到的路径。仍无法解析则停止并告知。 |
 | `CHILD_HOMEWORK_ARCHIVE_ROOT` | 档案根目录。可以是**相对 vault 的子路径**（如 `教育/家庭作业/数学`）或绝对路径。 | 回退到 `孩子档案.md` 的 `档案根目录`；仍缺失则阻塞式询问用户。 |
-| `BAOYU_GEMINI_CLI` | `baoyu-danger-gemini-web` 技能 CLI 入口的**绝对路径**。 | 默认 `$HOME/.claude/skills/baoyu-danger-gemini-web/scripts/main.ts`。若该默认路径不存在则停止配图并告知。 |
+| `BAOYU_IMAGINE_CLI` | `baoyu-imagine` 技能 CLI 入口的**绝对路径**。 | 默认 `$HOME/.claude/skills/baoyu-imagine/scripts/main.ts`。若该默认路径不存在则停止配图并告知。 |
 
 引用规则：
 
-- shell 命令里统一写 `"$CHILD_HOMEWORK_VAULT_ROOT"` / `"$CHILD_HOMEWORK_ARCHIVE_ROOT"` / `"$BAOYU_GEMINI_CLI"`；不要在文档里给出 `/Users/<name>/...` 这类绝对示例。
+- shell 命令里统一写 `"$CHILD_HOMEWORK_VAULT_ROOT"` / `"$CHILD_HOMEWORK_ARCHIVE_ROOT"` / `"$BAOYU_IMAGINE_CLI"`；不要在文档里给出 `/Users/<name>/...` 这类绝对示例。
 - 组合 vault 绝对路径与相对档案根时用 `"$CHILD_HOMEWORK_VAULT_ROOT/$CHILD_HOMEWORK_ARCHIVE_ROOT"`。
 - 档案 frontmatter 写入的 `档案根目录` 字段仍存明文字符串（否则跨会话读不回来）——环境变量只影响运行时解析路径，不影响 vault 内落地内容。
 
@@ -322,7 +322,7 @@ Obsidian 档案默认目录（所有路径均在 `档案根目录` 之下）：
 
 **原始作业照片**：Step 2 解析完照片后，**立即把原件 cp 到 `图片/原始图片/{UNIT_TOPIC}_{INDEX}_{SUBINDEX}.png`**，以防 image cache 被清理（实测 Claude Code 的 image cache 会定期清理，老照片可能已经丢失）。
 
-**配图生成**：按 `references/image-generation.md` 调 `baoyu-danger-gemini-web` 生成：
+**配图生成**：按 `references/image-generation.md` 调 `baoyu-imagine` 生成：
 
 - **核心知识点图解** 1 张（本次核心概念可视化，存到 `图片/核心知识点图解/{UNIT_TOPIC}_{知识点}.png`）。若该知识点图解已存在（跨批次共享）可复用，不重复生成。
 - **错题图** N 张（每道新错题一张，存到 `图片/错题/{UNIT_TOPIC}_{知识点}.png`）。若相同知识点已有图可共享时也可复用。
@@ -333,7 +333,7 @@ Obsidian 档案默认目录（所有路径均在 `档案根目录` 之下）：
   - 风格按 `image-generation.md` 的阶段适配；视觉语言按主攻素养维度挑选（M1 抽象→左右分栏、M2 推理→逻辑链、M3 想象→立体格点、M4 归纳→表格+规律、M5 迁移→双图并排）
 - **总结图**（仅跨周期触发时）
 
-Cookie 过期先跑 `--login`；单张失败重试一次；连续 5 次失败放弃配图但不阻塞批改正文。
+首次运行需先按 baoyu-imagine 的 EXTEND.md 流程完成 provider/model 配置；单张失败重试一次；连续 5 次失败放弃配图但不阻塞批改正文。多张图可用 `--batchfile` 批量并发生成（详见 `references/image-generation.md`）。
 
 **配图失败时的 Markdown 降级**：批改记录 / 错题本 / 总结的模板里有 `![[xxx.png]]` 嵌入点。某张图最终没生成，对应位置**不嵌入 wikilink**，改成以下占位 callout（避免 broken link）：
 

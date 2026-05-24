@@ -133,8 +133,8 @@ obsidian search query="tag:#批改/{{昵称}}" limit=50
 obsidian-cli 不支持直接写二进制。流程：
 
 ```bash
-# 1. Gemini 生成到 skill tmp/
-npx bun "$BAOYU_GEMINI_CLI" --image /tmp/xxx.png ...
+# 1. baoyu-imagine 生成到 skill tmp/
+npx -y bun "$BAOYU_IMAGINE_CLI" --prompt "..." --image /tmp/xxx.png ...
 
 # 2. cp 到 vault 对应目录（绕过 obsidian-cli 是必要例外）
 cp /tmp/xxx.png "$CHILD_HOMEWORK_VAULT_ROOT/$CHILD_HOMEWORK_ARCHIVE_ROOT/图片/错题/长方体和正方体_体积单位.png"

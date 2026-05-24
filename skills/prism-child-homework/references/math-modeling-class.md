@@ -145,7 +145,7 @@ frontmatter tag：`维度/M{N}` 进 tags，供跨次统计用。
 图片/建模/{UNIT_TOPIC}_{主题关键词}_{图位}.png
 ```
 
-生成方式与 `image-generation.md` 一致（调 `baoyu-danger-gemini-web`，阶段适配风格同批改主图）。
+生成方式与 `image-generation.md` 一致（调 `baoyu-imagine`，阶段适配风格同批改主图）。
 
 ### 6.1 提示词模板
 
